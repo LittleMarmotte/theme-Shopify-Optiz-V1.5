@@ -1,0 +1,138 @@
+{% comment %}
+  Section: Image centrée (PC + mobile) avec largeur réglable + coins arrondis
+{% endcomment %}
+
+<section
+  class="sda-image-section"
+  style="
+    --img-w-desktop: {{ section.settings.image_width_desktop }}px;
+    --img-w-mobile: {{ section.settings.image_width_mobile }}px;
+  "
+>
+  <div class="sda-image-wrap">
+    {% if section.settings.image != blank %}
+      <div class="sda-image-frame">
+        {%- assign alt_text = section.settings.image_alt | strip -%}
+        {%- if alt_text == blank and section.settings.image.alt != blank -%}
+          {%- assign alt_text = section.settings.image.alt -%}
+        {%- endif -%}
+        {%- if alt_text == blank -%}
+          {%- assign alt_text = 'Image' -%}
+        {%- endif -%}
+
+        {{ section.settings.image
+          | image_url: width: 2000
+          | image_tag: loading: 'lazy', alt: alt_text
+        }}
+      </div>
+    {% else %}
+      <div class="sda-placeholder">
+        Ajoute une image dans les paramètres.
+      </div>
+    {% endif %}
+  </div>
+
+  <style>
+    .sda-image-section {
+      width: 100%;
+      padding: {{ section.settings.padding_y }}px 0;
+    }
+
+    /* Toujours centré */
+    .sda-image-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Cadre: largeur réglable + arrondi */
+    .sda-image-frame {
+      width: min(100%, var(--img-w-mobile));
+      border-radius: {{ section.settings.image_radius }}px;
+      overflow: hidden; /* important pour que l'arrondi coupe l'image */
+    }
+
+    .sda-image-frame img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .sda-placeholder {
+      width: min(100%, var(--img-w-mobile));
+      padding: 20px;
+      border: 1px dashed rgba(0,0,0,.3);
+      text-align: center;
+      border-radius: {{ section.settings.image_radius }}px;
+      opacity: 0.85;
+    }
+
+    @media (min-width: 750px) {
+      .sda-image-frame,
+      .sda-placeholder {
+        width: min(100%, var(--img-w-desktop));
+      }
+    }
+  </style>
+</section>
+
+{% schema %}
+{
+  "name": "Image simple",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Texte alternatif (SEO)",
+      "default": "Image"
+    },
+    {
+      "type": "range",
+      "id": "image_width_desktop",
+      "label": "Largeur image PC (px)",
+      "min": 200,
+      "max": 1600,
+      "step": 20,
+      "default": 900
+    },
+    {
+      "type": "range",
+      "id": "image_width_mobile",
+      "label": "Largeur image mobile (px)",
+      "min": 200,
+      "max": 800,
+      "step": 10,
+      "default": 340
+    },
+    {
+      "type": "range",
+      "id": "image_radius",
+      "label": "Arrondi des coins (px)",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Padding section haut/bas (px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image simple"
+    }
+  ]
+}
+{% endschema %}

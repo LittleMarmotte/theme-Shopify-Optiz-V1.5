@@ -1,0 +1,44 @@
+{% schema %}
+{
+  "name": "Logo personnalisé",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo_image",
+      "label": "Choisir le logo"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Largeur du logo (en px)",
+      "min": 50,
+      "max": 1000,
+      "step": 10,
+      "default": 300
+    },
+    {
+      "type": "text",
+      "id": "logo_alt",
+      "label": "Texte alternatif du logo",
+      "default": "Logo"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Logo centré auto",
+      "category": "Image"
+    }
+  ]
+}
+{% endschema %}
+
+<div class="logo-section" style="display: flex; justify-content: center; align-items: center; padding: 20px 0;">
+  {% if section.settings.logo_image != blank %}
+    <img 
+      src="{{ section.settings.logo_image | img_url: 'master' }}" 
+      alt="{{ section.settings.logo_alt }}" 
+      style="width: {{ section.settings.logo_width }}px; max-width: 100%; height: auto;">
+  {% else %}
+    <p>Aucun logo sélectionné.</p>
+  {% endif %}
+</div>

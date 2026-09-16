@@ -1,0 +1,127 @@
+{% schema %}
+{
+  "name": "Barre d'images",
+  "settings": [
+    {
+      "type": "range",
+      "id": "image_height",
+      "label": "Hauteur des images (px)",
+      "default": 80,
+      "min": 40,
+      "max": 300,
+      "step": 10
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Vitesse (sec, plus petit = plus rapide)",
+      "default": 30,
+      "min": 5,
+      "max": 60,
+      "step": 1
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Couleur de fond",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "img",
+          "label": "Image"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 20,
+  "presets": [
+    {
+      "name": "Barre d'images"
+    }
+  ]
+}
+{% endschema %}
+
+<section class="image-marquee" style="background-color: {{ section.settings.background_color }}">
+  <div class="marquee-track">
+    {% for block in section.blocks %}
+      {% if block.settings.img != blank %}
+        <div class="marquee-item">
+          <img 
+            src="{{ block.settings.img | img_url: '500x' }}" 
+            alt="Image du défilement"
+            style="height: {{ section.settings.image_height }}px;"
+          >
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    {% comment %}
+      Duplicate pour défilement infini
+    {% endcomment %}
+    {% for block in section.blocks %}
+      {% if block.settings.img != blank %}
+        <div class="marquee-item">
+          <img 
+            src="{{ block.settings.img | img_url: '500x' }}" 
+            alt="Image du défilement"
+            style="height: {{ section.settings.image_height }}px;"
+          >
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+<style>
+.image-marquee {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  padding: 10px 0;
+}
+
+.image-marquee .marquee-track {
+  display: flex;
+  width: max-content;
+  animation: scroll {{ section.settings.speed }}s linear infinite;
+}
+
+.image-marquee .marquee-item {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 20px;
+}
+
+.image-marquee img {
+  height: auto;
+  max-height: 100%;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 768px) {
+  .image-marquee .marquee-item {
+    margin: 0 10px;
+  }
+}
+</style>

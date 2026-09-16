@@ -1,0 +1,201 @@
+{% comment %}
+------------------------------------------------------------
+SECTION : Ebook Promo — HAKIM (version compacte, image carrée)
+------------------------------------------------------------
+{% endcomment %}
+
+<section class="hakim-ebook-section">
+  <div class="hakim-ebook-inner">
+    
+    <div class="hakim-ebook-image">
+      {% if section.settings.image != blank %}
+        <img src="{{ section.settings.image | img_url: '600x' }}" alt="{{ section.settings.title | escape }}">
+      {% endif %}
+      <div class="hakim-ebook-glow"></div>
+    </div>
+
+    <div class="hakim-ebook-content">
+      {% if section.settings.kicker != blank %}
+        <span class="hakim-ebook-kicker">{{ section.settings.kicker }}</span>
+      {% endif %}
+      
+      {% if section.settings.title != blank %}
+        <h2 class="hakim-ebook-title">{{ section.settings.title }}</h2>
+      {% endif %}
+
+      {% if section.settings.text != blank %}
+        <p class="hakim-ebook-text">{{ section.settings.text }}</p>
+      {% endif %}
+
+      {% if section.settings.product != blank %}
+        {% assign product = all_products[section.settings.product] %}
+        {% if product %}
+          <div class="hakim-ebook-cta">
+            <a href="{{ product.url }}" class="hakim-btn">
+              {{ section.settings.button_label | default: 'Découvrir l’e-book' }}
+            </a>
+          </div>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<style>
+/* === HAKIM EBOOK SECTION (compacte, image carrée) === */
+.hakim-ebook-section {
+  background: #212121;
+  color: #FFFFFF;
+  padding: 40px 16px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.hakim-ebook-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  text-align: center;
+  position: relative;
+}
+
+.hakim-ebook-image {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  aspect-ratio: 1 / 1; /* 🔥 image carrée */
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 14px 40px rgba(255, 0, 0, 0.25);
+  transform: translateY(0);
+  transition: transform 0.8s ease;
+}
+.hakim-ebook-image:hover { transform: translateY(-6px); }
+
+.hakim-ebook-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hakim-ebook-glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255, 0, 0, 0.25), transparent 70%);
+  mix-blend-mode: screen;
+  animation: hakimGlow 6s ease-in-out infinite alternate;
+}
+@keyframes hakimGlow {
+  from { opacity: 0.5; transform: scale(1); }
+  to { opacity: 1; transform: scale(1.05); }
+}
+
+.hakim-ebook-content {
+  max-width: 480px;
+  position: relative;
+}
+
+.hakim-ebook-kicker {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: #FF0000;
+  text-transform: uppercase;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.hakim-ebook-title {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(1.4rem, 5vw, 2.2rem);
+  margin-bottom: 14px;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.hakim-ebook-text {
+  color: #f5f5f5;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+
+.hakim-btn {
+  display: inline-block;
+  background: linear-gradient(90deg, #FF0000, #a00000);
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 10px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  letter-spacing: 0.4px;
+  box-shadow: 0 4px 14px rgba(255,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.hakim-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(255,0,0,0.5);
+}
+.hakim-btn::after {
+  content:'';
+  position:absolute;
+  top:0; left:-100%;
+  width:100%; height:100%;
+  background:linear-gradient(120deg, rgba(255,255,255,0.25), transparent 70%);
+  transform:skewX(-20deg);
+  transition: left .5s ease;
+}
+.hakim-btn:hover::after { left:100%; }
+
+@media (min-width: 768px) {
+  .hakim-ebook-inner {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    text-align: left;
+  }
+  .hakim-ebook-content { flex: 1; }
+  .hakim-ebook-image { flex: 0 0 35%; }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){ entry.target.classList.add('visible'); }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('.hakim-ebook-section').forEach(el => observer.observe(el));
+});
+</script>
+
+{% schema %}
+{
+  "name": "Ebook Promo - Hakim ",
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Texte d'accroche", "default": "NOUVEAU E-BOOK" },
+    { "type": "text", "id": "title", "label": "Titre principal", "default": "Découvre mon e-book exclusif" },
+    { "type": "textarea", "id": "text", "label": "Texte descriptif", "default": "Un guide clair et pratique pour comprendre ce qui nourrit réellement ton énergie, ton équilibre hormonal et ta santé à long terme." },
+    { "type": "image_picker", "id": "image", "label": "Image du e-book" },
+    { "type": "product", "id": "product", "label": "Produit à mettre en avant" },
+    { "type": "text", "id": "button_label", "label": "Texte du bouton", "default": "Découvrir l’e-book" }
+  ],
+  "presets": [
+    { "name": "Ebook promo (Hakim carré)", "category": "Contenu personnalisé" }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,126 @@
+{% comment %}
+  SECTION : Texte défilant infini (no-JS)
+{% endcomment %}
+
+<section
+  class="marquee"
+  style="
+    --bg: {{ section.settings.bg_color }};
+    --color: {{ section.settings.text_color }};
+    --size: {{ section.settings.text_size }}px;
+    --speed: {{ section.settings.scroll_speed }}s;
+    --gap: 48px;
+  "
+>
+  <div class="marquee__viewport" style="background-color: var(--bg);">
+    <div class="marquee__track" aria-hidden="true">
+      <span class="marquee__text" style="color: var(--color)">{{ section.settings.text_content }}</span>
+      <span class="marquee__text" style="color: var(--color)">{{ section.settings.text_content }}</span>
+      <span class="marquee__text" style="color: var(--color)">{{ section.settings.text_content }}</span>
+      <span class="marquee__text" style="color: var(--color)">{{ section.settings.text_content }}</span>
+      <span class="marquee__text" style="color: var(--color)">{{ section.settings.text_content }}</span>
+      <span class="marquee__text" style="color: var(--color)">{{ section.settings.text_content }}</span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .marquee {
+    width: 100%;
+  }
+
+  .marquee__viewport {
+    overflow: hidden;
+    width: 100%;
+    padding: 10px 0;
+  }
+
+  .marquee__track {
+    display: flex;
+    align-items: center;
+    gap: var(--gap);
+    width: max-content;
+    animation: marquee-scroll var(--speed) linear infinite;
+    will-change: transform;
+  }
+
+  .marquee__text {
+    display: inline-block;
+    white-space: nowrap;
+    font-weight: 600;
+    font-size: var(--size);
+    line-height: 1;
+  }
+
+  @keyframes marquee-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Mobile: texte légèrement réduit (optionnel) */
+  @media (max-width: 768px) {
+    .marquee__text {
+      font-size: calc(var(--size) * 0.9);
+    }
+  }
+
+  /* Accessibilité: respecte la préférence utilisateur */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee__track {
+      animation: none;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Texte défilant",
+  "settings": [
+    {
+      "type": "text",
+      "id": "text_content",
+      "label": "Texte défilant",
+      "default": "Livraison rapide — Naturel — Performance — Fabriqué en France 🇫🇷"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Couleur de fond",
+      "default": "#212121"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Couleur du texte",
+      "default": "#FF0000"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "label": "Taille du texte (px)",
+      "min": 10,
+      "max": 40,
+      "step": 1,
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "label": "Vitesse du défilement (secondes, plus grand = plus lent)",
+      "min": 5,
+      "max": 40,
+      "step": 1,
+      "default": 15
+    }
+  ],
+  "presets": [
+    {
+      "name": "Texte défilant"
+    }
+  ]
+}
+{% endschema %}
