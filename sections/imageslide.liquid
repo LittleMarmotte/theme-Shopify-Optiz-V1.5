@@ -1,0 +1,333 @@
+{% comment %}
+  Section: Slider d'images avec preview (PC + mobile) + swipe + flèches
+  FIX: la 1ère image est TOUJOURS centrée (et la dernière aussi)
+  - Images formats différents OK (pas étirées)
+  - Largeur PC/mobile indépendante
+  - Titre PC/mobile indépendant
+  - Coins arrondis réglables
+{% endcomment %}
+
+{% assign sid = section.id %}
+
+<section
+  id="sda-img-slider-{{ sid }}"
+  class="sda-img-slider"
+  style="
+    --img-w-desktop: {{ section.settings.image_width_desktop }}px;
+    --img-w-mobile: {{ section.settings.image_width_mobile }}px;
+    --title-size-desktop: {{ section.settings.title_size_desktop }}px;
+    --title-size-mobile: {{ section.settings.title_size_mobile }}px;
+    --radius: {{ section.settings.image_radius }}px;
+    --gap: {{ section.settings.gap }}px;
+    --edge-pad: 0px;
+  "
+>
+  {% if section.settings.title != blank %}
+    <h2 class="sda-img-slider__title">{{ section.settings.title }}</h2>
+  {% endif %}
+
+  <div class="sda-img-slider__outer">
+    <button class="sda-img-slider__nav prev" type="button" aria-label="Image précédente">‹</button>
+
+    <div class="sda-img-slider__viewport" role="region" aria-label="Slider d'images">
+      <div class="sda-img-slider__track">
+        {% for block in section.blocks %}
+          {% if block.type == 'image' %}
+            <div class="sda-img-slider__slide" {{ block.shopify_attributes }}>
+              {% if block.settings.image != blank %}
+                <div class="sda-img-slider__frame">
+                  {%- assign alt_text = block.settings.alt | strip -%}
+                  {%- if alt_text == blank and block.settings.image.alt != blank -%}
+                    {%- assign alt_text = block.settings.image.alt -%}
+                  {%- endif -%}
+                  {%- if alt_text == blank -%}
+                    {%- assign alt_text = 'Image' -%}
+                  {%- endif -%}
+
+                  {{ block.settings.image
+                    | image_url: width: 2000
+                    | image_tag: loading: 'lazy', alt: alt_text
+                  }}
+                </div>
+              {% else %}
+                <div class="sda-img-slider__placeholder">Ajoute une image</div>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <button class="sda-img-slider__nav next" type="button" aria-label="Image suivante">›</button>
+  </div>
+
+  <style>
+    .sda-img-slider{
+      width:100%;
+      padding: {{ section.settings.padding_y }}px 0;
+    }
+
+    .sda-img-slider__title{
+      margin: 0 0 {{ section.settings.title_spacing }}px 0;
+      text-align:center;
+      font-size: var(--title-size-mobile);
+      line-height: 1.15;
+    }
+
+    .sda-img-slider__outer{
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    /* viewport pleine largeur => preview visible */
+    .sda-img-slider__viewport{
+      width: 100%;
+      overflow: hidden;
+      touch-action: pan-y;
+      box-sizing: border-box;
+    }
+
+    /* ✅ le secret: padding dynamique pour centrer la 1ère/dernière */
+    .sda-img-slider__track{
+      display: flex;
+      gap: var(--gap);
+      will-change: transform;
+      transform: translateX(0px);
+      transition: transform .25s ease;
+
+      padding-left: var(--edge-pad);
+      padding-right: var(--edge-pad);
+      box-sizing: border-box;
+    }
+
+    .sda-img-slider__slide{
+      flex: 0 0 auto;
+      width: var(--img-w-mobile);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* formats différents OK */
+    .sda-img-slider__frame{
+      width: 100%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #f3f3f3;
+    }
+
+    .sda-img-slider__frame img{
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .sda-img-slider__placeholder{
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding: 18px;
+      border: 1px dashed rgba(0,0,0,.3);
+      border-radius: var(--radius);
+      opacity:.85;
+      box-sizing: border-box;
+    }
+
+    .sda-img-slider__nav{
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 3;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.18);
+      background: rgba(255,255,255,.92);
+      cursor: pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 26px;
+      line-height: 1;
+      user-select:none;
+      -webkit-user-select:none;
+      transition: opacity .15s ease;
+    }
+    .sda-img-slider__nav:hover{ opacity:.9; }
+    .sda-img-slider__nav.prev{ left: 8px; }
+    .sda-img-slider__nav.next{ right: 8px; }
+
+    @media (min-width: 750px){
+      .sda-img-slider__title{ font-size: var(--title-size-desktop); }
+      .sda-img-slider__slide{ width: var(--img-w-desktop); }
+    }
+  </style>
+
+  <script>
+    (function(){
+      const root = document.getElementById('sda-img-slider-{{ sid }}');
+      if(!root) return;
+
+      const viewport = root.querySelector('.sda-img-slider__viewport');
+      const track = root.querySelector('.sda-img-slider__track');
+      const slides = Array.from(root.querySelectorAll('.sda-img-slider__slide'));
+      const prev = root.querySelector('.sda-img-slider__nav.prev');
+      const next = root.querySelector('.sda-img-slider__nav.next');
+
+      if(slides.length <= 1){
+        prev.style.display = 'none';
+        next.style.display = 'none';
+        return;
+      }
+
+      let index = 0;
+      let startX = 0, currentX = 0;
+      let dragging = false;
+      let baseTranslate = 0;
+
+      function num(v){ return parseFloat(v || '0') || 0; }
+
+      function gapPx(){
+        return num(getComputedStyle(track).gap);
+      }
+
+      function slideW(){
+        // largeur réelle d'une slide (stable car width CSS)
+        return slides[0].getBoundingClientRect().width;
+      }
+
+      function step(){
+        return slideW() + gapPx();
+      }
+
+      function setEdgePadding(){
+        // ✅ centre la slide 0 et la dernière via padding du track
+        const vw = viewport.clientWidth;
+        const pad = Math.max(0, (vw - slideW()) / 2);
+        root.style.setProperty('--edge-pad', pad + 'px');
+      }
+
+      function totalContentWidth(){
+        const pad = num(getComputedStyle(root).getPropertyValue('--edge-pad'));
+        const n = slides.length;
+        return (pad * 2) + (n * slideW()) + ((n - 1) * gapPx());
+      }
+
+      function clampTranslate(x){
+        const vw = viewport.clientWidth;
+        const content = totalContentWidth();
+
+        // track translateX se fait sur le contenu incluant edge padding
+        const maxX = 0; // slide 0 centrée => translate 0
+        const minX = Math.min(0, vw - content); // limite gauche
+        return Math.max(minX, Math.min(maxX, x));
+      }
+
+      function translateForIndex(i){
+        // grâce à edge-pad, i=0 centré à translate 0
+        return clampTranslate(-(i * step()));
+      }
+
+      function clampIndex(i){
+        return Math.max(0, Math.min(slides.length - 1, i));
+      }
+
+      function update(){
+        setEdgePadding();
+        index = clampIndex(index);
+        const x = translateForIndex(index);
+        baseTranslate = x;
+        track.style.transition = 'transform .25s ease';
+        track.style.transform = `translateX(${x}px)`;
+      }
+
+      prev.addEventListener('click', function(){ index -= 1; update(); });
+      next.addEventListener('click', function(){ index += 1; update(); });
+
+      viewport.addEventListener('pointerdown', function(e){
+        dragging = true;
+        startX = e.clientX;
+        currentX = startX;
+        track.style.transition = 'none';
+        viewport.setPointerCapture(e.pointerId);
+      });
+
+      viewport.addEventListener('pointermove', function(e){
+        if(!dragging) return;
+        currentX = e.clientX;
+        const delta = currentX - startX;
+        track.style.transform = `translateX(${ clampTranslate(baseTranslate + delta) }px)`;
+      });
+
+      function endDrag(){
+        if(!dragging) return;
+        dragging = false;
+
+        const delta = currentX - startX;
+        const threshold = step() * 0.18;
+
+        if(delta > threshold) index -= 1;
+        else if(delta < -threshold) index += 1;
+
+        update();
+      }
+
+      viewport.addEventListener('pointerup', endDrag);
+      viewport.addEventListener('pointercancel', endDrag);
+      viewport.addEventListener('pointerleave', endDrag);
+
+      // ✅ important: le theme editor peut changer layout après coup
+      window.addEventListener('resize', update);
+      window.addEventListener('load', update);
+
+      // double raf pour être sûr que le layout est bien calculé
+      requestAnimationFrame(() => requestAnimationFrame(update));
+    })();
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Slider images",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Titre", "default": "Galerie" },
+
+    { "type": "range", "id": "title_size_desktop", "label": "Taille titre PC (px)", "min": 12, "max": 100, "step": 1, "default": 36 },
+    { "type": "range", "id": "title_size_mobile", "label": "Taille titre mobile (px)", "min": 12, "max": 80, "step": 1, "default": 24 },
+    { "type": "range", "id": "title_spacing", "label": "Espace sous le titre (px)", "min": 0, "max": 80, "step": 1, "default": 16 },
+
+    { "type": "range", "id": "image_width_desktop", "label": "Largeur image PC (px)", "min": 240, "max": 840, "step": 6, "default": 360 },
+    { "type": "range", "id": "image_width_mobile", "label": "Largeur image mobile (px)", "min": 180, "max": 420, "step": 3, "default": 270 },
+
+    { "type": "range", "id": "image_radius", "label": "Arrondi des coins (px)", "min": 0, "max": 60, "step": 1, "default": 16 },
+    { "type": "range", "id": "gap", "label": "Espace entre images (px)", "min": 0, "max": 60, "step": 1, "default": 14 },
+    { "type": "range", "id": "padding_y", "label": "Padding section haut/bas (px)", "min": 0, "max": 160, "step": 2, "default": 24 }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "alt", "label": "Texte alternatif", "default": "Image" }
+      ]
+    }
+  ],
+  "max_blocks": 20,
+  "presets": [
+    {
+      "name": "Slider images",
+      "blocks": [
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" }
+      ]
+    }
+  ]
+}
+{% endschema %}

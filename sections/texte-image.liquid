@@ -1,0 +1,315 @@
+{% comment %}
+  Section autonome: Texte + image
+  - Conteneur max 1200px
+  - Ratio image: carré (option)
+  - Image gauche/droite (desktop)
+  - Mobile: image d'abord (ou texte d'abord)
+  - Bouton optionnel
+  - CSS complet inclus (scopé au section.id)
+{% endcomment %}
+
+{% assign s = section.settings %}
+{% if s.image != blank %}
+  {% assign has_image = true %}
+{% else %}
+  {% assign has_image = false %}
+{% endif %}
+
+{% if s.show_button and s.button_label != blank and s.button_link != blank %}
+  {% assign has_button = true %}
+{% else %}
+  {% assign has_button = false %}
+{% endif %}
+
+
+<section id="ti-{{ section.id }}" class="ti">
+  <div class="ti__container">
+    <div class="ti__grid {% if s.image_position == 'right' %}ti__grid--reverse{% endif %} {% if s.mobile_order == 'text_first' %}ti__grid--mobile-text-first{% endif %}">
+      <!-- Media -->
+      <div class="ti__media">
+        {% if has_image %}
+          {%- assign image_alt = s.image.alt | default: s.heading | escape -%}
+          <div class="ti__media-inner {% if s.image_ratio == 'square' %}ti__media-inner--square{% endif %}">
+            {{
+              s.image
+              | image_url: width: 2000
+              | image_tag:
+                alt: image_alt,
+                loading: 'lazy',
+                widths: '320, 480, 640, 800, 1000, 1200, 1600, 2000',
+                sizes: '(min-width: 990px) 50vw, 100vw'
+            }}
+          </div>
+        {% else %}
+          <div class="ti__media-inner ti__media-inner--placeholder {% if s.image_ratio == 'square' %}ti__media-inner--square{% endif %}">
+            <span>Image</span>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Content -->
+      <div class="ti__content">
+        {% if s.kicker != blank %}
+          <p class="ti__kicker">{{ s.kicker }}</p>
+        {% endif %}
+
+        {% if s.heading != blank %}
+          <h2 class="ti__heading">{{ s.heading }}</h2>
+        {% endif %}
+
+        {% if s.text != blank %}
+          <div class="ti__text rte">
+            {{ s.text }}
+          </div>
+        {% endif %}
+
+        {% if has_button %}
+          <div class="ti__actions">
+            <a
+              class="ti__button {% if s.button_style == 'outline' %}ti__button--outline{% elsif s.button_style == 'link' %}ti__button--link{% else %}ti__button--solid{% endif %}"
+              href="{{ s.button_link }}"
+              {% if s.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
+            >
+              {{ s.button_label }}
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <style>
+    /* ========== Scoped styles (unique per section) ========== */
+    #ti-{{ section.id }}{
+      --ti-max: 1200px;
+      --ti-pad-y: {{ s.padding_y }}px;
+      --ti-gap: {{ s.gap }}px;
+
+      --ti-radius: {{ s.radius }}px;
+      --ti-shadow: {% if s.shadow %}0 10px 30px rgba(0,0,0,.10){% else %}none{% endif %};
+
+      --ti-bg: {{ s.background }};
+      --ti-text: {{ s.text_color }};
+      --ti-muted: rgba(0,0,0,.65);
+
+      --ti-btn-bg: {{ s.button_bg }};
+      --ti-btn-text: {{ s.button_text_color }};
+      --ti-btn-border: {{ s.button_border_color }};
+
+      background: var(--ti-bg);
+      color: var(--ti-text);
+      padding: var(--ti-pad-y) 0;
+    }
+
+    #ti-{{ section.id }} .ti__container{
+      max-width: var(--ti-max);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Layout */
+    #ti-{{ section.id }} .ti__grid{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--ti-gap);
+      align-items: center;
+    }
+    #ti-{{ section.id }} .ti__grid--reverse{
+      direction: rtl;
+    }
+    #ti-{{ section.id }} .ti__grid--reverse > *{
+      direction: ltr;
+    }
+
+    /* Media */
+    #ti-{{ section.id }} .ti__media-inner{
+      border-radius: var(--ti-radius);
+      overflow: hidden;
+      box-shadow: var(--ti-shadow);
+      background: rgba(0,0,0,.03);
+    }
+
+    #ti-{{ section.id }} .ti__media-inner img{
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    #ti-{{ section.id }} .ti__media-inner--square{
+      aspect-ratio: 1 / 1;
+    }
+    #ti-{{ section.id }} .ti__media-inner--square img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #ti-{{ section.id }} .ti__media-inner--placeholder{
+      display: grid;
+      place-items: center;
+      min-height: 260px;
+      border: 1px dashed rgba(0,0,0,.18);
+      color: rgba(0,0,0,.5);
+      font-size: 14px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    /* Content */
+    #ti-{{ section.id }} .ti__kicker{
+      margin: 0 0 10px;
+      font-size: 13px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      opacity: .75;
+    }
+
+    #ti-{{ section.id }} .ti__heading{
+      margin: 0 0 14px;
+      font-size: clamp(24px, 2.2vw, 38px);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    #ti-{{ section.id }} .ti__text{
+      font-size: 16px;
+      line-height: 1.65;
+      opacity: .92;
+    }
+
+    #ti-{{ section.id }} .ti__actions{
+      margin-top: 18px;
+    }
+
+    /* Button */
+    #ti-{{ section.id }} .ti__button{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 18px;
+      border-radius: calc(var(--ti-radius) - 2px);
+      font-weight: 600;
+      text-decoration: none;
+      transition: transform .12s ease, opacity .12s ease, background .12s ease, border-color .12s ease;
+      will-change: transform;
+    }
+    #ti-{{ section.id }} .ti__button:hover{ transform: translateY(-1px); }
+    #ti-{{ section.id }} .ti__button:active{ transform: translateY(0); opacity: .9; }
+
+    #ti-{{ section.id }} .ti__button--solid{
+      background: var(--ti-btn-bg);
+      color: var(--ti-btn-text);
+      border: 1px solid var(--ti-btn-bg);
+    }
+
+    #ti-{{ section.id }} .ti__button--outline{
+      background: transparent;
+      color: var(--ti-btn-bg);
+      border: 1px solid var(--ti-btn-border);
+    }
+
+    #ti-{{ section.id }} .ti__button--link{
+      background: transparent;
+      color: var(--ti-btn-bg);
+      border: 0;
+      padding: 0;
+      border-radius: 0;
+      transform: none !important;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    /* Mobile */
+    @media (max-width: 989px){
+      #ti-{{ section.id }} .ti__grid{
+        grid-template-columns: 1fr;
+      }
+
+      /* Default: image first */
+      #ti-{{ section.id }} .ti__grid--mobile-text-first{
+        display: flex;
+        flex-direction: column-reverse;
+        gap: var(--ti-gap);
+      }
+    }
+  </style>
+</section>
+
+{% schema %}
+{
+  "name": "Texte + image (autonome)",
+  "settings": [
+    { "type": "header", "content": "Contenu" },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Ratio image",
+      "default": "square",
+      "options": [
+        { "value": "original", "label": "Original" },
+        { "value": "square", "label": "Carré" }
+      ]
+    },
+    { "type": "text", "id": "kicker", "label": "Sur-titre (optionnel)" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Votre titre" },
+    { "type": "richtext", "id": "text", "label": "Texte", "default": "<p>Votre texte ici.</p>" },
+
+    { "type": "header", "content": "Bouton" },
+    { "type": "checkbox", "id": "show_button", "label": "Afficher le bouton", "default": true },
+    { "type": "text", "id": "button_label", "label": "Texte du bouton", "default": "En savoir plus" },
+    { "type": "url", "id": "button_link", "label": "Lien du bouton" },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Style du bouton",
+      "default": "solid",
+      "options": [
+        { "value": "solid", "label": "Plein" },
+        { "value": "outline", "label": "Contour" },
+        { "value": "link", "label": "Lien" }
+      ]
+    },
+    { "type": "checkbox", "id": "open_in_new_tab", "label": "Ouvrir dans un nouvel onglet", "default": false },
+
+    { "type": "header", "content": "Mise en page" },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Position de l'image (desktop)",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "Image à gauche" },
+        { "value": "right", "label": "Image à droite" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "mobile_order",
+      "label": "Ordre sur mobile",
+      "default": "image_first",
+      "options": [
+        { "value": "image_first", "label": "Image d'abord" },
+        { "value": "text_first", "label": "Texte d'abord" }
+      ]
+    },
+    { "type": "range", "id": "gap", "label": "Espace entre colonnes", "min": 8, "max": 64, "step": 4, "default": 24, "unit": "px" },
+    { "type": "range", "id": "padding_y", "label": "Padding haut/bas", "min": 0, "max": 140, "step": 4, "default": 40, "unit": "px" },
+
+    { "type": "header", "content": "Style (section autonome)" },
+    { "type": "color", "id": "background", "label": "Couleur de fond", "default": "#ffffff" },
+    { "type": "color", "id": "text_color", "label": "Couleur du texte", "default": "#111111" },
+
+    { "type": "range", "id": "radius", "label": "Arrondis", "min": 0, "max": 28, "step": 2, "default": 16, "unit": "px" },
+    { "type": "checkbox", "id": "shadow", "label": "Ombre sur l'image", "default": true },
+
+    { "type": "color", "id": "button_bg", "label": "Couleur bouton (plein)", "default": "#111111" },
+    { "type": "color", "id": "button_text_color", "label": "Texte bouton (plein)", "default": "#ffffff" },
+    { "type": "color", "id": "button_border_color", "label": "Bordure bouton (contour)", "default": "#111111" }
+  ],
+  "presets": [
+    { "name": "Texte + image (autonome)" }
+  ]
+}
+{% endschema %}

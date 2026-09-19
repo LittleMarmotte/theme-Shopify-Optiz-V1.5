@@ -1,0 +1,163 @@
+{%- liquid
+  assign v = product.selected_or_first_available_variant
+  assign is_oos = false
+  unless v.available
+    assign is_oos = true
+  endunless
+  assign whatsapp_link = product.metafields.custom.whatsapp_link | default: "https://chat.whatsapp.com/HJVD9xqEZFIKStqWC9b7do"
+-%}
+
+<div
+  id="oos-wa-popup"
+  data-oos-initial="{{ is_oos }}"
+  data-whatsapp-link="{{ whatsapp_link }}"
+  style="display:none;"
+>
+  <div id="oos-wa-overlay" style="position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:9998;"></div>
+
+  <div
+    role="dialog"
+    aria-modal="true"
+    aria-label="Rejoindre le groupe WhatsApp"
+    style="
+      position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
+      width:min(460px, 92vw); background:#fff; border-radius:16px;
+      padding:18px; z-index:9999;
+    "
+  >
+    <button
+      type="button"
+      id="oos-wa-close"
+      style="float:right; border:none; background:transparent; font-size:22px; cursor:pointer;"
+      aria-label="Fermer"
+    >×</button>
+
+    <h3 style="margin:0 0 8px;">Produit en rupture</h3>
+    <p style="margin:0 0 14px;">
+      Rejoins notre groupe WhatsApp pour recevoir les alertes de réassort, ventes privées et du contenu gratuit exclusif.
+    </p>
+
+    <a
+      id="oos-wa-join"
+      href="{{ whatsapp_link }}"
+      target="_blank"
+      rel="noopener"
+      class="button"
+      style="width:100%; display:inline-flex; justify-content:center;"
+    >
+      Rejoindre le groupe WhatsApp
+    </a>
+
+    <p style="margin:12px 0 0; font-size:12px; color:#666;">
+      En rejoignant le groupe, ton numéro sera visible par les autres membres. Tu peux quitter à tout moment.
+    </p>
+  </div>
+</div>
+
+<div
+  id="oos-wa-popup"
+  data-oos-initial="{{ is_oos }}"
+  data-whatsapp-link="{{ whatsapp_link }}"
+  style="display:none;"
+>
+  <div id="oos-wa-overlay" style="position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:9998;"></div>
+
+  <div
+    role="dialog"
+    aria-modal="true"
+    aria-label="Rejoindre le groupe WhatsApp"
+    style="
+      position:fixed; left:50%; top:50%; transform:translate(-50%,-50%);
+      width:min(460px, 92vw); background:#fff; border-radius:16px;
+      padding:18px; z-index:9999;
+    "
+  >
+    <button
+      type="button"
+      id="oos-wa-close"
+      style="float:right; border:none; background:transparent; font-size:22px; cursor:pointer;"
+      aria-label="Fermer"
+    >×</button>
+
+    <h3 style="margin:0 0 8px;">Produit en rupture</h3>
+    <p style="margin:0 0 14px;">
+      Rejoins notre groupe WhatsApp pour recevoir les alertes de réassort, ventes privées et du contenu gratuit exclusif.
+    </p>
+
+    <a
+      id="oos-wa-join"
+      href="{{ whatsapp_link }}"
+      target="_blank"
+      rel="noopener"
+      class="button"
+      style="width:100%; display:inline-flex; justify-content:center;"
+    >
+      Rejoindre le groupe WhatsApp
+    </a>
+
+    <p style="margin:12px 0 0; font-size:12px; color:#666;">
+      En rejoignant le groupe, ton numéro sera visible par les autres membres. Tu peux quitter à tout moment.
+    </p>
+  </div>
+</div>
+
+<script>
+(function () {
+  const root = document.getElementById('oos-wa-popup');
+  if (!root) return;
+
+  const overlay = document.getElementById('oos-wa-overlay');
+  const closeBtn = document.getElementById('oos-wa-close');
+
+  function toBool(v) {
+    return v === true || v === 'true' || v === '1';
+  }
+
+  function openPopup() {
+    root.style.display = 'block';
+    document.documentElement.style.overflow = 'hidden';
+  }
+
+  function closePopup() {
+    root.style.display = 'none';
+    document.documentElement.style.overflow = '';
+  }
+
+  // Fermeture
+  if (overlay) overlay.addEventListener('click', closePopup);
+  if (closeBtn) closeBtn.addEventListener('click', closePopup);
+
+  // Affichage au chargement si OOS
+  const initialOos = toBool(root.dataset.oosInitial);
+  if (initialOos) openPopup();
+
+  // Shopify : quand le variant change, on ré-évalue
+  document.addEventListener('variant:change', (event) => {
+    const variant = event.detail && event.detail.variant;
+    if (!variant) return;
+
+    // variant.available est un bool
+    if (variant.available === false) openPopup();
+    else closePopup();
+  });
+
+  // Fallback : thèmes qui n’émettent pas variant:change
+  document.addEventListener('change', (e) => {
+    // Sélecteurs de variant classiques
+    const isVariantInput =
+      e.target.matches('select[name="id"]') ||
+      e.target.matches('input[name="id"]') ||
+      e.target.closest('[data-variant-input]');
+
+    if (!isVariantInput) return;
+
+    // Cherche le bouton ATC, souvent désactivé quand OOS
+    const atc = document.querySelector('form[action^="/cart/add"] [type="submit"]');
+    if (!atc) return;
+
+    const oos = atc.hasAttribute('disabled') || atc.getAttribute('aria-disabled') === 'true';
+    if (oos) openPopup();
+    else closePopup();
+  });
+})();
+</script>

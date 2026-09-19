@@ -1,0 +1,352 @@
+{% comment %}
+  Section: Avant / Après (Before After Slider)
+  - 2 images superposées
+  - Slider range + poignée
+  - Titre au-dessus, texte en dessous
+  - Titre 2 + texte 2
+  - Background color, max width, border radius
+  - Responsive mobile/desktop
+{% endcomment %}
+
+{%- assign sid = section.id -%}
+
+<section
+  class="ba-section ba-section-{{ sid }}"
+  style="background: {{ section.settings.bg_color }}; padding: {{ section.settings.padding_y }}px 0;"
+>
+  <div class="ba-container" style="max-width: {{ section.settings.max_width }}px;">
+    {% if section.settings.heading != blank %}
+      <h2 class="ba-heading">{{ section.settings.heading | escape }}</h2>
+    {% endif %}
+
+    <div class="ba-wrap">
+      <div
+        class="ba-viewport"
+        style="
+          border-radius: {{ section.settings.radius }}px;
+          aspect-ratio: {{ section.settings.aspect_ratio }};
+        "
+        data-ba="viewport"
+      >
+        {% if section.settings.before_image != blank %}
+          {{
+            section.settings.before_image
+            | image_url: width: 2000
+            | image_tag: loading: 'lazy', class: 'ba-img ba-img--before', alt: 'Avant'
+          }}
+        {% else %}
+          <div class="ba-placeholder">Ajoute l’image “Avant”</div>
+        {% endif %}
+
+        {% if section.settings.after_image != blank %}
+          <div class="ba-after" data-ba="after" style="clip-path: inset(0 {{ 100 | minus: section.settings.start }}% 0 0);">
+            {{
+              section.settings.after_image
+              | image_url: width: 2000
+              | image_tag: loading: 'lazy', class: 'ba-img ba-img--after', alt: 'Après'
+            }}
+          </div>
+        {% endif %}
+
+        <div class="ba-handle" data-ba="handle" style="left: {{ section.settings.start }}%;">
+          <span class="ba-handle-line"></span>
+          <span class="ba-handle-knob" aria-hidden="true"></span>
+        </div>
+      </div>
+
+      <div class="ba-controls">
+        <input
+          class="ba-range"
+          type="range"
+          min="0"
+          max="100"
+          value="{{ section.settings.start }}"
+          step="1"
+          aria-label="Slider avant/après"
+          data-ba="range"
+        />
+      </div>
+
+      {% if section.settings.caption != blank %}
+        <div class="ba-caption rte">{{ section.settings.caption }}</div>
+      {% endif %}
+    </div>
+
+    {% if section.settings.heading_2 != blank %}
+      <h3 class="ba-heading2">{{ section.settings.heading_2 | escape }}</h3>
+    {% endif %}
+
+    {% if section.settings.text_2 != blank %}
+      <div class="ba-text2 rte">{{ section.settings.text_2 }}</div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .ba-section { width: 100%; }
+  .ba-container { margin: 0 auto; padding: 0 16px; }
+
+  .ba-heading {
+    margin: 0 0 14px;
+    font-size: {{ section.settings.heading_size }}px;
+    line-height: 1.15;
+    text-align: {{ section.settings.text_align }};
+  }
+
+  .ba-wrap { text-align: {{ section.settings.text_align }}; }
+
+  .ba-viewport {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: {{ section.settings.frame_bg }};
+    box-shadow: 0 0 0 1px rgba(0,0,0,.06) inset;
+  }
+
+  /* images */
+  .ba-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: {{ section.settings.fit_mode }};
+    object-position: center;
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .ba-after {
+    position: absolute;
+    inset: 0;
+    will-change: clip-path;
+  }
+
+  /* handle */
+  .ba-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 44px;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none; /* range gère l’interaction */
+  }
+
+  .ba-handle-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: {{ section.settings.handle_color }};
+    opacity: 0.9;
+  }
+
+  .ba-handle-knob {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    background: {{ section.settings.handle_bg }};
+    box-shadow: 0 6px 16px rgba(0,0,0,.18);
+    position: relative;
+  }
+
+  .ba-handle-knob:before,
+  .ba-handle-knob:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    transform: translateY(-50%);
+  }
+  .ba-handle-knob:before {
+    left: 10px;
+    border-right: 8px solid {{ section.settings.handle_color }};
+  }
+  .ba-handle-knob:after {
+    right: 10px;
+    border-left: 8px solid {{ section.settings.handle_color }};
+  }
+
+  /* range : on le met au-dessus mais invisible */
+  .ba-controls {
+    position: relative;
+    margin-top: 10px;
+  }
+
+  .ba-range {
+    width: 100%;
+    accent-color: {{ section.settings.range_accent }};
+  }
+
+  .ba-caption {
+    margin-top: 12px;
+    font-size: {{ section.settings.text_size }}px;
+    line-height: 1.55;
+  }
+
+  .ba-heading2 {
+    margin: 18px 0 8px;
+    font-size: {{ section.settings.heading2_size }}px;
+    line-height: 1.2;
+    text-align: {{ section.settings.text_align }};
+  }
+
+  .ba-text2 {
+    font-size: {{ section.settings.text2_size }}px;
+    line-height: 1.55;
+    text-align: {{ section.settings.text_align }};
+  }
+
+  .ba-caption p,
+  .ba-text2 p { margin: 0 0 10px; }
+  .ba-caption p:last-child,
+  .ba-text2 p:last-child { margin-bottom: 0; }
+
+  .ba-placeholder{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:14px;
+    color: rgba(0,0,0,.6);
+    background: rgba(0,0,0,.06);
+  }
+
+  @media (max-width: 749px) {
+    .ba-heading { font-size: max(18px, {{ section.settings.heading_size }}px); }
+    .ba-handle { width: 40px; }
+    .ba-handle-knob { width: 30px; height: 30px; }
+  }
+</style>
+
+<script>
+  (function() {
+    var root = document.querySelector('.ba-section-{{ sid }}');
+    if (!root) return;
+
+    var viewport = root.querySelector('[data-ba="viewport"]');
+    var afterWrap = root.querySelector('[data-ba="after"]');
+    var handle = root.querySelector('[data-ba="handle"]');
+    var range = root.querySelector('[data-ba="range"]');
+
+    if (!viewport || !afterWrap || !handle || !range) return;
+
+    function setPos(val) {
+      var v = Math.max(0, Math.min(100, parseInt(val, 10) || 0));
+      afterWrap.style.clipPath = 'inset(0 ' + (100 - v) + '% 0 0)';
+      handle.style.left = v + '%';
+    }
+
+    setPos(range.value);
+
+    range.addEventListener('input', function(e) {
+      setPos(e.target.value);
+    });
+
+    /* Bonus: drag directement sur l’image */
+    viewport.addEventListener('pointerdown', function(e) {
+      viewport.setPointerCapture(e.pointerId);
+      function move(ev) {
+        var rect = viewport.getBoundingClientRect();
+        var x = (ev.clientX - rect.left) / rect.width;
+        setPos(Math.round(x * 100));
+        range.value = Math.round(x * 100);
+      }
+      move(e);
+
+      function up(ev) {
+        try { viewport.releasePointerCapture(ev.pointerId); } catch (err) {}
+        viewport.removeEventListener('pointermove', move);
+        viewport.removeEventListener('pointerup', up);
+        viewport.removeEventListener('pointercancel', up);
+      }
+
+      viewport.addEventListener('pointermove', move);
+      viewport.addEventListener('pointerup', up);
+      viewport.addEventListener('pointercancel', up);
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Avant / Après (slider)",
+  "settings": [
+    { "type": "color", "id": "bg_color", "label": "Couleur de fond", "default": "#FFFFFF" },
+    { "type": "range", "id": "padding_y", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding haut/bas", "default": 32 },
+
+    { "type": "text", "id": "heading", "label": "Titre au-dessus", "default": "Avant / Après" },
+    { "type": "range", "id": "heading_size", "min": 16, "max": 60, "step": 1, "unit": "px", "label": "Taille du titre", "default": 32 },
+
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Alignement",
+      "default": "center",
+      "options": [
+        { "value": "left", "label": "Gauche" },
+        { "value": "center", "label": "Centré" }
+      ]
+    },
+
+    { "type": "image_picker", "id": "before_image", "label": "Image Avant" },
+    { "type": "image_picker", "id": "after_image", "label": "Image Après" },
+
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Format (ratio)",
+      "default": "1 / 1",
+      "options": [
+        { "value": "1 / 1", "label": "Carré (1:1)" },
+        { "value": "4 / 5", "label": "Portrait (4:5)" },
+        { "value": "3 / 4", "label": "Portrait (3:4)" },
+        { "value": "16 / 9", "label": "Paysage (16:9)" },
+        { "value": "4 / 3", "label": "Paysage (4:3)" }
+      ]
+    },
+
+    {
+      "type": "select",
+      "id": "fit_mode",
+      "label": "Remplissage image",
+      "default": "cover",
+      "options": [
+        { "value": "cover", "label": "Cover (crop possible)" },
+        { "value": "contain", "label": "Contain (tout afficher)" }
+      ]
+    },
+
+    { "type": "color", "id": "frame_bg", "label": "Fond du cadre (utile si contain)", "default": "#F2F2F2" },
+
+    { "type": "range", "id": "radius", "min": 0, "max": 60, "step": 2, "unit": "px", "label": "Arrondi (border radius)", "default": 16 },
+
+    { "type": "range", "id": "max_width", "min": 320, "max": 1400, "step": 20, "unit": "px", "label": "Largeur max du bloc", "default": 900 },
+
+    { "type": "range", "id": "start", "min": 0, "max": 100, "step": 1, "unit": "%", "label": "Position de départ", "default": 50 },
+
+    { "type": "color", "id": "handle_bg", "label": "Fond poignée", "default": "#FFFFFF" },
+    { "type": "color", "id": "handle_color", "label": "Couleur flèches/ligne", "default": "#111111" },
+    { "type": "color", "id": "range_accent", "label": "Couleur de la barre (accent)", "default": "#111111" },
+
+    { "type": "richtext", "id": "caption", "label": "Texte sous le slider", "default": "<p>Explique ce que l’on voit avant / après.</p>" },
+
+    { "type": "text", "id": "heading_2", "label": "Titre en dessous", "default": "Détails" },
+    { "type": "range", "id": "heading2_size", "min": 14, "max": 44, "step": 1, "unit": "px", "label": "Taille du titre (bas)", "default": 22 },
+
+    { "type": "richtext", "id": "text_2", "label": "Texte final", "default": "<p>Ajoute un paragraphe complémentaire ici.</p>" },
+    { "type": "range", "id": "text_size", "min": 12, "max": 26, "step": 1, "unit": "px", "label": "Taille texte (slider)", "default": 16 },
+    { "type": "range", "id": "text2_size", "min": 12, "max": 26, "step": 1, "unit": "px", "label": "Taille texte (bas)", "default": 16 }
+  ],
+  "presets": [
+    { "name": "Avant / Après (slider)", "category": "Contenu" }
+  ]
+}
+{% endschema %}

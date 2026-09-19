@@ -1,0 +1,4 @@
+interface:
+  display_name: "Optiz Shopify"
+  short_description: "Direction artistique, copywriting et développement du thème Optiz"
+  default_prompt: "Utilise $optiz-shopify pour améliorer cette partie de la boutique Optiz sans la redesigner comme une nouvelle marque."

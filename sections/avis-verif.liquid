@@ -1,0 +1,422 @@
+{% comment %}
+  Section: Avis clients (Avis vérifié) — Slider horizontal
+  - Fond blanc, cartes #212121
+  - Liseré rouge, étoiles gold
+  - Badge certifié PRO "Instagram-like" (scallops + cercle bleu + check blanc)
+  - Slider horizontal (scroll-snap) + flèches desktop
+  - Aucun formulaire d'avis (display only)
+{% endcomment %}
+
+{%- assign sid = section.id -%}
+
+<section
+  class="rv2-section rv2-section-{{ sid }}"
+  style="
+    background: {{ section.settings.bg_color }};
+    padding: {{ section.settings.padding_y }}px 0;
+  "
+>
+  <div class="rv2-container">
+
+    {% if section.settings.heading != blank %}
+      <h3 class="rv2-heading">{{ section.settings.heading | escape }}</h3>
+    {% endif %}
+
+    {% if section.settings.subtext != blank %}
+      <div class="rv2-subtext rte">
+        {{ section.settings.subtext }}
+      </div>
+    {% endif %}
+
+    <div class="rv2-slider">
+      <button class="rv2-nav rv2-nav--prev" type="button" aria-label="Avis précédent" data-rv2-prev>
+        <span aria-hidden="true">‹</span>
+      </button>
+
+      <div class="rv2-track" data-rv2-track>
+        {% for block in section.blocks %}
+          <article class="rv2-card" {{ block.shopify_attributes }}>
+            <div class="rv2-top">
+              <div class="rv2-user">
+                <div class="rv2-avatar" aria-hidden="true">
+                  {%- assign initial = block.settings.name | strip | slice: 0, 1 -%}
+                  {{ initial | upcase }}
+                </div>
+
+                <div class="rv2-user-meta">
+                  <div class="rv2-name-row">
+                    <div class="rv2-name">{{ block.settings.name | escape }}</div>
+
+                    <div class="rv2-verified" aria-label="{{ section.settings.verified_text | escape }}">
+                      <span class="rv2-verified-badge" aria-hidden="true">
+                        <!-- Badge certifié type Insta (scallops + cercle bleu + check blanc) -->
+                        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                          <!-- Bord “pics” (scallops) -->
+                          <path
+                            fill="#1D9BF0"
+                            d="M12 1.8
+                               L13.35 3.05
+                               L15.2 2.55
+                               L16.05 4.3
+                               L17.95 4.45
+                               L18.25 6.35
+                               L20 7.2
+                               L19.55 9.05
+                               L20.8 10.4
+                               L19.55 11.75
+                               L20 13.6
+                               L18.25 14.45
+                               L17.95 16.35
+                               L16.05 16.5
+                               L15.2 18.25
+                               L13.35 17.75
+                               L12 19
+                               L10.65 17.75
+                               L8.8 18.25
+                               L7.95 16.5
+                               L6.05 16.35
+                               L5.75 14.45
+                               L4 13.6
+                               L4.45 11.75
+                               L3.2 10.4
+                               L4.45 9.05
+                               L4 7.2
+                               L5.75 6.35
+                               L6.05 4.45
+                               L7.95 4.3
+                               L8.8 2.55
+                               L10.65 3.05
+                               Z"
+                          />
+                          <!-- Cercle interne pour un rendu “badge” propre -->
+                          <circle cx="12" cy="10.4" r="7.2" fill="#1D9BF0"/>
+                          <!-- Check -->
+                          <path
+                            d="M9.25 10.75l-1.35-1.35-1.05 1.05 2.4 2.4 5.6-5.6-1.05-1.05-4.55 4.55z"
+                            fill="#ffffff"
+                          />
+                        </svg>
+                      </span>
+                      <span class="rv2-verified-text">{{ section.settings.verified_text | escape }}</span>
+                    </div>
+                  </div>
+
+                  <div class="rv2-stars" aria-label="{{ block.settings.stars }} étoiles">
+                    {% assign s = block.settings.stars %}
+                    {% for i in (1..5) %}
+                      <span class="rv2-star {% if i <= s %}is-on{% else %}is-off{% endif %}" aria-hidden="true">★</span>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+
+              {% if block.settings.tag != blank %}
+                <div class="rv2-tag">{{ block.settings.tag | escape }}</div>
+              {% endif %}
+            </div>
+
+            <div class="rv2-body">
+              <p class="rv2-quote">“{{ block.settings.review | escape }}”</p>
+            </div>
+
+            {% if block.settings.date != blank %}
+              <div class="rv2-date">{{ block.settings.date | escape }}</div>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+
+      <button class="rv2-nav rv2-nav--next" type="button" aria-label="Avis suivant" data-rv2-next>
+        <span aria-hidden="true">›</span>
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .rv2-container{
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .rv2-heading{
+    margin: 0 0 10px;
+    color: {{ section.settings.heading_color }};
+    font-size: {{ section.settings.heading_size }}px;
+    letter-spacing: 0.2px;
+    line-height: 1.15;
+    text-transform: {{ section.settings.heading_case }};
+  }
+
+  .rv2-subtext{
+    margin: 0 0 18px;
+    color: {{ section.settings.subtext_color }};
+    font-size: {{ section.settings.subtext_size }}px;
+    line-height: 1.55;
+    max-width: 72ch;
+  }
+  .rv2-subtext p{ margin: 0 0 10px; }
+  .rv2-subtext p:last-child{ margin-bottom: 0; }
+
+  .rv2-slider{
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .rv2-track{
+    display: flex;
+    gap: {{ section.settings.gap }}px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+    width: 100%;
+  }
+  .rv2-track::-webkit-scrollbar{ display:none; }
+
+  .rv2-card{
+    scroll-snap-align: start;
+    flex: 0 0 calc((100% - ({{ section.settings.gap }}px * ({{ section.settings.cards_per_view_desktop }} - 1))) / {{ section.settings.cards_per_view_desktop }});
+
+    background: #212121;
+    border-radius: {{ section.settings.card_radius }}px;
+    padding: 16px 16px 14px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .rv2-card::before{
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: {{ section.settings.accent_red }};
+  }
+
+  .rv2-top{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .rv2-user{
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .rv2-avatar{
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.10);
+    font-weight: 700;
+    color: #fff;
+    flex: 0 0 auto;
+  }
+
+  .rv2-user-meta{ min-width: 0; }
+
+  .rv2-name-row{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .rv2-name{
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .rv2-verified{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.82);
+  }
+
+  .rv2-verified-badge svg{
+    display: block;
+  }
+
+  .rv2-stars{
+    margin-top: 6px;
+    display: inline-flex;
+    gap: 2px;
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  .rv2-star.is-on{ color: {{ section.settings.star_gold }}; }
+  .rv2-star.is-off{ color: rgba(255,255,255,0.22); }
+
+  .rv2-tag{
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    color: #fff;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.10);
+    white-space: nowrap;
+  }
+
+  .rv2-body{ margin-top: 12px; }
+
+  .rv2-quote{
+    margin: 0;
+    color: rgba(255,255,255,0.92);
+    font-size: {{ section.settings.review_size }}px;
+    line-height: 1.6;
+  }
+
+  .rv2-date{
+    margin-top: 10px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+  }
+
+  /* Flèches desktop */
+  .rv2-nav{
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: 1px solid rgba(0,0,0,0.12);
+    background: #fff;
+    color: #111;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    user-select: none;
+    flex: 0 0 auto;
+    transition: transform .12s ease, border-color .12s ease;
+  }
+  .rv2-nav span{ font-size: 24px; line-height: 1; }
+  .rv2-nav:hover{ transform: translateY(-1px); border-color: rgba(0,0,0,0.22); }
+
+  @media (max-width: 989px){
+    .rv2-card{
+      flex-basis: calc((100% - ({{ section.settings.gap }}px * ({{ section.settings.cards_per_view_tablet }} - 1))) / {{ section.settings.cards_per_view_tablet }});
+    }
+    .rv2-name{ white-space: normal; }
+  }
+
+  @media (max-width: 749px){
+    .rv2-nav{ display: none; }
+    .rv2-track{ scroll-padding-left: 16px; }
+    .rv2-card{
+      flex-basis: 86%;
+      padding: 14px;
+    }
+  }
+</style>
+
+<script>
+  (function(){
+    var root = document.querySelector('.rv2-section-{{ sid }}');
+    if(!root) return;
+
+    var track = root.querySelector('[data-rv2-track]');
+    var prev = root.querySelector('[data-rv2-prev]');
+    var next = root.querySelector('[data-rv2-next]');
+    if(!track || !prev || !next) return;
+
+    function scrollByCard(dir){
+      var card = track.querySelector('.rv2-card');
+      if(!card) return;
+      var gap = parseFloat(getComputedStyle(track).gap || 0);
+      var amount = card.getBoundingClientRect().width + gap;
+      track.scrollBy({ left: dir * amount, behavior: 'smooth' });
+    }
+
+    prev.addEventListener('click', function(){ scrollByCard(-1); });
+    next.addEventListener('click', function(){ scrollByCard(1); });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Avis clients",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Titre (H3)", "default": "Ils valident. Point." },
+    { "type": "range", "id": "heading_size", "min": 16, "max": 48, "step": 1, "unit": "px", "label": "Taille du titre", "default": 28 },
+    {
+      "type": "select",
+      "id": "heading_case",
+      "label": "Style du titre",
+      "default": "uppercase",
+      "options": [
+        { "value": "none", "label": "Normal" },
+        { "value": "uppercase", "label": "MAJUSCULES" }
+      ]
+    },
+    { "type": "color", "id": "heading_color", "label": "Couleur du titre", "default": "#111111" },
+
+    { "type": "richtext", "id": "subtext", "label": "Texte sous le titre (optionnel)", "default": "<p>Des avis vérifiés, copiés tels quels.</p>" },
+    { "type": "range", "id": "subtext_size", "min": 12, "max": 22, "step": 1, "unit": "px", "label": "Taille du texte", "default": 16 },
+    { "type": "color", "id": "subtext_color", "label": "Couleur du texte", "default": "#111111" },
+
+    { "type": "text", "id": "verified_text", "label": "Texte “badge”", "default": "Avis vérifié" },
+
+    { "type": "color", "id": "bg_color", "label": "Fond de la section", "default": "#FFFFFF" },
+    { "type": "color", "id": "accent_red", "label": "Rouge accent", "default": "#FF0000" },
+    { "type": "color", "id": "star_gold", "label": "Couleur des étoiles (gold)", "default": "#D4AF37" },
+
+    { "type": "range", "id": "review_size", "min": 12, "max": 22, "step": 1, "unit": "px", "label": "Taille texte avis", "default": 16 },
+
+    { "type": "range", "id": "padding_y", "min": 0, "max": 120, "step": 4, "unit": "px", "label": "Padding haut/bas", "default": 32 },
+    { "type": "range", "id": "max_width", "min": 320, "max": 1400, "step": 20, "unit": "px", "label": "Largeur max", "default": 1100 },
+
+    { "type": "range", "id": "gap", "min": 8, "max": 40, "step": 2, "unit": "px", "label": "Espacement entre cartes", "default": 16 },
+
+    { "type": "range", "id": "cards_per_view_desktop", "min": 1, "max": 4, "step": 1, "label": "Cartes visibles (desktop)", "default": 3 },
+    { "type": "range", "id": "cards_per_view_tablet", "min": 1, "max": 3, "step": 1, "label": "Cartes visibles (tablette)", "default": 2 },
+
+    { "type": "range", "id": "card_radius", "min": 0, "max": 28, "step": 2, "unit": "px", "label": "Arrondi des cartes", "default": 16 }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Avis",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Nom", "default": "Thomas" },
+        { "type": "range", "id": "stars", "min": 1, "max": 5, "step": 1, "label": "Nombre d'étoiles", "default": 5 },
+        { "type": "textarea", "id": "review", "label": "Avis", "default": "Très bonne qualité, ça fait le job. Livraison rapide." },
+        { "type": "text", "id": "tag", "label": "Petit tag (optionnel)", "default": "Recommandé" },
+        { "type": "text", "id": "date", "label": "Date (optionnel)", "default": "Janvier 2026" }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Avis clients",
+      "category": "Contenu",
+      "blocks": [
+        { "type": "review" },
+        { "type": "review" },
+        { "type": "review" }
+      ]
+    }
+  ]
+}
+{% endschema %}

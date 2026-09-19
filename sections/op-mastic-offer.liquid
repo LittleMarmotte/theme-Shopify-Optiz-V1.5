@@ -1,0 +1,819 @@
+{% comment %}
+  Section: op-mastic-offer.liquid
+  Sélecteur de paliers (1/2/3 sachets) + cadeaux progressifs EasyGift + add-to-cart drawer
+  Préfixe "op-" sur toutes les classes pour éviter les conflits avec le thème Savor.
+{% endcomment %}
+
+{%- assign main_variant = product.variants.first -%}
+
+{%- if section.settings.gift1_image != blank -%}
+  {%- assign gift1_url = section.settings.gift1_image | image_url: width: 200 -%}
+{%- else -%}
+  {%- assign gift1_url = 'https://cdn.shopify.com/s/files/1/0961/2355/2126/files/ChatGPTImage28janv.2026_17_51_44.png?v=1769619124' -%}
+{%- endif -%}
+
+{%- if section.settings.gift2_image != blank -%}
+  {%- assign gift2_url = section.settings.gift2_image | image_url: width: 200 -%}
+{%- else -%}
+  {%- assign gift2_url = 'https://cdn.shopify.com/s/files/1/0961/2355/2126/files/7.jpg?v=1765719029' -%}
+{%- endif -%}
+
+{%- if section.settings.gift3_image != blank -%}
+  {%- assign gift3_url = section.settings.gift3_image | image_url: width: 200 -%}
+{%- else -%}
+  {%- assign gift3_url = 'https://cdn.shopify.com/s/files/1/0961/2355/2126/files/Designsanstitre_11.png?v=1761206698' -%}
+{%- endif -%}
+
+<style>
+  /* Masque les blocs natifs redondants sur ce template */
+  .buy-buttons-block,
+  .product-inventory { display: none !important; }
+
+  /* ==========================================================
+     Offre Mastic de Chios — préfixe op- (anti-conflit Savor)
+     ========================================================== */
+  .op-pdp {
+    --op-accent:        #FF0000;
+    --op-accent-soft:   rgba(255,0,0,0.08);
+    --op-accent-ring:   rgba(255,0,0,0.18);
+    --op-ink:           #1A1A1A;
+    --op-black:         #1A1A1A;
+    --op-border:        #E6E6E6;
+    --op-fg2:           #333232;
+    --op-fg3:           #666666;
+    --op-font-display:  'Barlow Condensed', 'Open Sans', sans-serif;
+    --op-font-body:     'Inter', system-ui, sans-serif;
+    --op-cta-glow:      0 8px 22px rgba(255,0,0,0.28);
+    font-family: var(--op-font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  .op-pdp *, .op-pdp *::before, .op-pdp *::after { box-sizing: border-box; }
+
+  .op-pdp .op-container {
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 18px;
+  }
+
+  /* --- Carte offre principale --- */
+  .op-pdp .op-offer {
+    margin: 8px 0 32px;
+    padding: 0 0 22px;
+    background: #fff;
+    border: 1px solid var(--op-border);
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    overflow: hidden;
+  }
+
+  /* --- Marquee promo (bandeau rouge en haut de la carte) --- */
+  .op-pdp .op-marquee {
+    background: var(--op-accent);
+    color: #fff;
+    font-family: var(--op-font-display);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 9px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-bottom: 18px;
+  }
+  .op-pdp .op-marquee__track {
+    display: inline-flex;
+    gap: 3rem;
+    animation: opMarquee 28s linear infinite;
+  }
+  .op-pdp .op-marquee__track span::before {
+    content: "•";
+    margin-right: 3rem;
+    color: rgba(255,255,255,0.5);
+  }
+  @keyframes opMarquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* --- Corps de la carte (padding horizontal) --- */
+  .op-pdp .op-offer__body { padding: 0 16px; }
+
+  /* --- Sélecteur de paliers --- */
+  .op-pdp .op-tiers {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 22px;
+    padding-top: 14px;
+  }
+  .op-pdp .op-tier {
+    position: relative;
+    background: #FAFAFA;
+    border: 2px solid var(--op-border);
+    border-radius: 14px;
+    padding: 14px 8px 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.25s cubic-bezier(0.33,1,0.68,1);
+    user-select: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .op-pdp .op-tier:hover { border-color: rgba(255,0,0,0.3); }
+
+  .op-pdp .op-tier__radio {
+    position: absolute;
+    top: 10px; left: 10px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid #C9C9C9;
+    background: #fff;
+    transition: all 0.2s ease;
+  }
+  .op-pdp .op-tier__radio::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border-radius: 50%;
+    background: var(--op-accent);
+    transform: scale(0);
+    transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .op-pdp .op-tier__badge {
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--op-font-display);
+    font-weight: 800;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+    z-index: 2;
+  }
+  .op-pdp .op-tier__badge--popular { background: #1A1A1A; color: #fff; }
+  .op-pdp .op-tier__badge--best    { background: var(--op-accent); color: #fff; }
+
+  .op-pdp .op-tier__qty {
+    font-family: var(--op-font-display);
+    font-weight: 800;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--op-black);
+    margin-bottom: 4px;
+  }
+  .op-pdp .op-tier__discount {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--op-fg3);
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+  .op-pdp .op-tier__discount strong { color: var(--op-accent); font-weight: 700; }
+
+  .op-pdp .op-tier__price {
+    font-family: var(--op-font-display);
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--op-black);
+    line-height: 1;
+  }
+  .op-pdp .op-tier__price-strike {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--op-fg3);
+    text-decoration: line-through;
+    font-weight: 500;
+  }
+
+  /* État actif */
+  .op-pdp .op-tier.is-active {
+    background: rgba(255,0,0,0.08);
+    border-color: var(--op-accent);
+    box-shadow: 0 4px 14px rgba(255,0,0,0.18);
+  }
+  .op-pdp .op-tier.is-active .op-tier__radio { border-color: var(--op-accent); }
+  .op-pdp .op-tier.is-active .op-tier__radio::after { transform: scale(1); }
+
+  /* --- Bloc cadeaux progressifs --- */
+  .op-pdp .op-gifts {
+    background: rgba(255,0,0,0.08);
+    border: 1px solid rgba(255,0,0,0.18);
+    border-radius: 16px;
+    padding: 22px 14px 18px;
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .op-pdp .op-gifts__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #1A1A1A;
+    color: #fff;
+    font-family: var(--op-font-display);
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 10px 18px;
+    border-radius: 999px;
+    width: fit-content;
+    margin: -34px auto 8px;
+    border: 2px solid #fff;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  }
+  .op-pdp .op-gifts__header::before,
+  .op-pdp .op-gifts__header::after {
+    content: "";
+    display: block;
+    width: 14px; height: 14px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FF0000'><path d='M20 7h-2.18A3 3 0 0 0 14 3a3 3 0 0 0-2 .77A3 3 0 0 0 10 3a3 3 0 0 0-3.82 4H4a2 2 0 0 0-2 2v2a2 2 0 0 0 1 1.73V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7.27A2 2 0 0 0 22 11V9a2 2 0 0 0-2-2zm-6-2a1 1 0 1 1 0 2h-1V6a1 1 0 0 1 1-1zM9 6a1 1 0 0 1 2 0v1H9zM4 9h7v2H4zm2 4h5v7H6zm12 7h-5v-7h5zm2-9h-7V9h7z'/></svg>");
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+  .op-pdp .op-gifts__subtitle {
+    text-align: center;
+    font-size: 13px;
+    color: var(--op-fg2);
+    margin: 6px 0 18px;
+  }
+  .op-pdp .op-gifts__subtitle strong { color: var(--op-ink); font-weight: 700; }
+
+  .op-pdp .op-gift-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .op-pdp .op-gift {
+    position: relative;
+    background: #fff;
+    border: 1px solid var(--op-border);
+    border-radius: 14px;
+    padding: 24px 6px 12px;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.33,1,0.68,1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 170px;
+  }
+  .op-pdp .op-gift__sticker {
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%) rotate(-4deg);
+    background: var(--op-accent);
+    color: #fff;
+    font-family: var(--op-font-display);
+    font-weight: 800;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+    z-index: 2;
+  }
+  .op-pdp .op-gift__media {
+    width: 72px; height: 72px;
+    border-radius: 12px;
+    background: #F5EFE7;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4px auto 8px;
+  }
+  .op-pdp .op-gift__media img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .op-pdp .op-gift__name {
+    font-family: var(--op-font-display);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--op-ink);
+    line-height: 1.15;
+  }
+  .op-pdp .op-gift__unlock-hint {
+    font-size: 10px;
+    color: var(--op-fg3);
+    margin-top: 4px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-weight: 600;
+    display: none;
+  }
+
+  /* État verrouillé */
+  .op-pdp .op-gift.is-locked {
+    background: #F4F4F4;
+    border-style: dashed;
+    border-color: #D9D9D9;
+  }
+  .op-pdp .op-gift.is-locked .op-gift__sticker { background: #9A9A9A; box-shadow: none; }
+  .op-pdp .op-gift.is-locked .op-gift__media { background: #E8E8E8; position: relative; }
+  .op-pdp .op-gift.is-locked .op-gift__media img { opacity: 0.18; filter: grayscale(1); }
+  .op-pdp .op-gift.is-locked .op-gift__media::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='11' width='18' height='11' rx='2' ry='2'/><path d='M7 11V7a5 5 0 0 1 10 0v4'/></svg>");
+    background-size: 28px 28px;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .op-pdp .op-gift.is-locked .op-gift__name { color: var(--op-fg3); font-style: italic; }
+  .op-pdp .op-gift.is-locked .op-gift__unlock-hint { display: block; }
+
+  /* --- Récap unitaire --- */
+  .op-pdp .op-recap {
+    text-align: center;
+    font-size: 12px;
+    color: var(--op-fg3);
+    margin: 0 0 14px;
+    letter-spacing: 0.02em;
+  }
+  .op-pdp .op-recap strong { color: var(--op-ink); font-weight: 700; }
+
+  /* --- Bouton CTA principal --- */
+  .op-pdp .op-cta {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    width: 100%;
+    background: var(--op-accent);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 16px 18px;
+    font-family: var(--op-font-display);
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: var(--op-cta-glow);
+    transition: transform 0.15s ease, background-color 0.2s ease, opacity 0.2s ease;
+    gap: 14px;
+    text-align: left;
+  }
+  .op-pdp .op-cta:hover:not(:disabled) { background: #E60000; }
+  .op-pdp .op-cta:active:not(:disabled) { transform: scale(0.98); }
+  .op-pdp .op-cta:disabled { opacity: 0.72; cursor: wait; }
+
+  .op-pdp .op-cta__label { line-height: 1; }
+  .op-pdp .op-cta__price {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    font-family: var(--op-font-display);
+  }
+  .op-pdp .op-cta__price-strike {
+    font-size: 11px;
+    font-weight: 500;
+    text-decoration: line-through;
+    opacity: 0.65;
+    letter-spacing: 0;
+  }
+  .op-pdp .op-cta__price-now { font-size: 18px; font-weight: 800; letter-spacing: 0; }
+  .op-pdp .op-cta__arrow::after { content: "→"; font-size: 22px; }
+
+  /* --- Lien achat unique --- */
+  .op-pdp .op-singlebuy {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--op-fg2);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    background: none;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+    padding: 0;
+    font-family: var(--op-font-body);
+  }
+  .op-pdp .op-singlebuy:hover { color: var(--op-black); }
+
+  /* --- Bandeau de confiance --- */
+  .op-pdp .op-trust {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--op-border);
+  }
+  .op-pdp .op-trust__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+    font-size: 10px;
+    font-family: var(--op-font-display);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--op-fg2);
+    line-height: 1.2;
+  }
+  .op-pdp .op-trust__icon { width: 18px; height: 18px; color: var(--op-accent); }
+
+  /* --- Responsive --- */
+  @media (max-width: 360px) {
+    .op-pdp .op-tiers { gap: 6px; padding-top: 16px; }
+    .op-pdp .op-tier { padding: 14px 4px; }
+    .op-pdp .op-tier__price { font-size: 17px; }
+    .op-pdp .op-gift__media { width: 60px; height: 60px; }
+    .op-pdp .op-gift__name { font-size: 11px; }
+  }
+  @media (min-width: 720px) {
+    .op-pdp .op-container { max-width: 620px; padding: 0 24px; }
+    .op-pdp .op-tier__price { font-size: 22px; }
+    .op-pdp .op-gift__media { width: 88px; height: 88px; }
+  }
+</style>
+
+<div class="op-pdp" id="op-pdp-{{ section.id }}">
+  <div class="op-container">
+    <div class="op-offer">
+
+      <!-- Marquee rouge en haut de la carte -->
+      <div class="op-marquee" aria-hidden="true">
+        <div class="op-marquee__track">
+          <span>Jawline en 30 jours</span>
+          <span>100% naturel</span>
+          <span>Résine de Chios</span>
+          <span>Expédié sous 24h</span>
+          <span>Jawline en 30 jours</span>
+          <span>100% naturel</span>
+          <span>Résine de Chios</span>
+          <span>Expédié sous 24h</span>
+        </div>
+      </div>
+
+      <div class="op-offer__body">
+
+        <!-- Sélecteur de paliers -->
+        <div class="op-tiers" role="radiogroup" aria-label="Choisis ton offre">
+
+          <!-- Palier 1 — 1 sachet -->
+          <button class="op-tier"
+                  role="radio" aria-checked="false"
+                  data-tier="1"
+                  data-qty="1"
+                  data-price="21.38"
+                  data-strike="22.50"
+                  data-discount="5"
+                  data-gifts="1"
+                  data-unit="21.38"
+                  data-code="MASTIC5">
+            <span class="op-tier__radio"></span>
+            <div class="op-tier__qty">1 sachet</div>
+            <div class="op-tier__discount">-5% + <strong>1 cadeau</strong></div>
+            <div class="op-tier__price">21,38€<span class="op-tier__price-strike">22,50€</span></div>
+          </button>
+
+          <!-- Palier 2 — 2 sachets (sélectionné par défaut) -->
+          <button class="op-tier is-active"
+                  role="radio" aria-checked="true"
+                  data-tier="2"
+                  data-qty="2"
+                  data-price="40.50"
+                  data-strike="45.00"
+                  data-discount="10"
+                  data-gifts="2"
+                  data-unit="20.25"
+                  data-code="MASTIC10">
+            <div class="op-tier__badge op-tier__badge--popular">Le plus populaire</div>
+            <span class="op-tier__radio"></span>
+            <div class="op-tier__qty">2 sachets</div>
+            <div class="op-tier__discount">-10% + <strong>2 cadeaux</strong></div>
+            <div class="op-tier__price">40,50€<span class="op-tier__price-strike">45,00€</span></div>
+          </button>
+
+          <!-- Palier 3 — 3 sachets -->
+          <button class="op-tier"
+                  role="radio" aria-checked="false"
+                  data-tier="3"
+                  data-qty="3"
+                  data-price="57.38"
+                  data-strike="67.50"
+                  data-discount="15"
+                  data-gifts="3"
+                  data-unit="19.13"
+                  data-code="MASTIC15">
+            <div class="op-tier__badge op-tier__badge--best">La meilleure offre</div>
+            <span class="op-tier__radio"></span>
+            <div class="op-tier__qty">3 sachets</div>
+            <div class="op-tier__discount">-15% + <strong>3 cadeaux</strong></div>
+            <div class="op-tier__price">57,38€<span class="op-tier__price-strike">67,50€</span></div>
+          </button>
+
+        </div>
+
+        <!-- Bloc cadeaux progressifs -->
+        <div class="op-gifts">
+          <div class="op-gifts__header">Offre spéciale</div>
+          <p class="op-gifts__subtitle">
+            Cadeaux exclusifs offerts <strong id="op-gift-date-{{ section.id }}">jusqu'au ...</strong>
+          </p>
+          <div class="op-gift-grid">
+
+            <!-- Cadeau 1 — débloqué dès le palier 1 -->
+            <div class="op-gift" data-min-tier="1">
+              <span class="op-gift__sticker">Offert · 13€</span>
+              <div class="op-gift__media">
+                <img src="{{ gift1_url }}" alt="Poudre dentaire au charbon" loading="lazy" width="72" height="72">
+              </div>
+              <div class="op-gift__name">Poudre dentaire</div>
+              <div class="op-gift__unlock-hint">Dès 1 sachet</div>
+            </div>
+
+            <!-- Cadeau 2 — débloqué dès le palier 2 -->
+            <div class="op-gift is-locked" data-min-tier="2">
+              <span class="op-gift__sticker">Offert · 11€</span>
+              <div class="op-gift__media">
+                <img src="{{ gift2_url }}" alt="Bâton de siwak" loading="lazy" width="72" height="72">
+              </div>
+              <div class="op-gift__name">Bâton de siwak</div>
+              <div class="op-gift__unlock-hint">Dès 2 sachets</div>
+            </div>
+
+            <!-- Cadeau 3 — débloqué au palier 3 -->
+            <div class="op-gift is-locked" data-min-tier="3">
+              <span class="op-gift__sticker">Offert · 37€</span>
+              <div class="op-gift__media">
+                <img src="{{ gift3_url }}" alt='Ebook La Shrediet' loading="lazy" width="72" height="72">
+              </div>
+              <div class="op-gift__name">Ebook<br>« La Shrediet »</div>
+              <div class="op-gift__unlock-hint">Dès 3 sachets</div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Récap unitaire -->
+        <p class="op-recap">
+          <strong id="op-unit-{{ section.id }}">20,25€</strong> par unité ·
+          <strong id="op-discount-{{ section.id }}">-10%</strong> +
+          <strong id="op-gifts-{{ section.id }}">2 cadeaux</strong> offerts
+        </p>
+
+        <!-- CTA principal -->
+        <button class="op-cta"
+                id="op-cta-{{ section.id }}"
+                data-variant-id="{{ main_variant.id }}"
+                type="button">
+          <span class="op-cta__label" id="op-cta-label-{{ section.id }}">Ajouter au panier</span>
+          <span class="op-cta__price">
+            <span class="op-cta__price-strike" id="op-cta-strike-{{ section.id }}">45,00€</span>
+            <span class="op-cta__price-now"    id="op-cta-now-{{ section.id }}">40,50€</span>
+          </span>
+          <span class="op-cta__arrow" aria-hidden="true"></span>
+        </button>
+
+        <!-- Achat unique (revient au palier 1) -->
+        <button class="op-singlebuy" id="op-singlebuy-{{ section.id }}" type="button">
+          Achat unique — 21,38€
+        </button>
+
+        <!-- Bandeau de confiance -->
+        <div class="op-trust">
+          <div class="op-trust__item">
+            <svg class="op-trust__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M3 7l9-4 9 4-9 4-9-4zm0 0v6c0 5 9 8 9 8s9-3 9-8V7"/>
+            </svg>
+            Garantie 30j
+          </div>
+          <div class="op-trust__item">
+            <svg class="op-trust__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <rect x="2" y="6" width="20" height="12" rx="2"/>
+              <path d="M2 10h20"/>
+            </svg>
+            Paiement sécurisé
+          </div>
+          <div class="op-trust__item">
+            <svg class="op-trust__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <rect x="1" y="3" width="15" height="13"/>
+              <path d="M16 8h4l3 3v5h-7zM5.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm13 0a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+            </svg>
+            Livraison 24h
+          </div>
+        </div>
+
+      </div><!-- /.op-offer__body -->
+    </div><!-- /.op-offer -->
+  </div><!-- /.op-container -->
+</div><!-- /.op-pdp -->
+
+<script>
+(function () {
+  'use strict';
+
+  var sid = '{{ section.id }}';
+  var offer = document.getElementById('op-pdp-' + sid);
+  if (!offer) return;
+
+  var tiers = Array.from(offer.querySelectorAll('.op-tier'));
+  var gifts = Array.from(offer.querySelectorAll('.op-gift'));
+  var currentCode = 'MASTIC10'; /* code du palier actif par défaut (palier 2) */
+
+  /* Formate un nombre en prix FR (ex: 35,90€) */
+  function fmt(n) {
+    return Number(n).toLocaleString('fr-FR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }) + '€';
+  }
+
+  /* Date dynamique — aujourd'hui + 4 jours */
+  (function setGiftDate() {
+    var jours   = ['dim.','lun.','mar.','mer.','jeu.','ven.','sam.'];
+    var mois    = ['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+    var cible   = new Date();
+    cible.setDate(cible.getDate() + 4);
+    var label   = "jusqu'au " + jours[cible.getDay()] + ' ' + cible.getDate() + ' ' + mois[cible.getMonth()];
+    var el      = document.getElementById('op-gift-date-' + sid);
+    if (el) el.textContent = label;
+  })();
+
+  /* Sélection d'un palier */
+  function selectTier(tierEl) {
+    if (!tierEl) return;
+
+    tiers.forEach(function (t) {
+      t.classList.remove('is-active');
+      t.setAttribute('aria-checked', 'false');
+    });
+    tierEl.classList.add('is-active');
+    tierEl.setAttribute('aria-checked', 'true');
+
+    var tier     = parseInt(tierEl.dataset.tier, 10);
+    var price    = parseFloat(tierEl.dataset.price);
+    var strike   = parseFloat(tierEl.dataset.strike);
+    var discount = parseInt(tierEl.dataset.discount, 10);
+    var giftCnt  = parseInt(tierEl.dataset.gifts, 10);
+    var unit     = parseFloat(tierEl.dataset.unit);
+    currentCode  = tierEl.dataset.code || '';
+
+    /* Cadeaux : verrouillé si palier insuffisant */
+    gifts.forEach(function (g) {
+      var min = parseInt(g.dataset.minTier, 10);
+      g.classList.toggle('is-locked', tier < min);
+    });
+
+    /* Mise à jour du CTA */
+    var ctaNow    = document.getElementById('op-cta-now-'    + sid);
+    var ctaStrike = document.getElementById('op-cta-strike-' + sid);
+    if (ctaNow)    ctaNow.textContent    = fmt(price);
+    if (ctaStrike) {
+      ctaStrike.style.display = discount > 0 ? 'inline' : 'none';
+      if (discount > 0) ctaStrike.textContent = fmt(strike);
+    }
+
+    /* Mise à jour du récap */
+    var rUnit     = document.getElementById('op-unit-'     + sid);
+    var rDiscount = document.getElementById('op-discount-' + sid);
+    var rGifts    = document.getElementById('op-gifts-'    + sid);
+    if (rUnit)     rUnit.textContent     = fmt(unit);
+    if (rDiscount) rDiscount.textContent = discount > 0 ? ('-' + discount + '%') : 'sans réduc.';
+    if (rGifts)    rGifts.textContent    = giftCnt + (giftCnt > 1 ? ' cadeaux' : ' cadeau');
+
+    /* Lien achat unique : affiche le prix unitaire du palier 1 */
+    var singleBtn = document.getElementById('op-singlebuy-' + sid);
+    if (singleBtn) singleBtn.textContent = 'Achat unique — 22,50€';
+  }
+
+  /* Bind clics sur les paliers */
+  tiers.forEach(function (t) {
+    t.addEventListener('click', function () { selectTier(t); });
+    t.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectTier(t); }
+    });
+  });
+
+  /* Ajout au panier via Shopify Cart API */
+  function addToCart(variantId, qty) {
+    var btn   = document.getElementById('op-cta-' + sid);
+    var label = document.getElementById('op-cta-label-' + sid);
+
+    if (btn)   btn.disabled = true;
+    if (label) label.textContent = 'Ajout en cours…';
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: variantId, quantity: qty })
+    })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      if (data.status && data.status >= 400) {
+        /* Erreur serveur (rupture de stock, etc.) */
+        if (label) label.textContent = data.message || 'Erreur — réessaie';
+        setTimeout(function () {
+          if (btn)   btn.disabled = false;
+          if (label) label.textContent = 'Ajouter au panier';
+        }, 3000);
+        return;
+      }
+
+      /* Succès — applique le code promo puis ouvre le drawer */
+      function openDrawer() {
+        document.dispatchEvent(new CustomEvent('cart:update', {
+          bubbles: true,
+          detail: { data: {} }
+        }));
+        if (label) label.textContent = 'Ajouté ✓';
+        setTimeout(function () {
+          if (btn)   btn.disabled = false;
+          if (label) label.textContent = 'Ajouter au panier';
+        }, 2200);
+      }
+
+      if (currentCode) {
+        fetch('/discount/' + currentCode, { redirect: 'follow' })
+          .then(openDrawer)
+          .catch(openDrawer);
+      } else {
+        openDrawer();
+      }
+    })
+    .catch(function (err) {
+      console.error('[Optiz] Cart error:', err);
+      if (btn)   btn.disabled = false;
+      if (label) label.textContent = 'Ajouter au panier';
+    });
+  }
+
+  /* CTA click */
+  var ctaBtn = document.getElementById('op-cta-' + sid);
+  if (ctaBtn) {
+    ctaBtn.addEventListener('click', function () {
+      var active    = offer.querySelector('.op-tier.is-active');
+      if (!active)  return;
+      var variantId = ctaBtn.dataset.variantId;
+      var qty       = parseInt(active.dataset.qty, 10);
+      addToCart(variantId, qty);
+    });
+  }
+
+  /* Lien achat unique → revient au palier 1 */
+  var singleBtn = document.getElementById('op-singlebuy-' + sid);
+  if (singleBtn) {
+    singleBtn.addEventListener('click', function () {
+      selectTier(tiers[0]);
+      if (ctaBtn) ctaBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Offre Mastic — Paliers",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Images des cadeaux"
+    },
+    {
+      "type": "paragraph",
+      "content": "Laisse vide pour utiliser les images CDN par défaut."
+    },
+    {
+      "type": "image_picker",
+      "id": "gift1_image",
+      "label": "Cadeau 1 — Poudre dentaire"
+    },
+    {
+      "type": "image_picker",
+      "id": "gift2_image",
+      "label": "Cadeau 2 — Bâton de siwak"
+    },
+    {
+      "type": "image_picker",
+      "id": "gift3_image",
+      "label": "Cadeau 3 — Ebook La Shrediet"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Offre Mastic — Paliers"
+    }
+  ]
+}
+{% endschema %}

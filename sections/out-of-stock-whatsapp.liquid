@@ -1,0 +1,75 @@
+{% if product and product.available == false %}
+<section class="oos-section" style="margin-top:24px;">
+  <div style="
+    border:1px dashed #ddd;
+    padding:20px;
+    border-radius:14px;
+    text-align:center;
+  ">
+    <h3>{{ section.settings.title }}</h3>
+    <p>{{ section.settings.text }}</p>
+
+    <a
+      href="{{ section.settings.whatsapp_link }}"
+      target="_blank"
+      rel="noopener"
+      style="
+        display:inline-block;
+        margin-top:12px;
+        padding:12px 18px;
+        border-radius:999px;
+        text-decoration:none;
+        font-weight:600;
+      "
+    >
+      {{ section.settings.button_label }}
+    </a>
+
+    <small style="display:block; margin-top:10px; color:#666;">
+      {{ section.settings.disclaimer }}
+    </small>
+  </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Stock WhatsApp",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Titre",
+      "default": "Accès prioritaire 🔔"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Texte",
+      "default": "Ce produit est en rupture. Rejoins notre groupe WhatsApp pour recevoir les alertes, ventes privées et avant-premières."
+    },
+    {
+      "type": "url",
+      "id": "whatsapp_link",
+      "label": "Lien d’invitation WhatsApp"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Texte du bouton",
+      "default": "Rejoindre le groupe WhatsApp"
+    },
+    {
+      "type": "textarea",
+      "id": "disclaimer",
+      "label": "Mention légale",
+      "default": "En rejoignant le groupe, ton numéro sera visible par les autres membres. Tu peux quitter le groupe à tout moment."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Stock"
+    }
+  ]
+}
+{% endschema %}

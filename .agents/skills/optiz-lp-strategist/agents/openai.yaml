@@ -1,0 +1,4 @@
+interface:
+  display_name: "Optiz LP Strategist"
+  short_description: "Conçoit la structure persuasive de la landing page Optiz"
+  default_prompt: "Utilise $optiz-lp-strategist pour produire une stratégie de landing page à partir de copywriting/AVATAR.md et de mon brief."

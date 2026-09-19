@@ -1,0 +1,144 @@
+{% schema %}
+{
+  "name": "Images superposées",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image_principale",
+      "label": "Image principale"
+    },
+    {
+      "type": "range",
+      "id": "taille_image_principale",
+      "label": "Taille image principale (%)",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "default": 90
+    },
+    {
+      "type": "image_picker",
+      "id": "image_superposee",
+      "label": "Image superposée"
+    },
+    {
+      "type": "range",
+      "id": "taille_image_superposee",
+      "label": "Taille image superposée (%)",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "default": 45
+    },
+    {
+      "type": "text",
+      "id": "titre",
+      "label": "Titre",
+      "default": "Titre de la section"
+    },
+    {
+      "type": "textarea",
+      "id": "texte",
+      "label": "Texte",
+      "default": "Votre description ici."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Images superposées"
+    }
+  ]
+}
+{% endschema %}
+
+<section class="overlap-section">
+  <div class="overlap-container">
+    {% if section.settings.image_principale %}
+      <div class="image-principale" style="width: {{ section.settings.taille_image_principale }}%;">
+        <img src="{{ section.settings.image_principale | image_url: width: 1000 }}" alt="Image principale">
+      </div>
+    {% endif %}
+    
+    {% if section.settings.image_superposee %}
+      <div class="image-superposee" style="width: {{ section.settings.taille_image_superposee }}%;">
+        <img src="{{ section.settings.image_superposee | image_url: width: 800 }}" alt="Image superposée">
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="overlap-text">
+    <h2>{{ section.settings.titre }}</h2>
+    <p>{{ section.settings.texte }}</p>
+  </div>
+</section>
+
+<style>
+.overlap-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4rem 1rem;
+  background: #fff;
+  overflow-x: hidden; /* <-- CORRECTIF MINIMAL : empêche le débordement horizontal */
+}
+
+.overlap-container {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin-bottom: 2rem;
+}
+
+.image-principale img {
+  width: 100%;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+.image-superposee {
+  position: absolute;
+  bottom: -20px;
+  right: -20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.image-superposee img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.image-superposee:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+.overlap-text {
+  text-align: center;
+  max-width: 600px;
+}
+
+.overlap-text h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.overlap-text p {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* Animation fluide */
+.overlap-container img {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>

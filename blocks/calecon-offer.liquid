@@ -1,0 +1,781 @@
+{% liquid
+  assign product_resource = product
+  if product_resource == blank
+    assign product_resource = closest.product
+  endif
+  assign variant = product_resource.selected_or_first_available_variant
+  assign gift_product = block.settings.gift_product
+  assign gift_variant = gift_product.selected_or_first_available_variant
+  assign ebook_product = block.settings.ebook_product
+  assign ebook_variant = ebook_product.selected_or_first_available_variant
+  assign initial_tier = block.settings.initial_tier | default: 1
+  assign initial_total = variant.price | times: initial_tier
+%}
+
+<calecon-offer
+  class="calecon-offer spacing-style"
+  data-product-id="{{ product_resource.id }}"
+  style="{% render 'spacing-style', settings: block.settings %}"
+  {{ block.shopify_attributes }}
+>
+  <script type="application/json" data-offer-config>
+    {
+      "variantId": {{ variant.id | json }},
+      "variantAvailable": {{ variant.available | json }},
+      "unitPrice": {{ variant.price | json }},
+      "currency": {{ cart.currency.iso_code | default: shop.currency | json }},
+      "locale": {{ request.locale.iso_code | json }},
+      "variants": [
+        {% for pack_variant in product_resource.variants %}
+          {
+            "id": {{ pack_variant.id | json }},
+            "available": {{ pack_variant.available | json }},
+            "price": {{ pack_variant.price | json }}
+          }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ],
+      "gift": {
+        "id": {{ gift_variant.id | json }},
+        "available": {{ gift_variant.available | default: false | json }}
+      },
+      "ebook": {
+        "id": {{ ebook_variant.id | json }},
+        "available": {{ ebook_variant.available | default: false | json }}
+      }
+    }
+  </script>
+
+  <fieldset class="calecon-offer__fieldset">
+    <legend class="calecon-offer__legend">{{ 'products.product.offer_heading' | t }}</legend>
+    <p class="calecon-offer__intro">{{ 'products.product.offer_intro' | t }}</p>
+
+    <div class="calecon-offer__tiers">
+      <label class="calecon-offer__tier">
+        <input
+          type="radio"
+          name="calecon-offer-{{ block.id }}"
+          value="1"
+          data-offer-tier
+          {% if initial_tier == 1 %}checked{% endif %}
+        >
+        <span class="calecon-offer__radio" aria-hidden="true"></span>
+        <span class="calecon-offer__copy">
+          <span class="calecon-offer__tier-title">{{ 'products.product.pack_count' | t: count: 1 }}</span>
+          <span class="calecon-offer__tier-detail">{{ 'products.product.underwear_count' | t: count: 3 }}</span>
+        </span>
+        <strong class="calecon-offer__price">{{ variant.price | money }}</strong>
+      </label>
+
+      <label class="calecon-offer__tier">
+        <input
+          type="radio"
+          name="calecon-offer-{{ block.id }}"
+          value="2"
+          data-offer-tier
+          {% if initial_tier == 2 %}checked{% endif %}
+        >
+        <span class="calecon-offer__radio" aria-hidden="true"></span>
+        <span class="calecon-offer__copy">
+          <span class="calecon-offer__tier-title">{{ 'products.product.pack_count' | t: count: 2 }}</span>
+          <span class="calecon-offer__tier-detail">{{ 'products.product.underwear_count' | t: count: 6 }}</span>
+          <span class="calecon-offer__benefit">
+            {{ 'products.product.gift_included' | t: product: gift_product.title }}
+          </span>
+        </span>
+        <strong class="calecon-offer__price">{{ variant.price | times: 2 | money }}</strong>
+      </label>
+
+      <label class="calecon-offer__tier calecon-offer__tier--featured">
+        <input
+          type="radio"
+          name="calecon-offer-{{ block.id }}"
+          value="3"
+          data-offer-tier
+          {% if initial_tier == 3 %}checked{% endif %}
+        >
+        <span class="calecon-offer__badge">{{ 'products.product.best_offer' | t }}</span>
+        <span class="calecon-offer__radio" aria-hidden="true"></span>
+        <span class="calecon-offer__copy">
+          <span class="calecon-offer__tier-title">{{ 'products.product.pack_count' | t: count: 3 }}</span>
+          <span class="calecon-offer__tier-detail">{{ 'products.product.underwear_count' | t: count: 9 }}</span>
+          <span class="calecon-offer__benefit">
+            {{ 'products.product.gift_included' | t: product: gift_product.title }}
+          </span>
+          <span class="calecon-offer__benefit">{{ 'products.product.ebook_included' | t }}</span>
+          <span class="calecon-offer__benefit">{{ 'products.product.free_shipping' | t }}</span>
+        </span>
+        <strong class="calecon-offer__price">{{ variant.price | times: 3 | money }}</strong>
+      </label>
+    </div>
+  </fieldset>
+
+  <div class="calecon-offer__sizes" data-pack-sizes>
+    <p class="calecon-offer__sizes-heading">{{ 'products.product.select_pack_sizes' | t }}</p>
+    <div class="calecon-offer__size-rows">
+      {% for pack_index in (1..3) %}
+        <fieldset
+          class="calecon-offer__size-row"
+          data-pack-row="{{ pack_index }}"
+          {% if pack_index > initial_tier %}hidden{% endif %}
+        >
+          <legend>{{ 'products.product.pack_size_label' | t: count: pack_index }}</legend>
+          <div class="calecon-offer__size-options">
+            {% for pack_variant in product_resource.variants %}
+              <label class="calecon-offer__size-option">
+                <input
+                  type="radio"
+                  name="calecon-pack-{{ block.id }}-{{ pack_index }}"
+                  value="{{ pack_variant.id }}"
+                  data-pack-variant
+                  {% if pack_variant.id == variant.id %}checked{% endif %}
+                  {% unless pack_variant.available %}disabled{% endunless %}
+                >
+                <span>{{ pack_variant.title }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        </fieldset>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="calecon-offer__summary" aria-live="polite">
+    <span>{{ 'products.product.offer_total' | t }}</span>
+    <strong data-offer-total>{{ initial_total | money }}</strong>
+  </div>
+
+  <button type="button" class="calecon-offer__button" data-offer-submit>
+    <span data-offer-button-text>{{ 'products.product.add_offer' | t }}</span>
+    <span class="calecon-offer__spinner" aria-hidden="true" hidden></span>
+  </button>
+
+  <p class="calecon-offer__note">{{ 'products.product.offer_note' | t }}</p>
+  <p class="calecon-offer__message" data-offer-message role="status" aria-live="polite" hidden></p>
+
+  <template data-offer-translations>
+    <span data-add>{{ 'products.product.add_offer' | t }}</span>
+    <span data-adding>{{ 'products.product.adding_offer' | t }}</span>
+    <span data-added>{{ 'products.product.offer_added' | t }}</span>
+    <span data-error>{{ 'products.product.offer_error' | t }}</span>
+    <span data-unavailable>{{ 'products.product.offer_unavailable' | t }}</span>
+  </template>
+</calecon-offer>
+
+{% stylesheet %}
+  .calecon-offer {
+    display: block;
+    width: 100%;
+  }
+
+  .calecon-offer__fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .calecon-offer__legend {
+    margin: 0;
+    color: #111;
+    font-family: var(--font-heading--family);
+    font-size: clamp(1.2rem, 2vw, 1.45rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+
+  .calecon-offer__intro {
+    margin: 0.4rem 0 0.9rem;
+    color: #686868;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .calecon-offer__tiers {
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  .calecon-offer__tier {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.25rem minmax(0, 1fr) auto;
+    gap: 0.75rem;
+    align-items: center;
+    min-height: 4.75rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid #d9d9d9;
+    border-radius: 0.7rem;
+    background: #fff;
+    color: #111;
+    cursor: pointer;
+    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+  }
+
+  .calecon-offer__tier:hover {
+    border-color: #777;
+    transform: translateY(-1px);
+  }
+
+  .calecon-offer__tier:has(input:focus-visible) {
+    outline: 2px solid #111;
+    outline-offset: 3px;
+  }
+
+  .calecon-offer__tier:has(input:checked) {
+    border-color: #111;
+    box-shadow: 0 0 0 1px #111, 0 8px 22px rgb(0 0 0 / 8%);
+  }
+
+  .calecon-offer__tier input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .calecon-offer__radio {
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 1.5px solid #9a9a9a;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: inset 0 0 0 0.22rem #fff;
+  }
+
+  .calecon-offer__tier:has(input:checked) .calecon-offer__radio {
+    border-color: #f00000;
+    background: #f00000;
+  }
+
+  .calecon-offer__copy {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.12rem;
+  }
+
+  .calecon-offer__tier-title {
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  .calecon-offer__tier-detail {
+    color: #6a6a6a;
+    font-size: 0.82rem;
+    line-height: 1.35;
+  }
+
+  .calecon-offer__benefit {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #111;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .calecon-offer__benefit::before {
+    content: '✓';
+    color: #f00000;
+    font-weight: 900;
+  }
+
+  .calecon-offer__price {
+    align-self: center;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+
+  .calecon-offer__tier--featured {
+    margin-top: 0.45rem;
+    border-color: #f00000;
+  }
+
+  .calecon-offer__badge {
+    position: absolute;
+    top: -0.72rem;
+    right: 0.75rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    background: #f00000;
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 850;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .calecon-offer__sizes {
+    margin-top: 1rem;
+  }
+
+  .calecon-offer__sizes-heading {
+    margin: 0 0 0.55rem;
+    color: #111;
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+
+  .calecon-offer__size-rows {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .calecon-offer__size-row {
+    display: grid;
+    grid-template-columns: minmax(5rem, auto) minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: center;
+    min-width: 0;
+    margin: 0;
+    padding: 0.55rem 0.65rem;
+    border: 1px solid #dedede;
+    border-radius: 0.55rem;
+  }
+
+  .calecon-offer__size-row[hidden] {
+    display: none;
+  }
+
+  .calecon-offer__size-row legend {
+    grid-column: 1;
+    padding: 0;
+    color: #111;
+    font-size: 0.78rem;
+    font-weight: 750;
+  }
+
+  .calecon-offer__size-options {
+    display: grid;
+    grid-column: 2;
+    grid-row: 1;
+    grid-template-columns: repeat(auto-fit, minmax(4.25rem, 1fr));
+    gap: 0.4rem;
+  }
+
+  .calecon-offer__size-option {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .calecon-offer__size-option input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .calecon-offer__size-option span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.1rem;
+    padding: 0.35rem 0.65rem;
+    border: 1px solid #d5d5d5;
+    border-radius: 0.35rem;
+    background: #fff;
+    color: #111;
+    font-size: 0.78rem;
+    font-weight: 750;
+    transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+  }
+
+  .calecon-offer__size-option input:checked + span {
+    border-color: #111;
+    background: #111;
+    color: #fff;
+  }
+
+  .calecon-offer__size-option input:focus-visible + span {
+    outline: 2px solid #f00000;
+    outline-offset: 2px;
+  }
+
+  .calecon-offer__size-option input:disabled + span {
+    cursor: not-allowed;
+    opacity: 0.4;
+    text-decoration: line-through;
+  }
+
+  .calecon-offer__summary {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.9rem;
+    padding: 0.85rem 1rem;
+    border-radius: 0.55rem;
+    background: #f4f4f2;
+    color: #111;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .calecon-offer__summary strong {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .calecon-offer__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    width: 100%;
+    min-height: 3.3rem;
+    margin-top: 0.75rem;
+    padding: 0.85rem 1.25rem;
+    border: 1px solid #f00000;
+    border-radius: 0;
+    background: #f00000;
+    color: #fff;
+    font: inherit;
+    font-weight: 800;
+    letter-spacing: 0.015em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgb(255 0 0 / 25%);
+    transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+  }
+
+  .calecon-offer__button:hover:not(:disabled) {
+    border-color: #111;
+    background: #111;
+    transform: translateY(-1px);
+  }
+
+  .calecon-offer__button:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 3px;
+  }
+
+  .calecon-offer__button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .calecon-offer__spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgb(255 255 255 / 45%);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: calecon-offer-spin 650ms linear infinite;
+  }
+
+  .calecon-offer__note,
+  .calecon-offer__message {
+    margin: 0.55rem 0 0;
+    color: #6a6a6a;
+    font-size: 0.72rem;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .calecon-offer__message[data-error='true'] {
+    color: #b42318;
+    font-weight: 700;
+  }
+
+  @keyframes calecon-offer-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (max-width: 480px) {
+    .calecon-offer__tier {
+      grid-template-columns: 1.15rem minmax(0, 1fr) auto;
+      gap: 0.6rem;
+      padding-inline: 0.8rem;
+    }
+
+    .calecon-offer__price {
+      font-size: 0.92rem;
+    }
+
+    .calecon-offer__size-row {
+      grid-template-columns: 1fr;
+      gap: 0.45rem;
+    }
+
+    .calecon-offer__size-row legend,
+    .calecon-offer__size-options {
+      grid-column: 1;
+      grid-row: auto;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .calecon-offer__tier,
+    .calecon-offer__button,
+    .calecon-offer__size-option span {
+      transition: none;
+    }
+
+    .calecon-offer__spinner {
+      animation-duration: 1.5s;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class CaleconOffer extends HTMLElement {
+    connectedCallback() {
+      this.config = JSON.parse(this.querySelector('[data-offer-config]').textContent);
+      this.submitButton = this.querySelector('[data-offer-submit]');
+      this.buttonText = this.querySelector('[data-offer-button-text]');
+      this.spinner = this.querySelector('.calecon-offer__spinner');
+      this.message = this.querySelector('[data-offer-message]');
+      this.total = this.querySelector('[data-offer-total]');
+      this.translations = this.readTranslations();
+      this.section = this.closest('.shopify-section');
+      this.onChange = this.handleChange.bind(this);
+      this.onSubmit = this.addOffer.bind(this);
+      this.onVariantUpdate = this.handleVariantUpdate.bind(this);
+      this.addEventListener('change', this.onChange);
+      this.submitButton.addEventListener('click', this.onSubmit);
+      this.section?.addEventListener('variant:update', this.onVariantUpdate);
+      this.render();
+    }
+
+    disconnectedCallback() {
+      this.removeEventListener('change', this.onChange);
+      this.submitButton?.removeEventListener('click', this.onSubmit);
+      this.section?.removeEventListener('variant:update', this.onVariantUpdate);
+    }
+
+    readTranslations() {
+      const source = this.querySelector('[data-offer-translations]')?.content;
+      return {
+        add: source?.querySelector('[data-add]')?.textContent.trim() || '',
+        adding: source?.querySelector('[data-adding]')?.textContent.trim() || '',
+        added: source?.querySelector('[data-added]')?.textContent.trim() || '',
+        error: source?.querySelector('[data-error]')?.textContent.trim() || '',
+        unavailable: source?.querySelector('[data-unavailable]')?.textContent.trim() || '',
+      };
+    }
+
+    get tier() {
+      return Number(this.querySelector('[data-offer-tier]:checked')?.value || 1);
+    }
+
+    get packRows() {
+      return Array.from(this.querySelectorAll('[data-pack-row]'));
+    }
+
+    selectedPackVariantIds() {
+      return this.packRows
+        .slice(0, this.tier)
+        .map((row) => Number(row.querySelector('[data-pack-variant]:checked')?.value))
+        .filter(Boolean);
+    }
+
+    variantById(id) {
+      return this.config.variants.find((variant) => Number(variant.id) === Number(id));
+    }
+
+    money(cents) {
+      return new Intl.NumberFormat(this.config.locale, {
+        style: 'currency',
+        currency: this.config.currency,
+      }).format(cents / 100);
+    }
+
+    handleChange(event) {
+      if (!event.target.matches('[data-offer-tier], [data-pack-variant]')) return;
+      this.render();
+    }
+
+    handleVariantUpdate(event) {
+      if (String(event.detail?.data?.productId) !== String(this.dataset.productId)) return;
+      const variant = event.detail?.resource;
+      if (!variant) return;
+      this.config.variantId = variant.id;
+      this.config.variantAvailable = Boolean(variant.available);
+      if (Number.isFinite(Number(variant.price))) this.config.unitPrice = Number(variant.price);
+      const configuredVariant = this.variantById(variant.id);
+      if (configuredVariant) {
+        configuredVariant.available = Boolean(variant.available);
+        if (Number.isFinite(Number(variant.price))) configuredVariant.price = Number(variant.price);
+      }
+      this.querySelectorAll('[data-pack-variant]').forEach((input) => {
+        if (Number(input.value) !== Number(variant.id)) return;
+        input.disabled = !Boolean(variant.available);
+      });
+      const firstPackInput = this.packRows[0]?.querySelector(`[data-pack-variant][value="${variant.id}"]`);
+      if (firstPackInput && !firstPackInput.disabled) firstPackInput.checked = true;
+      this.render();
+    }
+
+    offerAvailable() {
+      const selectedVariants = this.selectedPackVariantIds();
+      if (selectedVariants.length !== this.tier) return false;
+      if (selectedVariants.some((id) => !this.variantById(id)?.available)) return false;
+      if (this.tier >= 2 && (!this.config.gift.id || !this.config.gift.available)) return false;
+      if (this.tier >= 3 && (!this.config.ebook.id || !this.config.ebook.available)) return false;
+      return true;
+    }
+
+    render() {
+      const tier = this.tier;
+      this.packRows.forEach((row, index) => {
+        row.hidden = index >= tier;
+      });
+      const total = this.selectedPackVariantIds().reduce((sum, id) => {
+        return sum + Number(this.variantById(id)?.price || this.config.unitPrice);
+      }, 0);
+      this.total.textContent = this.money(total);
+      this.submitButton.disabled = !this.offerAvailable();
+      this.message.hidden = this.offerAvailable();
+      if (!this.offerAvailable()) {
+        this.message.dataset.error = 'true';
+        this.message.textContent = this.translations.unavailable;
+      }
+    }
+
+    cartItems() {
+      const tier = this.tier;
+      const offer = `calecons-tier-${tier}`;
+      const quantitiesByVariant = new Map();
+      this.selectedPackVariantIds().forEach((variantId) => {
+        quantitiesByVariant.set(variantId, (quantitiesByVariant.get(variantId) || 0) + 1);
+      });
+      const items = Array.from(quantitiesByVariant, ([variantId, quantity]) => ({
+        id: variantId,
+        quantity,
+        properties: { _offre_calecons: offer },
+      }));
+      if (tier >= 2) {
+        items.push({
+          id: Number(this.config.gift.id),
+          quantity: 1,
+          properties: { _offre_calecons: offer, _cadeau_calecons: 'ghassoul' },
+        });
+      }
+      if (tier >= 3) {
+        items.push({
+          id: Number(this.config.ebook.id),
+          quantity: 1,
+          properties: { _offre_calecons: offer, _cadeau_calecons: 'ebook' },
+        });
+      }
+      return items;
+    }
+
+    async addOffer() {
+      if (!this.offerAvailable() || this.submitButton.disabled) return;
+      this.submitButton.disabled = true;
+      this.submitButton.setAttribute('aria-busy', 'true');
+      this.spinner.hidden = false;
+      this.buttonText.textContent = this.translations.adding;
+      this.message.hidden = true;
+
+      const sectionIds = Array.from(document.querySelectorAll('cart-items-component'))
+        .map((component) => component.dataset.sectionId)
+        .filter(Boolean);
+
+      try {
+        const response = await fetch(`${window.Shopify?.routes?.root || '/'}cart/add.js`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            items: this.cartItems(),
+            sections: sectionIds,
+            sections_url: window.location.pathname,
+          }),
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.description || result.message || this.translations.error);
+
+        this.buttonText.textContent = this.translations.added;
+        document.dispatchEvent(new CustomEvent('cart:update', {
+          bubbles: true,
+          detail: {
+            data: {
+              source: 'calecon-offer',
+              itemCount: this.cartItems().reduce((total, item) => total + item.quantity, 0),
+              productId: this.dataset.productId,
+              sections: result.sections,
+            },
+          },
+        }));
+      } catch (error) {
+        this.message.dataset.error = 'true';
+        this.message.textContent = error.message || this.translations.error;
+        this.message.hidden = false;
+        this.buttonText.textContent = this.translations.error;
+      } finally {
+        this.submitButton.removeAttribute('aria-busy');
+        this.spinner.hidden = true;
+        window.setTimeout(() => {
+          this.submitButton.disabled = !this.offerAvailable();
+          if (this.offerAvailable()) this.buttonText.textContent = this.translations.add;
+        }, 1800);
+      }
+    }
+  }
+
+  if (!customElements.get('calecon-offer')) customElements.define('calecon-offer', CaleconOffer);
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:names.calecon_offer",
+  "tag": null,
+  "settings": [
+    {
+      "type": "product",
+      "id": "gift_product",
+      "label": "t:settings.gift_product"
+    },
+    {
+      "type": "product",
+      "id": "ebook_product",
+      "label": "t:settings.ebook_product"
+    },
+    {
+      "type": "range",
+      "id": "initial_tier",
+      "label": "t:settings.initial_tier",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.calecon_offer",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

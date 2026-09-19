@@ -1,0 +1,893 @@
+{%- comment -%}
+  Section: product-scroll-reveal.liquid
+  Scroll-driven canvas animation — product video opens to reveal interior.
+  Frames: scroll-rev-0001.webp → scroll-rev-0121.webp (upload to theme Assets)
+  Dependencies: GSAP 3 + ScrollTrigger (loaded via CDN automatically)
+{%- endcomment -%}
+
+{%- assign section_height = section.settings.section_height | append: 'vh' -%}
+
+<div class="prs"
+     id="prs-{{ section.id }}"
+     data-section-id="{{ section.id }}"
+     style="height: {{ section_height }};">
+
+  {%- comment -%} Sticky viewport — stays visible during entire scroll range {%- endcomment -%}
+  <div class="prs__sticky">
+
+    {%- comment -%} Canvas — product frame animation {%- endcomment -%}
+    <canvas class="prs__canvas" id="prs-canvas-{{ section.id }}"></canvas>
+
+    {%- comment -%} Dark overlay — fades in during stats section {%- endcomment -%}
+    <div class="prs__overlay" id="prs-overlay-{{ section.id }}"></div>
+
+    {%- comment -%} Background marquee text {%- endcomment -%}
+    <div class="prs__marquee" id="prs-marquee-{{ section.id }}" aria-hidden="true">
+      <span class="prs__marquee-text">
+        {{- section.settings.marquee_text -}}&nbsp;&nbsp;&nbsp;
+        {{- section.settings.marquee_text -}}&nbsp;&nbsp;&nbsp;
+        {{- section.settings.marquee_text -}}&nbsp;&nbsp;&nbsp;
+        {{- section.settings.marquee_text -}}
+      </span>
+    </div>
+
+    {%- comment -%} ── SECTION 1 : Intro (left) ── {%- endcomment -%}
+    <div class="prs__section prs__section--left"
+         data-enter="10" data-leave="28" data-animation="slide-left"
+         id="prs-s1-{{ section.id }}">
+      <div class="prs__inner">
+        {%- unless section.settings.s1_label == blank -%}
+          <span class="prs__label">{{ section.settings.s1_label }}</span>
+        {%- endunless -%}
+        {%- unless section.settings.s1_heading == blank -%}
+          <h2 class="prs__heading">{{ section.settings.s1_heading }}</h2>
+        {%- endunless -%}
+        {%- unless section.settings.s1_body == blank -%}
+          <p class="prs__body">{{ section.settings.s1_body }}</p>
+        {%- endunless -%}
+      </div>
+    </div>
+
+    {%- comment -%} ── SECTION 2 : Feature (right) ── {%- endcomment -%}
+    <div class="prs__section prs__section--right"
+         data-enter="32" data-leave="50" data-animation="slide-right"
+         id="prs-s2-{{ section.id }}">
+      <div class="prs__inner">
+        {%- unless section.settings.s2_label == blank -%}
+          <span class="prs__label">{{ section.settings.s2_label }}</span>
+        {%- endunless -%}
+        {%- unless section.settings.s2_heading == blank -%}
+          <h2 class="prs__heading">{{ section.settings.s2_heading }}</h2>
+        {%- endunless -%}
+        {%- unless section.settings.s2_body == blank -%}
+          <p class="prs__body">{{ section.settings.s2_body }}</p>
+        {%- endunless -%}
+      </div>
+    </div>
+
+    {%- comment -%} ── SECTION 3 : Stats (dark overlay, centré) ── {%- endcomment -%}
+    <div class="prs__section prs__section--stats"
+         data-enter="53" data-leave="72" data-animation="stagger-up"
+         data-overlay-enter="53" data-overlay-leave="72"
+         id="prs-s3-{{ section.id }}">
+      <div class="prs__stats-grid">
+
+        <div class="prs__stat">
+          <span class="prs__stat-num"
+                data-value="{{ section.settings.stat1_value }}"
+                data-decimals="{{ section.settings.stat1_decimals }}">0</span>
+          {%- unless section.settings.stat1_suffix == blank -%}
+            <span class="prs__stat-suffix">{{ section.settings.stat1_suffix }}</span>
+          {%- endunless -%}
+          <span class="prs__stat-label">{{ section.settings.stat1_label }}</span>
+        </div>
+
+        <div class="prs__stat">
+          <span class="prs__stat-num"
+                data-value="{{ section.settings.stat2_value }}"
+                data-decimals="{{ section.settings.stat2_decimals }}">0</span>
+          {%- unless section.settings.stat2_suffix == blank -%}
+            <span class="prs__stat-suffix">{{ section.settings.stat2_suffix }}</span>
+          {%- endunless -%}
+          <span class="prs__stat-label">{{ section.settings.stat2_label }}</span>
+        </div>
+
+        <div class="prs__stat">
+          <span class="prs__stat-num"
+                data-value="{{ section.settings.stat3_value }}"
+                data-decimals="{{ section.settings.stat3_decimals }}">0</span>
+          {%- unless section.settings.stat3_suffix == blank -%}
+            <span class="prs__stat-suffix">{{ section.settings.stat3_suffix }}</span>
+          {%- endunless -%}
+          <span class="prs__stat-label">{{ section.settings.stat3_label }}</span>
+        </div>
+
+      </div>
+    </div>
+
+    {%- comment -%} ── SECTION 4 : CTA (persist after scroll) ── {%- endcomment -%}
+    <div class="prs__section prs__section--cta"
+         data-enter="76" data-leave="100" data-animation="fade-up"
+         data-persist="true"
+         id="prs-s4-{{ section.id }}">
+      <div class="prs__inner prs__inner--center">
+        {%- unless section.settings.cta_heading == blank -%}
+          <h2 class="prs__heading prs__heading--cta">{{ section.settings.cta_heading }}</h2>
+        {%- endunless -%}
+        {%- unless section.settings.cta_text == blank -%}
+          <a class="prs__cta-btn" href="{{ section.settings.cta_url }}">
+            {{ section.settings.cta_text }}
+          </a>
+        {%- endunless -%}
+      </div>
+    </div>
+
+  </div>{%- comment -%} /.prs__sticky {%- endcomment -%}
+</div>{%- comment -%} /.prs {%- endcomment -%}
+
+{%- comment -%}
+  Frame URLs — Liquid generates the asset_url for each frame.
+  Shopify for-loops are limited to 50 for arrays; numeric ranges have no limit,
+  but we split into 3 loops as a safe belt-and-suspenders measure.
+{%- endcomment -%}
+<script type="application/json" id="prs-frames-{{ section.id }}">
+[
+  {%- for i in (1..50) -%}
+    {%- assign padded = i | prepend: '000' | slice: -4, 4 -%}
+    "{{ 'scroll-rev-' | append: padded | append: '.webp' | asset_url }}"
+    {%- unless forloop.last -%},{%- endunless -%}
+  {%- endfor -%},
+  {%- for i in (51..100) -%}
+    {%- assign padded = i | prepend: '000' | slice: -4, 4 -%}
+    "{{ 'scroll-rev-' | append: padded | append: '.webp' | asset_url }}"
+    {%- unless forloop.last -%},{%- endunless -%}
+  {%- endfor -%},
+  {%- for i in (101..121) -%}
+    {%- assign padded = i | prepend: '000' | slice: -4, 4 -%}
+    "{{ 'scroll-rev-' | append: padded | append: '.webp' | asset_url }}"
+    {%- unless forloop.last -%},{%- endunless -%}
+  {%- endfor -%}
+]
+</script>
+
+{% stylesheet %}
+
+/* ─── Outer section — creates the scroll space ─────────────────── */
+.prs {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ─── Sticky viewport ───────────────────────────────────────────── */
+.prs__sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+/* ─── Canvas ────────────────────────────────────────────────────── */
+.prs__canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  will-change: contents;
+}
+
+/* ─── Dark overlay ──────────────────────────────────────────────── */
+.prs__overlay {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.05s linear;
+}
+
+/* ─── Background marquee ────────────────────────────────────────── */
+.prs__marquee {
+  position: absolute;
+  bottom: 12vh;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  z-index: 3;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.prs__marquee-text {
+  display: block;
+  white-space: nowrap;
+  font-size: 12vw;
+  font-weight: 900;
+  color: rgba(0, 0, 0, 0.06);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  will-change: transform;
+  line-height: 1;
+}
+
+/* ─── Content sections ──────────────────────────────────────────── */
+.prs__section {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  z-index: 4;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.prs__section--left {
+  padding-left: 5vw;
+  padding-right: 58vw;
+}
+
+.prs__section--right {
+  padding-left: 58vw;
+  padding-right: 5vw;
+}
+
+.prs__inner {
+  max-width: 36vw;
+}
+
+/* ─── Stats section ─────────────────────────────────────────────── */
+.prs__section--stats {
+  padding: 0 5vw;
+  pointer-events: none;
+}
+
+.prs__stats-grid {
+  display: flex;
+  justify-content: center;
+  gap: 8vw;
+  position: relative;
+  z-index: 5;
+}
+
+.prs__stat {
+  text-align: center;
+}
+
+.prs__stat-num {
+  display: block;
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.prs__stat-suffix {
+  font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+  font-weight: 700;
+  color: #ffffff;
+  margin-left: 0.15em;
+}
+
+.prs__stat-label {
+  display: block;
+  font-size: clamp(0.65rem, 0.9vw, 0.8rem);
+  color: rgba(255, 255, 255, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  margin-top: 0.8rem;
+}
+
+/* ─── CTA section ───────────────────────────────────────────────── */
+.prs__section--cta {
+  padding: 0 10vw;
+}
+
+.prs__inner--center {
+  max-width: none;
+  text-align: center;
+  width: 100%;
+}
+
+/* ─── Typography ────────────────────────────────────────────────── */
+.prs__label {
+  display: block;
+  font-size: clamp(0.6rem, 0.75vw, 0.75rem);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: rgba(0, 0, 0, 0.45);
+  margin-bottom: 1rem;
+}
+
+.prs__heading {
+  font-size: clamp(1.8rem, 3.5vw, 3.2rem);
+  font-weight: 800;
+  color: #111111;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0 0 1.25rem;
+}
+
+.prs__heading--cta {
+  font-size: clamp(2.2rem, 5vw, 4.5rem);
+  margin-bottom: 2.5rem;
+}
+
+.prs__body {
+  font-size: clamp(0.85rem, 1.1vw, 1rem);
+  color: rgba(0, 0, 0, 0.65);
+  line-height: 1.75;
+  margin: 0;
+}
+
+.prs__cta-btn {
+  display: inline-block;
+  padding: 1rem 3.5rem;
+  background: #111111;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: clamp(0.75rem, 0.9vw, 0.9rem);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.prs__cta-btn:hover {
+  opacity: 0.82;
+}
+
+/* ─── Mobile ────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .prs__section--left,
+  .prs__section--right {
+    padding: 0 1.25rem;
+  }
+
+  .prs__inner {
+    max-width: 100%;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding: 1.5rem;
+    border-radius: 10px;
+  }
+
+  .prs__marquee-text {
+    font-size: 20vw;
+  }
+
+  .prs__stats-grid {
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .prs__section--cta {
+    padding: 0 1.5rem;
+  }
+}
+
+{% endstylesheet %}
+
+{% javascript %}
+
+(function () {
+  'use strict';
+
+  /* ── Config ────────────────────────────────────────────────────── */
+  var FRAME_SPEED = 2.8;   // higher = animation finishes earlier in scroll
+  var IMAGE_SCALE = 0.88;  // 0.82–0.90: breathing room around product
+  var GSAP_CDN = 'https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js';
+  var ST_CDN   = 'https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js';
+
+  /* ── Script loader (deduped) ───────────────────────────────────── */
+  function loadScript(src) {
+    return new Promise(function (resolve) {
+      if (document.querySelector('script[src="' + src + '"]')) {
+        resolve(); return;
+      }
+      var s = document.createElement('script');
+      s.src = src;
+      s.onload = resolve;
+      s.onerror = resolve; // fail silently — animation just won't play
+      document.head.appendChild(s);
+    });
+  }
+
+  /* ── Zero-pad helper ───────────────────────────────────────────── */
+  function pad4(n) {
+    return ('000' + n).slice(-4);
+  }
+
+  /* ── Init one section instance ─────────────────────────────────── */
+  function initSection(sectionEl) {
+    var sid     = sectionEl.dataset.sectionId;
+    var canvas  = document.getElementById('prs-canvas-' + sid);
+    var overlay = document.getElementById('prs-overlay-' + sid);
+    var marquee = document.getElementById('prs-marquee-' + sid);
+    var dataEl  = document.getElementById('prs-frames-' + sid);
+
+    if (!canvas || !dataEl) return;
+
+    var ctx         = canvas.getContext('2d');
+    var frameUrls   = JSON.parse(dataEl.textContent || dataEl.innerHTML);
+    var FRAME_COUNT = frameUrls.length;
+    var frames      = new Array(FRAME_COUNT);
+    var currentFrame = 0;
+    var bgColor     = '#ffffff';
+    var dpr         = window.devicePixelRatio || 1;
+
+    /* ── Canvas sizing ───────────────────────────────────────────── */
+    function resizeCanvas() {
+      var parent = canvas.parentElement;
+      var w = parent.clientWidth;
+      var h = parent.clientHeight;
+      canvas.width  = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width  = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      drawFrame(currentFrame);
+    }
+
+    /* ── Draw a single frame ─────────────────────────────────────── */
+    function drawFrame(idx) {
+      var img = frames[idx];
+      if (!img || !img.complete || !img.naturalWidth) return;
+      var cw = canvas.width / dpr;
+      var ch = canvas.height / dpr;
+      var iw = img.naturalWidth;
+      var ih = img.naturalHeight;
+      var scale = Math.max(cw / iw, ch / ih) * IMAGE_SCALE;
+      var dw = iw * scale;
+      var dh = ih * scale;
+      var dx = (cw - dw) / 2;
+      var dy = (ch - dh) / 2;
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(0, 0, cw, ch);
+      ctx.drawImage(img, dx, dy, dw, dh);
+    }
+
+    /* ── Sample background color from canvas edge ────────────────── */
+    function sampleBg(idx) {
+      if (idx % 20 !== 0) return;
+      try {
+        var d = ctx.getImageData(2, 2, 1, 1).data;
+        bgColor = 'rgb(' + d[0] + ',' + d[1] + ',' + d[2] + ')';
+      } catch (e) {}
+    }
+
+    /* ── Preload frames ──────────────────────────────────────────── */
+    function preloadFrames() {
+      // First 12 — fast first paint
+      for (var i = 0; i < Math.min(12, FRAME_COUNT); i++) {
+        (function (idx) {
+          var img = new Image();
+          img.onload = function () {
+            if (idx === 0) { resizeCanvas(); drawFrame(0); }
+          };
+          img.src = frameUrls[idx];
+          frames[idx] = img;
+        }(i));
+      }
+      // Rest — background load
+      for (var j = 12; j < FRAME_COUNT; j++) {
+        (function (idx) {
+          var img = new Image();
+          img.src = frameUrls[idx];
+          frames[idx] = img;
+        }(j));
+      }
+    }
+
+    /* ── Counter animation ───────────────────────────────────────── */
+    function animateCounter(el) {
+      var target   = parseFloat(el.dataset.value) || 0;
+      var decimals = parseInt(el.dataset.decimals || '0', 10);
+      var start    = performance.now();
+      var duration = 2000;
+      var startVal = 0;
+
+      function tick(now) {
+        var elapsed  = Math.min(now - start, duration);
+        var progress = elapsed / duration;
+        // ease out cubic
+        progress = 1 - Math.pow(1 - progress, 3);
+        var val = startVal + (target - startVal) * progress;
+        el.textContent = decimals > 0 ? val.toFixed(decimals) : Math.round(val).toString();
+        if (elapsed < duration) requestAnimationFrame(tick);
+        else el.textContent = decimals > 0 ? target.toFixed(decimals) : target.toString();
+      }
+      requestAnimationFrame(tick);
+    }
+
+    /* ── GSAP / ScrollTrigger setup ──────────────────────────────── */
+    function initST() {
+      var gsap = window.gsap;
+      var ST   = window.ScrollTrigger;
+      gsap.registerPlugin(ST);
+
+      /* Frame scroll binding */
+      ST.create({
+        trigger: sectionEl,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 0.15,
+        onUpdate: function (self) {
+          var acc = Math.min(self.progress * FRAME_SPEED, 1);
+          var idx = Math.min(Math.floor(acc * FRAME_COUNT), FRAME_COUNT - 1);
+          if (idx !== currentFrame) {
+            currentFrame = idx;
+            sampleBg(idx);
+            requestAnimationFrame(function () { drawFrame(currentFrame); });
+          }
+        }
+      });
+
+      /* Dark overlay */
+      var overlaySections = sectionEl.querySelectorAll('[data-overlay-enter]');
+      overlaySections.forEach(function (sec) {
+        var enter = parseFloat(sec.dataset.overlayEnter) / 100;
+        var leave = parseFloat(sec.dataset.overlayLeave) / 100;
+        var fade  = 0.04;
+        ST.create({
+          trigger: sectionEl,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: true,
+          onUpdate: function (self) {
+            var p = self.progress;
+            var op = 0;
+            if (p >= enter - fade && p < enter)        op = (p - (enter - fade)) / fade;
+            else if (p >= enter && p <= leave)          op = 0.9;
+            else if (p > leave && p <= leave + fade)    op = 0.9 * (1 - (p - leave) / fade);
+            overlay.style.opacity = op;
+          }
+        });
+      });
+
+      /* Marquee */
+      if (marquee) {
+        var mText = marquee.querySelector('.prs__marquee-text');
+        gsap.to(mText, {
+          xPercent: -25,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: sectionEl,
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: true
+          }
+        });
+        ST.create({
+          trigger: sectionEl,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: true,
+          onUpdate: function (self) {
+            var p  = self.progress;
+            var op = 0;
+            if (p > 0.08 && p < 0.92) {
+              op = Math.min(1, Math.min((p - 0.08) / 0.06, (0.92 - p) / 0.06)) * 0.9;
+            }
+            marquee.style.opacity = op;
+          }
+        });
+      }
+
+      /* Content sections */
+      var contentSections = sectionEl.querySelectorAll('.prs__section');
+      contentSections.forEach(function (sec) {
+        setupAnim(sec);
+      });
+
+      /* Counters */
+      var countersTriggered = {};
+      sectionEl.querySelectorAll('.prs__stat-num').forEach(function (el) {
+        var statSec = el.closest('.prs__section');
+        var enter   = parseFloat(statSec.dataset.enter) / 100;
+        ST.create({
+          trigger: sectionEl,
+          start: 'top top',
+          end: 'bottom bottom',
+          onUpdate: function (self) {
+            if (!countersTriggered[el.id || el.dataset.value] && self.progress >= enter - 0.03) {
+              countersTriggered[el.id || el.dataset.value] = true;
+              animateCounter(el);
+            }
+          }
+        });
+      });
+
+      /* Resize */
+      window.addEventListener('resize', function () {
+        resizeCanvas();
+        ST.refresh();
+      });
+    }
+
+    /* ── Section animation setup ─────────────────────────────────── */
+    function setupAnim(sec) {
+      var gsap    = window.gsap;
+      var ST      = window.ScrollTrigger;
+      var type    = sec.dataset.animation;
+      var persist = sec.dataset.persist === 'true';
+      var enter   = parseFloat(sec.dataset.enter) / 100;
+      var leave   = parseFloat(sec.dataset.leave) / 100;
+      var fade    = 0.03;
+
+      var children = Array.from(sec.querySelectorAll(
+        '.prs__label, .prs__heading, .prs__body, .prs__stat, .prs__cta-btn'
+      ));
+
+      var tl = gsap.timeline({ paused: true });
+
+      if (type === 'slide-left') {
+        tl.from(children, { x: -70, opacity: 0, stagger: 0.13, duration: 0.85, ease: 'power3.out' });
+      } else if (type === 'slide-right') {
+        tl.from(children, { x: 70,  opacity: 0, stagger: 0.13, duration: 0.85, ease: 'power3.out' });
+      } else if (type === 'stagger-up') {
+        tl.from(children, { y: 55,  opacity: 0, stagger: 0.14, duration: 0.80, ease: 'power3.out' });
+      } else {
+        // fade-up (default)
+        tl.from(children, { y: 45,  opacity: 0, stagger: 0.12, duration: 0.85, ease: 'power3.out' });
+      }
+
+      var visible = false;
+
+      ST.create({
+        trigger: sectionEl,
+        start: 'top top',
+        end: 'bottom bottom',
+        onUpdate: function (self) {
+          var p       = self.progress;
+          var inRange = p >= enter - fade && (persist ? true : p <= leave + fade);
+
+          if (inRange && !visible) {
+            visible = true;
+            sec.style.opacity        = '1';
+            sec.style.pointerEvents  = persist ? 'auto' : 'none';
+            tl.play();
+          } else if (!inRange && visible && !persist) {
+            visible = false;
+            sec.style.opacity = '0';
+            tl.reverse();
+          }
+        }
+      });
+    }
+
+    /* ── Boot ────────────────────────────────────────────────────── */
+    function boot() {
+      resizeCanvas();
+      preloadFrames();
+
+      if (window.gsap && window.ScrollTrigger) {
+        initST();
+      } else {
+        loadScript(GSAP_CDN).then(function () {
+          return loadScript(ST_CDN);
+        }).then(function () {
+          initST();
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot);
+    } else {
+      boot();
+    }
+  }
+
+  /* ── Find & initialize all instances on page ───────────────────── */
+  document.querySelectorAll('.prs[data-section-id]').forEach(initSection);
+
+  /* ── Shopify theme editor: re-init on live section reload ──────── */
+  if (window.Shopify && window.Shopify.designMode) {
+    document.addEventListener('shopify:section:load', function (e) {
+      var el = e.target.querySelector('.prs[data-section-id]');
+      if (el) initSection(el);
+    });
+  }
+
+}());
+
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Product Scroll Reveal",
+  "tag": "div",
+  "class": "prs-section-wrapper",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section height"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "label": "Scroll distance (vh)",
+      "min": 500,
+      "max": 1400,
+      "step": 50,
+      "default": 900,
+      "info": "Total scroll height of the section. More vh = slower / more dramatic scroll effect."
+    },
+    {
+      "type": "text",
+      "id": "marquee_text",
+      "label": "Background marquee text",
+      "default": "DISCOVER THE INSIDE"
+    },
+    {
+      "type": "header",
+      "content": "Section 1 — Intro (left side)"
+    },
+    {
+      "type": "text",
+      "id": "s1_label",
+      "label": "Label",
+      "default": "001 / Overview"
+    },
+    {
+      "type": "text",
+      "id": "s1_heading",
+      "label": "Heading",
+      "default": "Engineered from the inside out."
+    },
+    {
+      "type": "textarea",
+      "id": "s1_body",
+      "label": "Body text",
+      "default": "Every detail designed with precision. Scroll to reveal what sets it apart."
+    },
+    {
+      "type": "header",
+      "content": "Section 2 — Feature (right side)"
+    },
+    {
+      "type": "text",
+      "id": "s2_label",
+      "label": "Label",
+      "default": "002 / Craftsmanship"
+    },
+    {
+      "type": "text",
+      "id": "s2_heading",
+      "label": "Heading",
+      "default": "Premium materials. Zero compromise."
+    },
+    {
+      "type": "textarea",
+      "id": "s2_body",
+      "label": "Body text",
+      "default": "Built to last. Designed to impress. Discover the quality that defines the difference."
+    },
+    {
+      "type": "header",
+      "content": "Stats"
+    },
+    {
+      "type": "number",
+      "id": "stat1_value",
+      "label": "Stat 1 — value",
+      "default": 24
+    },
+    {
+      "type": "text",
+      "id": "stat1_suffix",
+      "label": "Stat 1 — suffix",
+      "default": "h"
+    },
+    {
+      "type": "text",
+      "id": "stat1_label",
+      "label": "Stat 1 — label",
+      "default": "Battery life"
+    },
+    {
+      "type": "select",
+      "id": "stat1_decimals",
+      "label": "Stat 1 — decimal places",
+      "options": [
+        { "value": "0", "label": "None (123)" },
+        { "value": "1", "label": "One (12.3)" },
+        { "value": "2", "label": "Two (1.23)" }
+      ],
+      "default": "0"
+    },
+    {
+      "type": "number",
+      "id": "stat2_value",
+      "label": "Stat 2 — value",
+      "default": 99
+    },
+    {
+      "type": "text",
+      "id": "stat2_suffix",
+      "label": "Stat 2 — suffix",
+      "default": "%"
+    },
+    {
+      "type": "text",
+      "id": "stat2_label",
+      "label": "Stat 2 — label",
+      "default": "Customer satisfaction"
+    },
+    {
+      "type": "select",
+      "id": "stat2_decimals",
+      "label": "Stat 2 — decimal places",
+      "options": [
+        { "value": "0", "label": "None (123)" },
+        { "value": "1", "label": "One (12.3)" },
+        { "value": "2", "label": "Two (1.23)" }
+      ],
+      "default": "0"
+    },
+    {
+      "type": "number",
+      "id": "stat3_value",
+      "label": "Stat 3 — value",
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "stat3_suffix",
+      "label": "Stat 3 — suffix",
+      "default": "yr"
+    },
+    {
+      "type": "text",
+      "id": "stat3_label",
+      "label": "Stat 3 — label",
+      "default": "Warranty"
+    },
+    {
+      "type": "select",
+      "id": "stat3_decimals",
+      "label": "Stat 3 — decimal places",
+      "options": [
+        { "value": "0", "label": "None (123)" },
+        { "value": "1", "label": "One (12.3)" },
+        { "value": "2", "label": "Two (1.23)" }
+      ],
+      "default": "0"
+    },
+    {
+      "type": "header",
+      "content": "CTA"
+    },
+    {
+      "type": "text",
+      "id": "cta_heading",
+      "label": "Heading",
+      "default": "Ready to experience it?"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button text",
+      "default": "Shop now"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "Button link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Scroll Reveal"
+    }
+  ]
+}
+{% endschema %}

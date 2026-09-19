@@ -1,0 +1,972 @@
+{% comment %}
+  Offre Ghassoul — jauge de paliers de poids.
+
+  SOURCE DE VÉRITÉ : le metafield shop `custom.paliers_offre`.
+  Seuils, remises, nombre de cadeaux et liste blanche viennent de là et de
+  nulle part ailleurs — la Discount Function lit exactement le même metafield.
+  Aucun seuil ni montant n'est écrit en dur dans ce fichier.
+
+  Convention d'ordre des cadeaux (load-bearing) :
+  `cadeaux_autorises` est ordonné [cadeau1, cadeau2, cadeau3, subst1, subst2,
+  subst3]. Le palier qui autorise N cadeaux offre les N premiers emplacements.
+  Chaque bloc de section déclare le produit d'un emplacement et son substitut ;
+  le substitut prend le relais quand le principal est en rupture.
+
+  Les blocs servent à la PRÉSENTATION (titre, visuel, prix barré). L'AUTORISATION
+  reste le metafield : un produit choisi en bloc mais absent de
+  `cadeaux_autorises` n'est jamais poussé au panier.
+{% endcomment %}
+
+{%- liquid
+  assign config = shop.metafields.custom.paliers_offre.value
+  assign paliers = config.paliers
+  assign autorises = config.cadeaux_autorises
+  assign prix_unite = config.prix_unite_250g
+
+  assign config_ok = true
+  if paliers == blank or prix_unite == blank
+    assign config_ok = false
+  endif
+-%}
+
+{%- if config_ok == false -%}
+  {%- if request.design_mode -%}
+    <div style="padding:24px;border:2px solid #A42325;background:#fff;font-family:system-ui">
+      <strong>Offre Ghassoul — configuration absente.</strong><br>
+      Le metafield boutique <code>custom.paliers_offre</code> est vide ou invalide.
+      Renseigne-le (Paramètres → Métachamps → Boutique) avant d'utiliser cette section.
+    </div>
+  {%- endif -%}
+{%- else -%}
+
+{%- comment -%}
+  Diagnostic éditeur. Sans produit sélectionné, la section se rendait mais le
+  bouton restait grisé sans expliquer pourquoi — panne silencieuse constatée en
+  production le 06/09/2026. On compte ici les éléments réellement exploitables
+  pour pouvoir le dire au marchand.
+{%- endcomment -%}
+{%- liquid
+  assign vp = section.settings.produit_ghassoul
+  assign nb_variants_poids = 0
+  for v in vp.variants
+    if v.metafields.custom.poids_en_grammes.value != blank
+      assign nb_variants_poids = nb_variants_poids | plus: 1
+    endif
+  endfor
+
+  assign nb_cadeaux_ok = 0
+  assign nb_cadeaux_hors_liste = 0
+  for block in section.blocks
+    assign principal = block.settings.produit
+    assign substitut = block.settings.substitut
+    assign candidat = null
+    if principal != blank
+      assign candidat = principal
+    elsif substitut != blank
+      assign candidat = substitut
+    endif
+    if candidat != null
+      assign gid_c = 'gid://shopify/ProductVariant/' | append: candidat.selected_or_first_available_variant.id
+      if autorises contains gid_c
+        assign nb_cadeaux_ok = nb_cadeaux_ok | plus: 1
+      else
+        assign nb_cadeaux_hors_liste = nb_cadeaux_hors_liste | plus: 1
+      endif
+    endif
+  endfor
+-%}
+
+{%- if request.design_mode -%}
+  {%- if vp == blank or nb_variants_poids == 0 or nb_cadeaux_ok == 0 or nb_cadeaux_hors_liste > 0 -%}
+    <div style="margin:0 0 16px;padding:16px 18px;border:2px solid #A42325;background:#FFF6F6;font-family:system-ui;font-size:13px;line-height:1.55;border-radius:8px">
+      <strong style="font-size:14px">Offre Ghassoul — réglages incomplets</strong>
+      <ul style="margin:10px 0 0;padding-left:20px">
+        {%- if vp == blank -%}
+          <li><strong>Aucun produit Ghassoul sélectionné.</strong> Le bouton « Tout ajouter au panier » restera grisé. Réglage <em>Produit Ghassoul</em> ci-contre.</li>
+        {%- elsif nb_variants_poids == 0 -%}
+          <li><strong>Aucune variante de « {{ vp.title | escape }} » ne porte le métachamp <code>custom.poids_en_grammes</code>.</strong> Le bouton restera grisé. Vérifie que le métachamp est bien saisi sur chaque variante et que son accès Vitrines est activé.</li>
+        {%- endif -%}
+        {%- if nb_cadeaux_ok == 0 -%}
+          <li><strong>Aucun cadeau exploitable.</strong> Ajoute des blocs « Emplacement cadeau » et choisis un produit dans chacun.</li>
+        {%- endif -%}
+        {%- if nb_cadeaux_hors_liste > 0 -%}
+          <li><strong>{{ nb_cadeaux_hors_liste }} cadeau(x) ignoré(s)</strong> : le produit choisi ne figure pas dans <code>cadeaux_autorises</code> du métachamp boutique. Il ne sera jamais offert, même sélectionné ici.</li>
+        {%- endif -%}
+      </ul>
+    </div>
+  {%- endif -%}
+{%- endif -%}
+
+<script type="application/json" id="oz-config-{{ section.id }}" data-offre-ghassoul-config>
+{
+  "prixUnite250": {{ prix_unite | json }},
+  "devise": {{ config.devise | default: 'EUR' | json }},
+  "fraisPortCentimes": {{ section.settings.frais_port_centimes | default: 420 | json }},
+  "palierInitial": {{ section.settings.palier_initial | default: 2 | json }},
+  "paliers": [
+    {%- for p in paliers -%}
+      {
+        "seuil_g": {{ p.seuil_g | json }},
+        "remise_centimes": {{ p.remise_centimes | default: 0 | json }},
+        "cadeaux": {{ p.cadeaux | default: 0 | json }},
+        "port_offert": {{ p.port_offert | default: false | json }}
+      }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ],
+  "variants": {
+    {%- assign vp = section.settings.produit_ghassoul -%}
+    {%- for v in vp.variants -%}
+      {%- assign poids = v.metafields.custom.poids_en_grammes.value -%}
+      {%- if poids != blank -%}
+        "{{ poids }}": { "id": {{ v.id | json }}, "disponible": {{ v.available | json }} }
+        {%- unless forloop.last -%},{%- endunless -%}
+      {%- endif -%}
+    {%- endfor -%}
+  },
+  "cadeaux": [
+    {%- assign n = 0 -%}
+    {%- for block in section.blocks -%}
+      {%- liquid
+        assign principal = block.settings.produit
+        assign substitut = block.settings.substitut
+        assign choisi = null
+        assign remplace = false
+
+        if principal != blank and principal.selected_or_first_available_variant.available
+          assign choisi = principal
+        elsif substitut != blank and substitut.selected_or_first_available_variant.available
+          assign choisi = substitut
+          assign remplace = true
+        elsif principal != blank
+          assign choisi = principal
+        endif
+      -%}
+      {%- if choisi != null -%}
+        {%- assign v = choisi.selected_or_first_available_variant -%}
+        {%- assign gid = 'gid://shopify/ProductVariant/' | append: v.id -%}
+        {%- if autorises contains gid -%}
+          {%- if n > 0 -%},{%- endif -%}
+          {
+            "variantId": {{ v.id | json }},
+            "titre": {{ choisi.title | json }},
+            "prixCentimes": {{ v.price | json }},
+            "disponible": {{ v.available | json }},
+            "remplace": {{ remplace | json }},
+            "image": {{ choisi.featured_image | image_url: width: 160 | json }}
+          }
+          {%- assign n = n | plus: 1 -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+  ]
+}
+</script>
+
+<section
+  class="oz"
+  data-offre-ghassoul
+  data-config="oz-config-{{ section.id }}"
+  aria-labelledby="oz-titre-{{ section.id }}"
+  style="--oz-max:{{ section.settings.largeur_max | default: 620 }}px"
+>
+  <div class="oz__card">
+    <header class="oz__hero">
+      {%- assign hero = section.settings.produit_ghassoul -%}
+      {%- if hero.featured_image -%}
+        <img
+          class="oz__hero-img"
+          src="{{ hero.featured_image | image_url: width: 200 }}"
+          alt="{{ hero.featured_image.alt | escape }}"
+          width="78" height="78" loading="lazy"
+        >
+      {%- endif -%}
+      <div class="oz__hero-txt">
+        <p class="oz__kicker">— {{ section.settings.surtitre | escape }} —</p>
+        <h2 class="oz__titre" id="oz-titre-{{ section.id }}">{{ section.settings.titre | escape }}</h2>
+        <p class="oz__sous">{{ section.settings.sous_titre | escape }}</p>
+      </div>
+    </header>
+
+    <div class="oz__jauge">
+      <div class="oz__labels" data-oz-labels></div>
+
+      <div class="oz__piste">
+        <div class="oz__rail"><div class="oz__fill" data-oz-fill></div></div>
+        <div class="oz__pastilles" data-oz-pastilles aria-hidden="true"></div>
+        <input
+          class="oz-range"
+          type="range"
+          min="1"
+          max="{{ paliers.size }}"
+          step="1"
+          value="{{ section.settings.palier_initial | default: 2 }}"
+          data-oz-range
+          aria-label="{{ 'Quantité totale de ghassoul' | escape }}"
+        >
+      </div>
+
+      <div class="oz__crans" data-oz-crans></div>
+    </div>
+
+    <div class="oz__chiffres">
+      <div>
+        <p class="oz__poids" data-oz-poids></p>
+        <p class="oz__detail" data-oz-detail></p>
+      </div>
+      <div class="oz__prix-bloc">
+        <p class="oz__was" data-oz-was hidden></p>
+        <p class="oz__prix" data-oz-prix></p>
+        <p class="oz__kilo" data-oz-kilo></p>
+      </div>
+    </div>
+
+    <div class="oz__trophee" data-oz-trophee hidden>
+      <div class="oz__trophee-halo" aria-hidden="true"></div>
+      <div class="oz__trophee-in">
+        <div class="oz__trophee-txt">
+          <p class="oz__trophee-kicker">Palier maximum atteint</p>
+          <p class="oz__trophee-titre" data-oz-trophee-titre></p>
+          <p class="oz__trophee-desc" data-oz-trophee-desc></p>
+        </div>
+        <img class="oz__trophee-img" data-oz-trophee-img alt="" width="120" height="120" hidden>
+      </div>
+    </div>
+
+    <div class="oz__econ">
+      <span class="oz__econ-lbl">Économie totale</span>
+      <span class="oz__econ-val" data-oz-econ aria-live="polite"></span>
+    </div>
+
+    <ul class="oz__perks" data-oz-perks></ul>
+
+    <div class="oz__nudge" data-oz-nudge hidden><span data-oz-nudge-txt></span></div>
+
+    <div class="oz__cta-zone">
+      <button class="oz-cta" type="button" data-oz-cta>
+        <span data-oz-cta-txt>Tout ajouter au panier</span>
+        <span class="oz__spin" data-oz-spin hidden aria-hidden="true"></span>
+      </button>
+      <p class="oz__note" data-oz-note>{{ section.settings.note_pied | escape }}</p>
+      <p class="oz__err" data-oz-err role="alert" hidden></p>
+    </div>
+  </div>
+</section>
+
+{%- endif -%}
+
+{% comment %}
+  `stylesheet`, `javascript` et `schema` doivent rester à la racine du fichier :
+  Shopify refuse de les voir imbriqués dans un tag, y compris un `if` de garde.
+{% endcomment %}
+
+{% stylesheet %}
+[data-offre-ghassoul]{
+  --c-ink:#1A1A1A; --c-graphite:#212121; --c-red:#FF0000; --c-red-deep:#A42325;
+  --c-cream:#E8D5C7; --c-sand:#F6F2ED; --c-clay:#6B4A34; --c-clay-soft:#B08968;
+  --c-stone:#D6D0C7; --c-stone-2:#EDE9E3; --c-muted:#6E6A64;
+  --f-display:"Barlow Condensed",system-ui,sans-serif;
+  --r-card:18px; --r-card-sm:12px; --r-pill:68px;
+  --t-fast:.125s; --t-base:.15s; --t-med:.2s;
+  --ease:cubic-bezier(.33,1,.68,1);
+  --thumb:28px; --pad-gauge:14px; --tap:44px;
+  max-width:var(--oz-max); margin-inline:auto; color:var(--c-ink);
+}
+[data-offre-ghassoul] *{box-sizing:border-box}
+.oz__card{background:#fff;border:1px solid rgba(0,0,0,.10);border-radius:var(--r-card);box-shadow:0 18px 50px rgba(0,0,0,.08);overflow:hidden}
+
+.oz__hero{padding:16px 20px;border-bottom:1px solid var(--c-stone-2);display:flex;align-items:center;gap:14px}
+.oz__hero-img{flex:none;width:78px;height:78px;object-fit:cover;border:1px solid rgba(0,0,0,.12);background:var(--c-sand)}
+.oz__hero-txt{flex:1;min-width:0}
+.oz__kicker{margin:0 0 4px;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--c-clay)}
+.oz__titre{margin:0;font-family:var(--f-display);font-weight:700;font-size:26px;line-height:1;text-transform:uppercase}
+.oz__sous{margin:5px 0 0;font-size:11.5px;line-height:1.4;color:var(--c-muted)}
+
+.oz__jauge{padding:18px 20px 8px}
+.oz__labels,.oz__crans{display:flex;justify-content:space-between;padding:0 var(--pad-gauge)}
+.oz__labels{margin-bottom:6px}
+.oz__lab{width:44px;margin-inline:-22px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.oz__lab-txt{font-family:var(--f-display);font-size:10px;font-weight:700;letter-spacing:.06em;line-height:1;text-transform:uppercase;color:var(--c-stone);transition:color var(--t-med) var(--ease)}
+.oz__lab.is-done .oz__lab-txt{color:var(--c-ink)}
+
+.oz__piste{position:relative;height:var(--tap)}
+.oz__rail{position:absolute;left:var(--pad-gauge);right:var(--pad-gauge);top:50%;transform:translateY(-50%);height:10px;background:var(--c-stone-2);border-radius:var(--r-pill);overflow:hidden}
+.oz__fill{height:100%;width:0;background:linear-gradient(90deg,var(--c-clay) 0%,var(--c-clay-soft) 45%,var(--c-red) 100%);border-radius:var(--r-pill);transition:width var(--t-med) var(--ease)}
+[data-offre-ghassoul].is-dragging .oz__fill{transition-duration:0s}
+.oz__pastilles{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);display:flex;justify-content:space-between;padding:0 var(--pad-gauge);pointer-events:none}
+.oz__pastille-slot{width:44px;margin-inline:-22px;display:flex;justify-content:center}
+.oz__pastille{width:9px;height:9px;border-radius:50%;background:var(--c-stone);box-shadow:0 0 0 2px #fff;transition:background var(--t-med) var(--ease),width var(--t-med) var(--ease),height var(--t-med) var(--ease)}
+.oz__pastille.is-marque{width:13px;height:13px}
+.oz__pastille.is-done{background:var(--c-clay)}
+.oz__pastille.is-max{background:var(--c-red)}
+.oz__pastille.is-sel{width:0;height:0}
+
+.oz-range{-webkit-appearance:none;appearance:none;width:100%;height:var(--tap);background:transparent;margin:0;padding:0;display:block;position:relative;z-index:3;cursor:grab}
+.oz-range:active{cursor:grabbing}
+.oz-range::-webkit-slider-runnable-track{height:var(--tap);background:transparent;border:0}
+.oz-range::-moz-range-track{height:var(--tap);background:transparent;border:0}
+.oz-range::-webkit-slider-thumb{-webkit-appearance:none;height:var(--thumb);width:var(--thumb);margin-top:calc((var(--tap) - var(--thumb))/2);border-radius:50%;background:var(--c-red);border:3px solid #fff;box-shadow:0 0 0 1px var(--c-red-deep),0 2px 6px rgba(0,0,0,.35);transition:transform var(--t-fast) var(--ease)}
+.oz-range::-moz-range-thumb{height:var(--thumb);width:var(--thumb);border-radius:50%;background:var(--c-red);border:3px solid #fff;box-shadow:0 0 0 1px var(--c-red-deep),0 2px 6px rgba(0,0,0,.35);transition:transform var(--t-fast) var(--ease)}
+.oz-range:hover::-webkit-slider-thumb{transform:scale(1.08)}
+.oz-range:active::-webkit-slider-thumb{transform:scale(1.14)}
+.oz-range:focus{outline:none}
+.oz-range:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--c-red)}
+.oz-range:focus-visible::-moz-range-thumb{box-shadow:0 0 0 3px #fff,0 0 0 6px var(--c-red)}
+
+.oz__cran{width:44px;height:44px;margin-inline:-22px;padding:0;border:0;background:transparent;cursor:pointer;font-family:var(--f-display);font-size:13px;font-weight:600;line-height:1;text-transform:uppercase;color:var(--c-muted);transition:color var(--t-base) var(--ease)}
+.oz__cran.is-done{color:var(--c-ink)}
+.oz__cran[aria-pressed="true"]{color:var(--c-red);font-weight:800}
+.oz__cran:focus-visible{outline:3px solid var(--c-red);outline-offset:3px}
+
+.oz__chiffres{padding:6px 20px 18px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.oz__poids{margin:0;font-family:var(--f-display);font-size:38px;font-weight:800;line-height:.9;text-transform:uppercase}
+.oz__detail{margin:4px 0 0;font-size:12px;color:var(--c-muted);letter-spacing:.02em}
+.oz__prix-bloc{text-align:right}
+.oz__was{margin:0;font-size:13px;color:var(--c-muted);text-decoration:line-through}
+.oz__prix{margin:0;font-family:var(--f-display);font-size:34px;font-weight:800;line-height:1}
+.oz__kilo{margin:2px 0 0;font-size:11px;color:var(--c-muted)}
+
+.oz__trophee{margin:0 20px 16px;padding:18px;background:var(--c-graphite);border:1px solid var(--c-red-deep);border-radius:var(--r-card-sm);position:relative;overflow:hidden}
+.oz__trophee-halo{position:absolute;inset:-40% -10% auto auto;width:220px;height:220px;background:radial-gradient(circle,rgba(255,0,0,.22),transparent 65%);filter:blur(24px);pointer-events:none}
+.oz__trophee-in{position:relative;display:flex;align-items:flex-start;gap:16px}
+.oz__trophee-txt{flex:1;min-width:0}
+.oz__trophee-kicker{margin:0 0 8px;font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--c-red)}
+.oz__trophee-titre{margin:0;font-family:var(--f-display);font-size:40px;font-weight:800;line-height:.92;text-transform:uppercase;color:#fff}
+.oz__trophee-titre em{font-style:normal;color:var(--c-red);animation:oz-glow 3s ease-in-out infinite}
+.oz__trophee-desc{margin:8px 0 0;font-size:12px;line-height:1.5;color:rgba(255,255,255,.62);max-width:40ch}
+.oz__trophee-img{flex:none;width:120px;height:120px;object-fit:cover;border:1px solid var(--c-red-deep)}
+@keyframes oz-glow{0%,100%{text-shadow:0 0 10px rgba(255,0,0,.4)}50%{text-shadow:0 0 20px rgba(255,0,0,.8)}}
+
+.oz__econ{margin:0 20px 16px;padding:12px 14px;background:var(--c-ink);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.oz__econ-lbl{font-size:10px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.oz__econ-val{font-family:var(--f-display);font-size:26px;font-weight:800;line-height:1;color:var(--c-red);text-shadow:0 0 10px rgba(255,0,0,.4)}
+
+.oz__perks{list-style:none;margin:0;padding:0 20px 4px;display:flex;flex-direction:column;gap:2px}
+.oz__perk{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--c-stone-2);opacity:.45;transform:translateY(6px);transition:opacity var(--t-base) var(--ease),transform var(--t-base) var(--ease)}
+.oz__perk.is-done{opacity:1;transform:none}
+.oz__perk-slot{flex:none;position:relative;display:flex;width:22px;height:22px}
+.oz__perk-slot.has-img{width:46px;height:46px}
+.oz__perk-img{display:block;width:46px;height:46px;object-fit:cover;border:1px solid rgba(0,0,0,.12);background:var(--c-sand);filter:grayscale(1);transition:filter var(--t-med) var(--ease)}
+.oz__perk.is-done .oz__perk-img{filter:none}
+.oz__perk-badge{position:absolute;left:0;top:0;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--c-stone-2);color:var(--c-muted);box-shadow:0 0 0 2px #fff;font-size:12px;line-height:1;transition:background var(--t-med) var(--ease);transform:scale(1)}
+.oz__perk.is-done .oz__perk-badge{background:var(--c-clay);color:#fff}
+.oz__perk.is-done.is-max .oz__perk-badge{background:var(--c-red)}
+.oz__perk-corps{flex:1;min-width:0}
+.oz__perk-titre{display:block;font-family:var(--f-display);font-size:15px;font-weight:700;line-height:1.15;text-transform:uppercase;color:var(--c-muted)}
+.oz__perk.is-done .oz__perk-titre{color:var(--c-ink)}
+.oz__perk-desc{display:block;font-size:11.5px;line-height:1.45;color:var(--c-muted)}
+.oz__perk-note{display:block;margin-top:4px;font-size:10.5px;line-height:1.3;color:var(--c-clay)}
+.oz__perk-tier{flex:none;font-family:var(--f-display);font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--c-stone)}
+.oz__perk.is-done .oz__perk-tier{color:var(--c-clay)}
+
+.oz__nudge{margin:14px 20px 0;padding:11px 14px;background:var(--c-cream);border-left:5px solid var(--c-red);font-family:var(--f-display);font-size:16px;font-weight:700;line-height:1.15;text-transform:uppercase;transition:opacity var(--t-fast) var(--ease)}
+
+.oz__cta-zone{padding:16px 20px 20px}
+.oz-cta{width:100%;min-height:52px;padding:14px 20px;border:1px solid var(--c-red-deep);border-radius:0;background:#000;color:#fff;font-family:var(--f-display);font-size:18px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;box-shadow:0 2px 3px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;gap:10px;transition:background var(--t-base) var(--ease),border-color var(--t-base) var(--ease)}
+.oz-cta:hover{background:#780406E8;border-color:#000}
+.oz-cta:focus-visible{outline:3px solid var(--c-red);outline-offset:3px}
+.oz-cta[aria-busy="true"]{background:#2E0203;color:rgba(255,255,255,.85);cursor:progress}
+.oz-cta[disabled]{opacity:.55;cursor:not-allowed}
+.oz__spin{width:17px;height:17px;border-radius:50%;border:2px solid rgba(255,255,255,.28);border-top-color:var(--c-red);animation:oz-spin .7s linear infinite}
+@keyframes oz-spin{to{transform:rotate(360deg)}}
+.oz__note{margin:9px 0 0;text-align:center;font-size:11px;color:var(--c-muted)}
+.oz__err{margin:9px 0 0;text-align:center;font-size:12px;color:var(--c-red-deep)}
+
+@media (max-width:479px){
+  [data-offre-ghassoul]{--oz-max:100%}
+  .oz__labels{display:none}
+  .oz__hero-img{width:64px;height:64px}
+  .oz__trophee-titre{font-size:30px}
+  .oz__trophee-img{width:86px;height:86px}
+  .oz__perk-slot.has-img,.oz__perk-img{width:38px;height:38px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  [data-offre-ghassoul] *{animation-duration:0s!important;animation-iteration-count:1!important}
+  .oz__perk,.oz__pastille,.oz__lab-txt,.oz__cran,.oz__perk-badge,.oz__nudge{transition-duration:0s!important}
+  .oz__fill{transition-duration:.125s!important}
+}
+{% endstylesheet %}
+
+{% javascript %}
+(() => {
+  const REDUIT = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  class OffreGhassoul {
+    constructor(root) {
+      this.root = root;
+      const script =
+        document.getElementById(root.dataset.config) ||
+        root.previousElementSibling;
+      try {
+        this.cfg = JSON.parse(script.textContent);
+      } catch {
+        return; // config illisible : la section reste inerte plutôt que de casser la page
+      }
+      if (!this.cfg.paliers || !this.cfg.paliers.length) return;
+
+      this.el = {
+        range: root.querySelector('[data-oz-range]'),
+        fill: root.querySelector('[data-oz-fill]'),
+        labels: root.querySelector('[data-oz-labels]'),
+        pastilles: root.querySelector('[data-oz-pastilles]'),
+        crans: root.querySelector('[data-oz-crans]'),
+        poids: root.querySelector('[data-oz-poids]'),
+        detail: root.querySelector('[data-oz-detail]'),
+        was: root.querySelector('[data-oz-was]'),
+        prix: root.querySelector('[data-oz-prix]'),
+        kilo: root.querySelector('[data-oz-kilo]'),
+        econ: root.querySelector('[data-oz-econ]'),
+        perks: root.querySelector('[data-oz-perks]'),
+        nudge: root.querySelector('[data-oz-nudge]'),
+        nudgeTxt: root.querySelector('[data-oz-nudge-txt]'),
+        trophee: root.querySelector('[data-oz-trophee]'),
+        tropheeTitre: root.querySelector('[data-oz-trophee-titre]'),
+        tropheeDesc: root.querySelector('[data-oz-trophee-desc]'),
+        tropheeImg: root.querySelector('[data-oz-trophee-img]'),
+        cta: root.querySelector('[data-oz-cta]'),
+        ctaTxt: root.querySelector('[data-oz-cta-txt]'),
+        spin: root.querySelector('[data-oz-spin]'),
+        err: root.querySelector('[data-oz-err]'),
+      };
+
+      this.n = this.cfg.paliers.length;
+      this.idx = this.borner(this.cfg.palierInitial || 1);
+      this.econAffichee = 0;
+
+      this.construireGauge();
+      this.brancher();
+      this.rendre(true);
+    }
+
+    /* --- Dérivations, toutes issues du metafield --- */
+
+    borner(i) { return Math.min(Math.max(i, 1), this.n); }
+
+    palier(i) { return this.cfg.paliers[this.borner(i) - 1]; }
+
+    /** Ce que débloque le palier i par rapport au précédent. */
+    debloque(i) {
+      const p = this.palier(i);
+      const prec = i > 1 ? this.palier(i - 1) : { remise_centimes: 0, cadeaux: 0, port_offert: false };
+      if (p.cadeaux > prec.cadeaux) return { type: 'cadeau', rang: p.cadeaux - 1 };
+      if (p.port_offert && !prec.port_offert) return { type: 'port' };
+      if (p.remise_centimes > prec.remise_centimes) return { type: 'remise' };
+      return null;
+    }
+
+    cadeauxDe(i) {
+      const nb = this.palier(i).cadeaux;
+      return (this.cfg.cadeaux || []).slice(0, nb);
+    }
+
+    prixBarreCentimes(i) {
+      return (this.palier(i).seuil_g / 250) * this.cfg.prixUnite250;
+    }
+
+    prixCentimes(i) {
+      return this.prixBarreCentimes(i) - this.palier(i).remise_centimes;
+    }
+
+    economieCentimes(i) {
+      let e = this.palier(i).remise_centimes;
+      for (const c of this.cadeauxDe(i)) e += c.prixCentimes || 0;
+      if (this.palier(i).port_offert) e += this.cfg.fraisPortCentimes || 0;
+      return e;
+    }
+
+    /** Composition en sachets : n×500 g + n×250 g. */
+    composition(g) {
+      const n500 = Math.floor(g / 500);
+      const n250 = (g % 500) / 250;
+      return { n500, n250: Math.round(n250) };
+    }
+
+    /* --- Formatage --- */
+
+    eur(centimes) {
+      return (centimes / 100).toFixed(2).replace('.', ',') + ' €';
+    }
+
+    poidsTxt(g) {
+      return g >= 1000
+        ? String(g / 1000).replace('.', ',') + ' kg'
+        : g + ' g';
+    }
+
+    /* --- Construction statique de la jauge --- */
+
+    construireGauge() {
+      const labels = [];
+      const pastilles = [];
+      const crans = [];
+
+      for (let i = 1; i <= this.n; i++) {
+        const d = this.debloque(i);
+        const g = this.palier(i).seuil_g;
+
+        const lab = document.createElement('div');
+        lab.className = 'oz__lab';
+        const labTxt = document.createElement('span');
+        labTxt.className = 'oz__lab-txt';
+        labTxt.textContent = d ? this.libelleCourt(d, i) : '';
+        lab.appendChild(labTxt);
+        labels.push(lab);
+
+        const slot = document.createElement('span');
+        slot.className = 'oz__pastille-slot';
+        const past = document.createElement('span');
+        past.className = 'oz__pastille' + (d ? ' is-marque' : '');
+        slot.appendChild(past);
+        pastilles.push(slot);
+
+        const cran = document.createElement('button');
+        cran.type = 'button';
+        cran.className = 'oz__cran';
+        cran.textContent = this.poidsTxt(g);
+        cran.dataset.idx = String(i);
+        cran.setAttribute('aria-pressed', 'false');
+        cran.addEventListener('click', () => this.aller(i));
+        crans.push(cran);
+      }
+
+      this.el.labels.replaceChildren(...labels);
+      this.el.pastilles.replaceChildren(...pastilles);
+      this.el.crans.replaceChildren(...crans);
+      this.el.range.max = String(this.n);
+
+      // Lignes d'avantages : un palier utile = une ligne.
+      const perks = [];
+      for (let i = 2; i <= this.n; i++) {
+        const d = this.debloque(i);
+        if (!d) continue;
+        perks.push(this.construirePerk(d, i));
+      }
+      this.el.perks.replaceChildren(...perks);
+    }
+
+    libelleCourt(d, i) {
+      if (d.type === 'cadeau') {
+        const c = (this.cfg.cadeaux || [])[d.rang];
+        return c ? c.titre.split(' ')[0] : 'Cadeau';
+      }
+      if (d.type === 'port') return 'Livraison';
+      return this.rangRemise(i) === 1 ? 'Remise' : 'Remise +';
+    }
+
+    /** Nombre de paliers remise-seule jusqu'à i inclus. */
+    rangRemise(i) {
+      let r = 0;
+      for (let k = 1; k <= i; k++) {
+        const d = this.debloque(k);
+        if (d && d.type === 'remise') r++;
+      }
+      return r;
+    }
+
+    construirePerk(d, i) {
+      const li = document.createElement('li');
+      li.className = 'oz__perk';
+      li.dataset.idx = String(i);
+      if (i === this.n) li.classList.add('is-max');
+
+      const slot = document.createElement('span');
+      slot.className = 'oz__perk-slot';
+
+      let titre = '';
+      let desc = '';
+      let note = '';
+
+      if (d.type === 'cadeau') {
+        const c = (this.cfg.cadeaux || [])[d.rang];
+        titre = c ? c.titre : 'Cadeau offert';
+        desc = c ? 'Offert · valeur ' + this.eur(c.prixCentimes) : 'Offert';
+        if (c && c.remplace) note = 'Remplacé temporairement — le principal est en réapprovisionnement.';
+        if (c && c.image) {
+          slot.classList.add('has-img');
+          const img = document.createElement('img');
+          img.className = 'oz__perk-img';
+          img.src = c.image;
+          img.alt = '';
+          img.loading = 'lazy';
+          slot.appendChild(img);
+        }
+      } else if (d.type === 'port') {
+        titre = 'Livraison offerte';
+        desc = 'Offerte · valeur ' + this.eur(this.cfg.fraisPortCentimes || 0);
+      } else {
+        const r = this.rangRemise(i);
+        const total = this.rangRemise(this.n);
+        titre = r === 1 ? 'Première remise' : (r === total ? 'Remise maximale' : 'Remise renforcée');
+        desc = r === 1 ? 'Le prix au kilo commence à baisser' : 'Palier de prix supérieur';
+      }
+
+      const badge = document.createElement('span');
+      badge.className = 'oz__perk-badge';
+      badge.textContent = '✓';
+      slot.appendChild(badge);
+
+      const corps = document.createElement('span');
+      corps.className = 'oz__perk-corps';
+      const t = document.createElement('span');
+      t.className = 'oz__perk-titre';
+      t.textContent = titre;
+      const dd = document.createElement('span');
+      dd.className = 'oz__perk-desc';
+      dd.textContent = desc;
+      corps.append(t, dd);
+      if (note) {
+        const nn = document.createElement('span');
+        nn.className = 'oz__perk-note';
+        nn.textContent = note;
+        corps.appendChild(nn);
+      }
+
+      const tier = document.createElement('span');
+      tier.className = 'oz__perk-tier';
+      tier.textContent = this.poidsTxt(this.palier(i).seuil_g);
+
+      li.append(slot, corps, tier);
+      return li;
+    }
+
+    /* --- Interaction --- */
+
+    brancher() {
+      const r = this.el.range;
+      r.addEventListener('input', () => {
+        this.idx = this.borner(Number(r.value));
+        this.rendre();
+      });
+      r.addEventListener('pointerdown', () => this.root.classList.add('is-dragging'));
+      const fin = () => this.root.classList.remove('is-dragging');
+      r.addEventListener('pointerup', fin);
+      r.addEventListener('pointercancel', fin);
+      window.addEventListener('blur', fin);
+
+      this.el.cta.addEventListener('click', () => this.ajouterAuPanier());
+    }
+
+    aller(i) {
+      this.idx = this.borner(i);
+      this.el.range.value = String(this.idx);
+      this.rendre();
+    }
+
+    /* --- Rendu --- */
+
+    rendre(initial = false) {
+      const i = this.idx;
+      const p = this.palier(i);
+      const g = p.seuil_g;
+
+      this.el.fill.style.width = ((i - 1) / (this.n - 1) * 100).toFixed(3) + '%';
+      this.el.range.setAttribute('aria-valuetext', this.poidsTxt(g));
+
+      this.el.pastilles.querySelectorAll('.oz__pastille').forEach((el, k) => {
+        const n = k + 1;
+        el.classList.toggle('is-done', n <= i);
+        el.classList.toggle('is-max', n <= i && n === this.n);
+        el.classList.toggle('is-sel', n === i);
+      });
+      this.el.labels.querySelectorAll('.oz__lab').forEach((el, k) => {
+        el.classList.toggle('is-done', k + 1 <= i);
+      });
+      this.el.crans.querySelectorAll('.oz__cran').forEach((el, k) => {
+        const n = k + 1;
+        el.classList.toggle('is-done', n <= i);
+        el.setAttribute('aria-pressed', n === i ? 'true' : 'false');
+      });
+
+      const comp = this.composition(g);
+      const morceaux = [];
+      if (comp.n500) morceaux.push(comp.n500 + ' × 500 g');
+      if (comp.n250) morceaux.push(comp.n250 + ' × 250 g');
+      this.el.poids.textContent = this.poidsTxt(g);
+      this.el.detail.textContent = morceaux.join('   +   ');
+
+      const barre = this.prixBarreCentimes(i);
+      const prix = this.prixCentimes(i);
+      this.el.was.hidden = barre <= prix;
+      this.el.was.textContent = this.eur(barre);
+      this.el.prix.textContent = this.eur(prix);
+      this.el.kilo.textContent = this.eur(prix / (g / 1000)) + ' / kg';
+
+      this.animerEconomie(this.economieCentimes(i), initial);
+
+      const perksDus = this.el.perks.querySelectorAll('.oz__perk');
+      perksDus.forEach((el) => {
+        const n = Number(el.dataset.idx);
+        const actif = n <= i;
+        const etait = el.classList.contains('is-done');
+        el.classList.toggle('is-done', actif);
+        const badge = el.querySelector('.oz__perk-badge');
+        if (badge) badge.textContent = actif ? '✓' : '🔒';
+        // Stagger uniquement à l'ouverture d'un palier, pas au retour arrière.
+        if (actif && !etait && !initial && !REDUIT) {
+          const rang = Array.from(perksDus).indexOf(el);
+          el.style.transitionDelay = (rang * 40) + 'ms';
+          setTimeout(() => { el.style.transitionDelay = ''; }, 400);
+        }
+      });
+
+      this.rendreTrophee(i);
+      this.rendreNudge(i);
+
+      this.el.ctaTxt.textContent = 'Tout ajouter au panier · ' + this.eur(prix);
+      this.el.cta.disabled = !this.compositionDisponible(g);
+      this.el.err.hidden = true;
+    }
+
+    rendreTrophee(i) {
+      const dernier = this.debloque(this.n);
+      const actif = i === this.n && dernier && dernier.type === 'cadeau';
+      this.el.trophee.hidden = !actif;
+      if (!actif) return;
+
+      const c = (this.cfg.cadeaux || [])[dernier.rang];
+      if (!c) { this.el.trophee.hidden = true; return; }
+
+      this.el.tropheeTitre.innerHTML = '';
+      this.el.tropheeTitre.append(
+        document.createTextNode(c.titre + ' '),
+      );
+      const em = document.createElement('em');
+      em.textContent = 'offert';
+      this.el.tropheeTitre.appendChild(em);
+
+      this.el.tropheeDesc.textContent =
+        'Ajouté à ta commande. Valeur ' + this.eur(c.prixCentimes) +
+        ' — impossible à obtenir en dessous de ' + this.poidsTxt(this.palier(this.n).seuil_g) + '.';
+
+      if (c.image) {
+        this.el.tropheeImg.src = c.image;
+        this.el.tropheeImg.hidden = false;
+      } else {
+        this.el.tropheeImg.hidden = true;
+      }
+    }
+
+    rendreNudge(i) {
+      if (i >= this.n) { this.el.nudge.hidden = true; return; }
+
+      const suivant = i + 1;
+      const d = this.debloque(suivant);
+      if (!d) { this.el.nudge.hidden = true; return; }
+
+      const delta = this.palier(suivant).seuil_g - this.palier(i).seuil_g;
+      const gain = this.economieCentimes(suivant) - this.economieCentimes(i);
+
+      let quoi = 'le palier suivant';
+      if (d.type === 'cadeau') {
+        const c = (this.cfg.cadeaux || [])[d.rang];
+        quoi = c ? c.titre + ' offert' : 'un cadeau offert';
+      } else if (d.type === 'port') {
+        quoi = 'la livraison offerte';
+      } else {
+        quoi = 'la remise supérieure';
+      }
+
+      const txt = 'Plus que ' + this.poidsTxt(delta) + ' pour ' + quoi +
+        (gain > 0 ? '  ·  + ' + this.eur(gain) + " d'économie" : '');
+
+      if (this.el.nudgeTxt.textContent === txt) { this.el.nudge.hidden = false; return; }
+      if (REDUIT) {
+        this.el.nudgeTxt.textContent = txt;
+        this.el.nudge.hidden = false;
+        return;
+      }
+      this.el.nudge.style.opacity = '0';
+      setTimeout(() => {
+        this.el.nudgeTxt.textContent = txt;
+        this.el.nudge.hidden = false;
+        this.el.nudge.style.opacity = '1';
+      }, 125);
+    }
+
+    animerEconomie(cible, immediat) {
+      if (immediat || REDUIT) {
+        this.econAffichee = cible;
+        this.el.econ.textContent = this.eur(cible);
+        return;
+      }
+      const depart = this.econAffichee;
+      const t0 = performance.now();
+      const duree = 200;
+      cancelAnimationFrame(this._raf);
+      const pas = (t) => {
+        const k = Math.min((t - t0) / duree, 1);
+        const v = depart + (cible - depart) * k;
+        this.el.econ.textContent = this.eur(v);
+        if (k < 1) this._raf = requestAnimationFrame(pas);
+        else this.econAffichee = cible;
+      };
+      this._raf = requestAnimationFrame(pas);
+    }
+
+    /* --- Panier --- */
+
+    compositionDisponible(g) {
+      const comp = this.composition(g);
+      const v500 = this.cfg.variants['500'];
+      const v250 = this.cfg.variants['250'];
+      if (comp.n500 > 0 && (!v500 || !v500.disponible)) return false;
+      if (comp.n250 > 0 && (!v250 || !v250.disponible)) return false;
+      return true;
+    }
+
+    lignesPanier() {
+      const i = this.idx;
+      const comp = this.composition(this.palier(i).seuil_g);
+      const items = [];
+
+      const v500 = this.cfg.variants['500'];
+      const v250 = this.cfg.variants['250'];
+      if (comp.n500 > 0 && v500) items.push({ id: v500.id, quantity: comp.n500 });
+      if (comp.n250 > 0 && v250) items.push({ id: v250.id, quantity: comp.n250 });
+
+      // Les cadeaux partent à leur prix normal, marqués par la propriété.
+      // C'est la Discount Function qui les passe à 100 % — et elle revérifie
+      // la liste blanche côté serveur : cette propriété n'ouvre aucun droit
+      // par elle-même.
+      for (const c of this.cadeauxDe(i)) {
+        if (!c.disponible) continue;
+        items.push({
+          id: c.variantId,
+          quantity: 1,
+          properties: { _offre_palier: 'true' },
+        });
+      }
+      return items;
+    }
+
+    async ajouterAuPanier() {
+      const items = this.lignesPanier();
+      if (!items.length) return;
+
+      this.el.cta.setAttribute('aria-busy', 'true');
+      this.el.cta.disabled = true;
+      this.el.spin.hidden = false;
+      this.el.ctaTxt.textContent = 'Ajout en cours…';
+      this.el.err.hidden = true;
+
+      try {
+        const rep = await fetch(window.Shopify?.routes?.root
+          ? window.Shopify.routes.root + 'cart/add.js'
+          : '/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ items }),
+        });
+        if (!rep.ok) {
+          const detail = await rep.json().catch(() => ({}));
+          throw new Error(detail.description || detail.message || 'Ajout impossible');
+        }
+        document.dispatchEvent(new CustomEvent('offre-ghassoul:ajoute', { detail: { items } }));
+        window.location.href = (window.Shopify?.routes?.root || '/') + 'cart';
+      } catch (e) {
+        this.el.err.textContent = e.message || 'Ajout impossible. Réessaie.';
+        this.el.err.hidden = false;
+        this.el.cta.removeAttribute('aria-busy');
+        this.el.cta.disabled = false;
+        this.el.spin.hidden = true;
+        this.rendre(true);
+      }
+    }
+  }
+
+  const init = () =>
+    document.querySelectorAll('[data-offre-ghassoul]').forEach((el) => {
+      if (!el.dataset.ozPret) {
+        el.dataset.ozPret = '1';
+        new OffreGhassoul(el);
+      }
+    });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+  document.addEventListener('shopify:section:load', init);
+})();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Offre Ghassoul",
+  "tag": "section",
+  "class": "section-offre-ghassoul",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Les seuils, remises et cadeaux autorisés viennent du métachamp boutique custom.paliers_offre. Cette section ne fait que l'afficher."
+    },
+    {
+      "type": "product",
+      "id": "produit_ghassoul",
+      "label": "Produit Ghassoul",
+      "info": "Ses variantes doivent porter le métachamp custom.poids_en_grammes."
+    },
+    { "type": "text", "id": "surtitre", "label": "Surtitre", "default": "Choisis ta quantité" },
+    { "type": "text", "id": "titre", "label": "Titre", "default": "Ghassoul du Maroc" },
+    {
+      "type": "text",
+      "id": "sous_titre",
+      "label": "Sous-titre",
+      "default": "Argile lavante volcanique · sachets 250 g et 500 g"
+    },
+    {
+      "type": "range",
+      "id": "palier_initial",
+      "label": "Palier affiché à l'ouverture",
+      "min": 1, "max": 8, "step": 1, "default": 2
+    },
+    {
+      "type": "number",
+      "id": "frais_port_centimes",
+      "label": "Frais de port offerts (centimes)",
+      "info": "Sert au calcul de l'économie affichée quand le palier offre le port. Doit refléter le tarif réellement offert. 750 = 7,50 € (domicile / Colissimo).",
+      "default": 750
+    },
+    {
+      "type": "range",
+      "id": "largeur_max",
+      "label": "Largeur maximale (px)",
+      "min": 320, "max": 900, "step": 20, "default": 620
+    },
+    {
+      "type": "text",
+      "id": "note_pied",
+      "label": "Note sous le bouton",
+      "default": "Cadeaux ajoutés automatiquement au panier · retours 30 jours"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "cadeau",
+      "name": "Emplacement cadeau",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "product",
+          "id": "produit",
+          "label": "Cadeau principal",
+          "info": "Doit figurer dans cadeaux_autorises, sinon l'emplacement est ignoré."
+        },
+        {
+          "type": "product",
+          "id": "substitut",
+          "label": "Substitut si rupture",
+          "info": "Doit également figurer dans cadeaux_autorises."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Offre Ghassoul",
+      "blocks": [{ "type": "cadeau" }, { "type": "cadeau" }, { "type": "cadeau" }]
+    }
+  ]
+}
+{% endschema %}

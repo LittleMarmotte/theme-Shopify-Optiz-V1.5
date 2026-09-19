@@ -1,0 +1,4 @@
+interface:
+  display_name: "Optiz Copy Chief"
+  short_description: "Audite une V1 sans aseptiser les angles natifs de l’avatar"
+  default_prompt: "Utilise $optiz-copy-chief pour critiquer cette V1, classifier les claims et produire un brief de révision."

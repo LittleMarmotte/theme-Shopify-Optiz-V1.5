@@ -1,0 +1,223 @@
+{% comment %}
+  Section: Image carrée + titre + rich text
+  - Image dans un carré (ratio 1:1), centrée
+  - Taille du carré ajustable, bords arrondis
+  - Titre + texte riche dessous (gras/italique/liens)
+  - Couleur de fond de section et du carré
+{% endcomment %}
+
+<section
+  class="sqit-section"
+  style="background: {{ section.settings.bg_color }}; padding: {{ section.settings.padding_y }}px 0;"
+>
+  <div class="sqit-container">
+    {% if section.settings.image != blank %}
+      <div
+        class="sqit-square"
+        style="
+          width: {{ section.settings.square_size }}px;
+          border-radius: {{ section.settings.radius }}px;
+          background: {{ section.settings.square_bg }};
+        "
+      >
+        {%- assign img_alt = section.settings.image.alt | default: section.settings.title | default: 'Image' -%}
+        {{
+          section.settings.image
+          | image_url: width: 1600
+          | image_tag:
+            loading: 'lazy',
+            class: 'sqit-image',
+            alt: img_alt
+        }}
+      </div>
+    {% else %}
+      <div
+        class="sqit-square sqit-square--placeholder"
+        style="
+          width: {{ section.settings.square_size }}px;
+          border-radius: {{ section.settings.radius }}px;
+          background: rgba(0,0,0,0.06);
+        "
+      >
+        <span>Ajoute une image dans les réglages</span>
+      </div>
+    {% endif %}
+
+    {% if section.settings.title != blank %}
+      <h2 class="sqit-title">{{ section.settings.title | escape }}</h2>
+    {% endif %}
+
+    {% if section.settings.text != blank %}
+      <div class="sqit-text rte">
+        {{ section.settings.text }}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  .sqit-container {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    padding: 0 16px;
+    text-align: center;
+  }
+
+  /* Carré */
+  .sqit-square {
+    margin: 0 auto;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Image centrée dans le carré */
+  .sqit-image {
+    width: 100%;
+    height: 100%;
+    object-fit: {{ section.settings.fit_mode }};
+    object-position: center;
+    display: block;
+  }
+
+  .sqit-square--placeholder {
+    color: rgba(0,0,0,0.6);
+    font-size: 14px;
+  }
+
+  .sqit-title {
+    margin: 16px 0 8px;
+    font-size: {{ section.settings.title_size }}px;
+    line-height: 1.2;
+  }
+
+  .sqit-text {
+    font-size: {{ section.settings.text_size }}px;
+    line-height: 1.5;
+  }
+
+  .sqit-text p { margin: 0 0 10px; }
+  .sqit-text p:last-child { margin-bottom: 0; }
+
+  /* Responsive: éviter que le carré dépasse l’écran */
+  @media (max-width: 480px) {
+    .sqit-square {
+      width: min({{ section.settings.square_size }}px, 92vw) !important;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Image carrée + texte",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "range",
+      "id": "square_size",
+      "min": 120,
+      "max": 800,
+      "step": 10,
+      "unit": "px",
+      "label": "Taille du carré",
+      "default": 320
+    },
+    {
+      "type": "range",
+      "id": "radius",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Arrondi des bords",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "fit_mode",
+      "label": "Comportement de l'image",
+      "default": "cover",
+      "options": [
+        { "value": "cover", "label": "Remplir le carré (crop possible)" },
+        { "value": "contain", "label": "Tout afficher (bandes possibles)" }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "square_bg",
+      "label": "Couleur de fond du carré (utile si 'contain')",
+      "default": "#F2F2F2"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Titre",
+      "default": "Ton titre ici"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 14,
+      "max": 54,
+      "step": 1,
+      "unit": "px",
+      "label": "Taille du titre",
+      "default": 28
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Texte (gras/italique/liens...)",
+      "default": "<p>Tu peux mettre du <strong>gras</strong>, de l’<em>italique</em> et des <a href=\"#\">liens</a>.</p>"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "label": "Taille du texte",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Couleur de fond de la section",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding haut/bas",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 320,
+      "max": 1400,
+      "step": 20,
+      "unit": "px",
+      "label": "Largeur max du contenu",
+      "default": 900
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image carrée + texte",
+      "category": "Contenu"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,291 @@
+{% comment %}
+  Section: Bouton centré (PC + mobile) avec taille texte réglable indépendamment
+  - Force la quantité à 1 UNIQUEMENT pour le variant ciblé
+  - Laisse les autres items du panier inchangés
+  - Puis redirige vers /checkout
+{% endcomment %}
+
+{% assign target_variant_id = 56860087026046 %}
+
+<section
+  id="sda-prime-btn-{{ section.id }}"
+  class="sda-prime-btn-section"
+  style="
+    --btn-font-desktop: {{ section.settings.button_font_size_desktop }}px;
+    --btn-font-mobile: {{ section.settings.button_font_size_mobile }}px;
+  "
+>
+  <div class="sda-prime-btn-wrap">
+    {% if section.settings.show_button and section.settings.button_text != blank %}
+      <div class="sda-prime-btn-row">
+        <a
+          href="{{ section.settings.button_link | default: '/checkout' }}"
+          class="sda-prime-btn"
+          data-sda-variant-id="{{ target_variant_id }}"
+          rel="nofollow"
+        >
+          {{ section.settings.button_text }}
+        </a>
+      </div>
+    {% else %}
+      <div class="sda-prime-placeholder">
+        Ajoute un texte de bouton dans les paramètres.
+      </div>
+    {% endif %}
+  </div>
+
+  <style>
+    .sda-prime-btn-section {
+      width: 100%;
+      padding: {{ section.settings.padding_y }}px 0;
+    }
+
+    .sda-prime-btn-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .sda-prime-btn-row {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .sda-prime-btn {
+      font-size: var(--btn-font-mobile);
+      padding: {{ section.settings.button_padding_y }}px {{ section.settings.button_padding_x }}px;
+      border-radius: {{ section.settings.button_radius }}px;
+      background: {{ section.settings.button_bg }};
+      color: {{ section.settings.button_text_color }};
+      text-decoration: none;
+      border: 1px solid rgba(0,0,0,0.15);
+      white-space: nowrap;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform .15s ease, opacity .15s ease;
+
+      pointer-events: auto;
+      position: relative;
+      z-index: 9999;
+    }
+
+    .sda-prime-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .sda-prime-placeholder {
+      padding: 16px 18px;
+      border: 1px dashed rgba(0,0,0,.3);
+      text-align: center;
+      border-radius: 12px;
+      opacity: 0.85;
+    }
+
+    @media (min-width: 750px) {
+      .sda-prime-btn {
+        font-size: var(--btn-font-desktop);
+      }
+    }
+  </style>
+
+  <script>
+    (function(){
+      const root = document.getElementById('sda-prime-btn-{{ section.id }}');
+      if(!root) return;
+
+      const btn = root.querySelector('.sda-prime-btn');
+      if(!btn) return;
+
+      const VARIANT_ID = String(btn.getAttribute('data-sda-variant-id') || '');
+      if(!VARIANT_ID) return;
+
+      let locked = false;
+      const originalText = btn.textContent;
+
+      function lockUI(){
+        locked = true;
+        btn.setAttribute('aria-disabled', 'true');
+        btn.style.pointerEvents = 'none';
+        btn.style.opacity = '0.75';
+        btn.textContent = 'Redirection...';
+      }
+
+      function unlockUI(){
+        locked = false;
+        btn.removeAttribute('aria-disabled');
+        btn.style.pointerEvents = '';
+        btn.style.opacity = '';
+        btn.textContent = originalText;
+      }
+
+      async function fetchJSON(url, options){
+        const res = await fetch(url, Object.assign({
+          credentials: 'same-origin',
+          headers: { 'Accept': 'application/json' }
+        }, options || {}));
+
+        // Shopify renvoie parfois du texte/json: on tente json, sinon on throw
+        const ct = res.headers.get('content-type') || '';
+        if(!res.ok){
+          let msg = 'Erreur';
+          try{
+            msg = ct.includes('application/json') ? (await res.json()) : (await res.text());
+          }catch(e){}
+          throw new Error(typeof msg === 'string' ? msg : JSON.stringify(msg));
+        }
+        return ct.includes('application/json') ? res.json() : res.text();
+      }
+
+      async function ensureQtyOneForVariant(variantId){
+        // 1) lire panier
+        const cart = await fetchJSON('/cart.js');
+
+        // Shopify retourne items[].variant_id (number)
+        const existing = (cart.items || []).find(it => String(it.variant_id) === String(variantId));
+
+        if(existing){
+          // 2) si présent: forcer quantité = 1 via change.js (id = variant_id)
+          if(Number(existing.quantity) !== 1){
+            await fetchJSON('/cart/change.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+              body: JSON.stringify({ id: Number(variantId), quantity: 1 })
+            });
+          }
+        } else {
+          // 3) sinon: ajouter quantité 1 via add.js
+          await fetchJSON('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ id: Number(variantId), quantity: 1 })
+          });
+        }
+      }
+
+      btn.addEventListener('click', async function(e){
+        // On gère la nav nous-mêmes
+        e.preventDefault();
+        e.stopPropagation();
+
+        if(locked) return;
+        lockUI();
+
+        try{
+          await ensureQtyOneForVariant(VARIANT_ID);
+          window.location.assign('/checkout');
+        } catch(err){
+          // En cas de souci, on réactive le bouton (et on laisse l’utilisateur retenter)
+          console.error('[Prime Button] Cart update failed:', err);
+          unlockUI();
+          alert("Petit souci, réessaie. Si ça continue, vide ton cache ou teste en navigation privée.");
+        }
+      }, true);
+
+      // Si l’utilisateur revient en arrière, on réactive au bout de quelques secondes (sécurité)
+      setTimeout(unlockUI, 8000);
+    })();
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "Bouton prime",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_button",
+      "label": "Afficher le bouton",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Texte du bouton",
+      "default": "Découvrir"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Lien du bouton (ignoré ici, on va au checkout)"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size_desktop",
+      "label": "Taille texte bouton PC (px)",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "button_font_size_mobile",
+      "label": "Taille texte bouton mobile (px)",
+      "min": 10,
+      "max": 26,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "button_padding_x",
+      "label": "Padding bouton horizontal (px)",
+      "min": 8,
+      "max": 40,
+      "step": 1,
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "button_padding_y",
+      "label": "Padding bouton vertical (px)",
+      "min": 6,
+      "max": 24,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "label": "Arrondi bouton (px)",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "default": 40
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Couleur fond bouton",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Couleur texte bouton",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Padding section haut/bas (px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bouton prime"
+    }
+  ]
+}
+{% endschema %}

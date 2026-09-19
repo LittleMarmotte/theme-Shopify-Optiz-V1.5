@@ -1,0 +1,4 @@
+interface:
+  display_name: "Optiz Avatar Copywriter"
+  short_description: "Rédige du copy direct-response pour l’avatar Siwak"
+  default_prompt: "Utilise $avatar-direct-response-copywriter en choisissant le mode adapté et rédige à partir de copywriting/AVATAR.md et de mon brief."
