@@ -1,0 +1,65 @@
+<div id="siwak-buy" class="siwak-product-highlights" {{ block.shopify_attributes }}>
+  {% if block.settings.eyebrow != blank %}
+    <p class="siwak-product-highlights__eyebrow">{{ block.settings.eyebrow | escape }}</p>
+  {% endif %}
+  <ul class="siwak-product-highlights__list" role="list">
+    {% if block.settings.line_1 != blank %}<li>{{ block.settings.line_1 | escape }}</li>{% endif %}
+    {% if block.settings.line_2 != blank %}<li>{{ block.settings.line_2 | escape }}</li>{% endif %}
+    {% if block.settings.line_3 != blank %}<li>{{ block.settings.line_3 | escape }}</li>{% endif %}
+  </ul>
+</div>
+
+{% stylesheet %}
+  .siwak-product-highlights {
+    width: 100%;
+    border-block: 1px solid rgb(var(--color-foreground-rgb) / 0.2);
+    padding-block: 14px;
+    scroll-margin-top: 100px;
+  }
+
+  .siwak-product-highlights__eyebrow {
+    margin: 0 0 10px;
+    color: #e10600;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .siwak-product-highlights__list {
+    display: grid;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .siwak-product-highlights__list li {
+    display: grid;
+    grid-template-columns: 12px 1fr;
+    gap: 9px;
+    margin: 0;
+    line-height: 1.35;
+  }
+
+  .siwak-product-highlights__list li::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    margin-top: 0.45em;
+    background: #e10600;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Repères produit Siwak",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sur-titre", "default": "Le siwak, simplement." },
+    { "type": "text", "id": "line_1", "label": "Ligne 1", "default": "5 siwaks par boîte" },
+    { "type": "text", "id": "line_2", "label": "Ligne 2", "default": "Un geste simple à apprendre" },
+    { "type": "text", "id": "line_3", "label": "Ligne 3", "default": "Formats 1 ou 4 boîtes" }
+  ],
+  "presets": [{ "name": "Repères produit Siwak" }]
+}
+{% endschema %}

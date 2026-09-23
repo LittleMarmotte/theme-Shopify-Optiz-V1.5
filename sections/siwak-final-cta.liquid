@@ -1,0 +1,27 @@
+<section class="siwak-final-cta" aria-labelledby="SiwakFinalTitle-{{ section.id }}">
+  <p>07 / À TOI DE CHOISIR</p>
+  <h2 id="SiwakFinalTitle-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
+  {% if section.settings.text != blank %}<div class="siwak-final-cta__text rte">{{ section.settings.text }}</div>{% endif %}
+  <a href="#siwak-buy">{{ section.settings.button_label | escape }}</a>
+</section>
+
+{% stylesheet %}
+  .siwak-final-cta { background: #171717; color: #fff; padding: clamp(70px, 11vw, 150px) max(20px, calc((100vw - 1320px) / 2)); text-align: center; }
+  .siwak-final-cta > p { margin: 0 0 28px; color: #ff3b30; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em; }
+  .siwak-final-cta h2 { max-width: 1050px; margin: 0 auto 24px; font-size: clamp(3.1rem, 8vw, 8rem); line-height: 0.88; letter-spacing: -0.06em; }
+  .siwak-final-cta__text { max-width: 620px; margin: 0 auto 38px; font-size: clamp(1rem, 1.7vw, 1.3rem); }
+  .siwak-final-cta a { display: inline-flex; justify-content: center; min-width: min(100%, 310px); padding: 17px 24px; background: #e10600; color: #fff; font-weight: 900; text-decoration: none; text-transform: uppercase; }
+  .siwak-final-cta a:hover, .siwak-final-cta a:focus-visible { background: #fff; color: #171717; }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Siwak — appel final",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Quatre mois. Un geste simple." },
+    { "type": "richtext", "id": "text", "label": "Texte", "default": "<p>Choisis le format qui te convient en haut de la page.</p>" },
+    { "type": "text", "id": "button_label", "label": "Bouton", "default": "Choisir mon offre" }
+  ],
+  "presets": [{ "name": "Siwak — appel final" }]
+}
+{% endschema %}

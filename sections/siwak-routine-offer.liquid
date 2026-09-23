@@ -1,0 +1,106 @@
+<section class="siwak-routine" aria-labelledby="SiwakRoutineTitle-{{ section.id }}">
+  <div class="siwak-routine__visual">
+    {% if section.settings.image != blank %}
+      {{ section.settings.image | image_url: width: 2200 | image_tag: widths: '720, 1080, 1440, 1800, 2200', sizes: '100vw', loading: 'lazy', alt: section.settings.image.alt | default: section.settings.image_alt }}
+    {% else %}
+      {{ 'product-2' | placeholder_svg_tag: 'siwak-routine__placeholder' }}
+    {% endif %}
+    <div class="siwak-routine__visual-copy">
+      <p>04 / LA ROUTINE</p>
+      <h2 id="SiwakRoutineTitle-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
+      <span>{{ section.settings.subheading | escape }}</span>
+    </div>
+  </div>
+
+  <div class="siwak-routine__offers" aria-label="Comparaison des offres">
+    {% for block in section.blocks %}
+      <article class="siwak-routine__offer{% if block.settings.featured %} siwak-routine__offer--featured{% endif %}" {{ block.shopify_attributes }}>
+        <div class="siwak-routine__offer-label">
+          <span>0{{ forloop.index }}</span>
+          <div><p>{{ block.settings.kicker | escape }}</p><h3>{{ block.settings.title | escape }}</h3></div>
+        </div>
+        <p class="siwak-routine__quantity">{{ block.settings.quantity | escape }}</p>
+        <p class="siwak-routine__price">{{ block.settings.price | escape }}</p>
+        <p class="siwak-routine__detail">{{ block.settings.detail | escape }}</p>
+        <a href="#siwak-buy">{{ block.settings.cta | escape }}</a>
+      </article>
+    {% endfor %}
+  </div>
+  {% if section.settings.terms != blank %}<p class="siwak-routine__terms">{{ section.settings.terms | escape }}</p>{% endif %}
+</section>
+
+{% stylesheet %}
+  .siwak-routine { background: #f5f1e9; color: #171717; }
+  .siwak-routine__visual { position: relative; min-height: min(70vw, 720px); overflow: hidden; background: #d9d2c6; }
+  .siwak-routine__visual::after { content: ''; position: absolute; inset: 0; background: rgb(0 0 0 / 0.38); }
+  .siwak-routine__visual img, .siwak-routine__placeholder { width: 100%; height: 100%; position: absolute; inset: 0; display: block; object-fit: cover; }
+  .siwak-routine__visual-copy { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: end; min-height: inherit; max-width: 1400px; margin: 0 auto; padding: clamp(46px, 7vw, 100px) 24px; color: #fff; }
+  .siwak-routine__visual-copy p { margin: 0 0 18px; color: #ff3b30; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em; }
+  .siwak-routine h2 { max-width: 850px; margin: 0 0 22px; font-size: clamp(3rem, 7vw, 7rem); line-height: 0.9; letter-spacing: -0.055em; }
+  .siwak-routine__visual-copy span { max-width: 630px; font-size: clamp(1rem, 1.8vw, 1.35rem); line-height: 1.45; }
+  .siwak-routine__offers { max-width: 1400px; margin: 0 auto; border-inline: 2px solid #171717; border-bottom: 2px solid #171717; }
+  .siwak-routine__offer { display: grid; grid-template-columns: 1.5fr 0.8fr 0.6fr 1.1fr auto; gap: 24px; align-items: center; min-height: 124px; padding: 22px 28px; border-top: 1px solid #171717; }
+  .siwak-routine__offer:first-child { border-top: 0; }
+  .siwak-routine__offer--featured { background: #e10600; color: #fff; }
+  .siwak-routine__offer-label { display: flex; gap: 20px; align-items: center; }
+  .siwak-routine__offer-label > span { font-size: 0.75rem; font-weight: 800; }
+  .siwak-routine__offer-label p { margin: 0 0 4px; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.11em; text-transform: uppercase; }
+  .siwak-routine__offer h3 { margin: 0; font-size: clamp(1.25rem, 2vw, 1.8rem); }
+  .siwak-routine__quantity, .siwak-routine__detail { margin: 0; line-height: 1.35; }
+  .siwak-routine__price { margin: 0; font-size: clamp(1.7rem, 3vw, 2.6rem); font-weight: 900; white-space: nowrap; }
+  .siwak-routine__offer a { display: inline-flex; justify-content: center; padding: 13px 18px; border: 2px solid currentColor; color: inherit; font-weight: 800; text-decoration: none; text-transform: uppercase; }
+  .siwak-routine__offer a:hover, .siwak-routine__offer a:focus-visible { background: #171717; border-color: #171717; color: #fff; }
+  .siwak-routine__offer--featured a:hover, .siwak-routine__offer--featured a:focus-visible { background: #fff; border-color: #fff; color: #171717; }
+  .siwak-routine__terms { max-width: 1400px; margin: 0 auto; padding: 16px 24px 60px; font-size: 0.78rem; line-height: 1.45; }
+  @media (max-width: 899px) {
+    .siwak-routine__visual { min-height: 620px; }
+    .siwak-routine__offers { margin-inline: 18px; border-top: 2px solid #171717; }
+    .siwak-routine__offer { grid-template-columns: 1fr auto; gap: 12px 20px; }
+    .siwak-routine__quantity, .siwak-routine__detail { grid-column: 1; }
+    .siwak-routine__price { grid-column: 2; grid-row: 1; }
+    .siwak-routine__offer a { grid-column: 2; grid-row: 2 / span 2; align-self: stretch; align-items: center; }
+  }
+  @media (max-width: 549px) {
+    .siwak-routine__offer { grid-template-columns: 1fr; }
+    .siwak-routine__price, .siwak-routine__offer a, .siwak-routine__quantity, .siwak-routine__detail { grid-column: 1; grid-row: auto; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Siwak — routine et offres",
+  "max_blocks": 3,
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Photo des quatre boîtes" },
+    { "type": "text", "id": "image_alt", "label": "Texte alternatif", "default": "Quatre boîtes de siwaks Optiz alignées" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Vingt siwaks. Quatre mois devant toi." },
+    { "type": "textarea", "id": "subheading", "label": "Texte", "default": "Un repère simple : 5 siwaks par mois, soit environ un nouveau siwak tous les 6 jours." },
+    { "type": "textarea", "id": "terms", "label": "Conditions", "default": "Prix et avantages affichés à confirmer avec la configuration réelle du produit. Livraison offerte en France pour l’abonnement." }
+  ],
+  "blocks": [
+    {
+      "type": "offer",
+      "name": "Offre",
+      "settings": [
+        { "type": "text", "id": "kicker", "label": "Sur-titre", "default": "Pour essayer" },
+        { "type": "text", "id": "title", "label": "Titre", "default": "1 boîte" },
+        { "type": "text", "id": "quantity", "label": "Quantité", "default": "5 siwaks" },
+        { "type": "text", "id": "price", "label": "Prix", "default": "12 €" },
+        { "type": "text", "id": "detail", "label": "Détail", "default": "Achat unique" },
+        { "type": "text", "id": "cta", "label": "Bouton", "default": "Choisir" },
+        { "type": "checkbox", "id": "featured", "label": "Mettre en avant", "default": false }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Siwak — routine et offres",
+      "blocks": [
+        { "type": "offer", "settings": { "kicker": "Pour essayer", "title": "1 boîte", "quantity": "5 siwaks", "price": "12 €", "detail": "Achat unique", "cta": "Choisir" } },
+        { "type": "offer", "settings": { "kicker": "Pour quatre mois", "title": "4 boîtes", "quantity": "20 siwaks", "price": "45 €", "detail": "Achat unique", "cta": "Choisir" } },
+        { "type": "offer", "settings": { "kicker": "Pour ne pas y penser", "title": "Abonnement", "quantity": "20 siwaks / 4 mois", "price": "40 €", "detail": "Livraison France offerte", "cta": "S’abonner", "featured": true } }
+      ]
+    }
+  ]
+}
+{% endschema %}

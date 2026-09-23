@@ -1,0 +1,71 @@
+<section class="siwak-proof" aria-labelledby="SiwakProofTitle-{{ section.id }}">
+  <div class="siwak-proof__intro">
+    <p class="siwak-proof__index">01 / LA PREUVE</p>
+    <h2 id="SiwakProofTitle-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
+    {% if section.settings.text != blank %}<div class="siwak-proof__text rte">{{ section.settings.text }}</div>{% endif %}
+  </div>
+
+  <div class="siwak-proof__images">
+    {% for position in (1..2) %}
+      {% liquid
+        if position == 1
+          assign proof_image = section.settings.before_image
+          assign proof_label = section.settings.before_label
+        else
+          assign proof_image = section.settings.after_image
+          assign proof_label = section.settings.after_label
+        endif
+      %}
+      <figure class="siwak-proof__figure">
+        <div class="siwak-proof__media">
+          {% if proof_image != blank %}
+            {{ proof_image | image_url: width: 1600 | image_tag: widths: '480, 720, 960, 1200, 1600', sizes: '(min-width: 750px) 50vw, 100vw', loading: 'lazy', alt: proof_image.alt | default: proof_label }}
+          {% else %}
+            {{ 'lifestyle-1' | placeholder_svg_tag: 'siwak-proof__placeholder' }}
+          {% endif %}
+          <span>{{ proof_label | escape }}</span>
+        </div>
+      </figure>
+    {% endfor %}
+  </div>
+
+  {% if section.settings.proof_note != blank %}
+    <p class="siwak-proof__note"><strong>À compléter avant publication :</strong> {{ section.settings.proof_note | escape }}</p>
+  {% endif %}
+</section>
+
+{% stylesheet %}
+  .siwak-proof { background: #f5f1e9; color: #171717; padding: clamp(58px, 8vw, 112px) max(20px, calc((100vw - 1320px) / 2)); }
+  .siwak-proof__intro { display: grid; grid-template-columns: minmax(140px, 0.35fr) 1fr 0.8fr; gap: 26px; align-items: start; margin-bottom: 36px; }
+  .siwak-proof__index { margin: 9px 0 0; color: #e10600; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em; }
+  .siwak-proof h2 { margin: 0; max-width: 620px; font-size: clamp(2.5rem, 6vw, 6.8rem); line-height: 0.88; letter-spacing: -0.055em; }
+  .siwak-proof__text { max-width: 430px; font-size: clamp(1rem, 1.5vw, 1.25rem); line-height: 1.5; }
+  .siwak-proof__text p { margin-top: 0; }
+  .siwak-proof__images { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: #171717; border: 2px solid #171717; }
+  .siwak-proof__figure { margin: 0; background: #fff; }
+  .siwak-proof__media { position: relative; aspect-ratio: 4 / 5; overflow: hidden; }
+  .siwak-proof__media img, .siwak-proof__placeholder { width: 100%; height: 100%; display: block; object-fit: cover; background: #ded8cc; }
+  .siwak-proof__media span { position: absolute; left: 0; bottom: 0; padding: 10px 16px; background: #171717; color: #fff; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+  .siwak-proof__note { margin: 14px 0 0 auto; max-width: 670px; padding-left: 18px; border-left: 4px solid #e10600; font-size: 0.86rem; line-height: 1.5; }
+  @media (max-width: 749px) {
+    .siwak-proof__intro { grid-template-columns: 1fr; gap: 14px; }
+    .siwak-proof h2 { font-size: clamp(3.2rem, 18vw, 5.6rem); }
+    .siwak-proof__images { grid-template-columns: 1fr; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Siwak — preuve visuelle",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Oui, ça se voit." },
+    { "type": "richtext", "id": "text", "label": "Introduction", "default": "<p>Deux photos prises dans les mêmes conditions pour juger le résultat sans détour.</p>" },
+    { "type": "image_picker", "id": "before_image", "label": "Photo avant" },
+    { "type": "text", "id": "before_label", "label": "Légende avant", "default": "Avant" },
+    { "type": "image_picker", "id": "after_image", "label": "Photo après" },
+    { "type": "text", "id": "after_label", "label": "Légende après", "default": "Après" },
+    { "type": "textarea", "id": "proof_note", "label": "Note de preuve provisoire", "default": "ajouter un avant/après standardisé, la durée et les conditions de prise de vue." }
+  ],
+  "presets": [{ "name": "Siwak — preuve visuelle" }]
+}
+{% endschema %}

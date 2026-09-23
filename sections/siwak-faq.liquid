@@ -1,0 +1,63 @@
+<section class="siwak-faq" aria-labelledby="SiwakFaqTitle-{{ section.id }}">
+  <div class="siwak-faq__heading">
+    <p>06 / QUESTIONS</p>
+    <h2 id="SiwakFaqTitle-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
+  </div>
+  <div class="siwak-faq__items">
+    {% for block in section.blocks %}
+      <details class="siwak-faq__item" {{ block.shopify_attributes }}>
+        <summary><span>{{ block.settings.question | escape }}</span><span aria-hidden="true">+</span></summary>
+        <div class="siwak-faq__answer rte">{{ block.settings.answer }}</div>
+      </details>
+    {% endfor %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .siwak-faq { display: grid; grid-template-columns: minmax(260px, 0.65fr) minmax(0, 1.35fr); gap: clamp(40px, 8vw, 130px); background: #f5f1e9; color: #171717; padding: clamp(60px, 9vw, 120px) max(20px, calc((100vw - 1320px) / 2)); }
+  .siwak-faq__heading { align-self: start; position: sticky; top: 30px; }
+  .siwak-faq__heading p { margin: 0 0 24px; color: #e10600; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em; }
+  .siwak-faq h2 { margin: 0; font-size: clamp(3rem, 6vw, 6rem); line-height: 0.9; letter-spacing: -0.05em; }
+  .siwak-faq__items { border-top: 2px solid #171717; }
+  .siwak-faq__item { border-bottom: 1px solid #171717; }
+  .siwak-faq__item summary { display: flex; justify-content: space-between; gap: 20px; padding: 24px 0; cursor: pointer; font-size: clamp(1.1rem, 2vw, 1.45rem); font-weight: 800; list-style: none; }
+  .siwak-faq__item summary::-webkit-details-marker { display: none; }
+  .siwak-faq__item summary span:last-child { color: #e10600; font-size: 1.6em; font-weight: 400; line-height: 0.7; transition: transform 160ms ease; }
+  .siwak-faq__item[open] summary span:last-child { transform: rotate(45deg); }
+  .siwak-faq__answer { max-width: 720px; padding: 0 42px 24px 0; line-height: 1.6; }
+  .siwak-faq__answer p { margin: 0; }
+  @media (max-width: 749px) {
+    .siwak-faq { grid-template-columns: 1fr; gap: 42px; }
+    .siwak-faq__heading { position: static; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Siwak — FAQ",
+  "max_blocks": 8,
+  "settings": [{ "type": "text", "id": "heading", "label": "Titre", "default": "Les réponses nettes." }],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        { "type": "text", "id": "question", "label": "Question", "default": "Combien de temps dure un siwak ?" },
+        { "type": "richtext", "id": "answer", "label": "Réponse", "default": "<p>La durée dépend de la fréquence d’utilisation et de l’entretien. La routine de 20 unités sur quatre mois correspond à un repère d’environ un siwak tous les 6 jours.</p>" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Siwak — FAQ",
+      "blocks": [
+        { "type": "question", "settings": { "question": "Combien de temps dure un siwak ?", "answer": "<p>La durée dépend de la fréquence d’utilisation et de l’entretien. La routine de 20 unités sur quatre mois correspond à un repère d’environ un siwak tous les 6 jours.</p>" } },
+        { "type": "question", "settings": { "question": "Comment le conserver ?", "answer": "<p>Rince la pointe après usage, laisse-la sécher et conserve le siwak dans un endroit propre et aéré. Suis toujours les indications fournies avec le produit.</p>" } },
+        { "type": "question", "settings": { "question": "À quelle fréquence l’utiliser ?", "answer": "<p>Adapte l’usage à ta routine et aux consignes du produit. En cas de douleur ou d’irritation persistante, demande conseil à un professionnel de santé.</p>" } },
+        { "type": "question", "settings": { "question": "Comment fonctionne le renouvellement ?", "answer": "<p>L’offre prévoit l’envoi de 4 boîtes tous les 4 mois. Les modalités de modification ou de résiliation seront indiquées avec l’option d’abonnement.</p>" } },
+        { "type": "question", "settings": { "question": "Où la livraison est-elle offerte ?", "answer": "<p>La livraison est offerte en France avec l’abonnement. Les frais applicables aux autres destinations s’affichent avant le paiement.</p>" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

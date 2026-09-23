@@ -1,0 +1,65 @@
+<section class="siwak-facts" aria-label="Repères de l’offre">
+  <div class="siwak-facts__inner">
+    {% for block in section.blocks %}
+      <div class="siwak-facts__item" {{ block.shopify_attributes }}>
+        <strong>{{ block.settings.value | escape }}</strong>
+        <span>{{ block.settings.label | escape }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% stylesheet %}
+  .siwak-facts { background: #e10600; color: #fff; }
+  .siwak-facts__inner {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .siwak-facts__item {
+    min-height: 112px;
+    padding: 22px clamp(18px, 3vw, 44px);
+    border-right: 1px solid rgb(255 255 255 / 0.42);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .siwak-facts__item:last-child { border-right: 0; }
+  .siwak-facts__item strong { font-size: clamp(1.55rem, 2.6vw, 2.65rem); line-height: 1; }
+  .siwak-facts__item span { margin-top: 7px; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+  @media (max-width: 749px) {
+    .siwak-facts__inner { grid-template-columns: repeat(2, 1fr); }
+    .siwak-facts__item { min-height: 96px; border-bottom: 1px solid rgb(255 255 255 / 0.42); }
+    .siwak-facts__item:nth-child(2n) { border-right: 0; }
+    .siwak-facts__item:nth-last-child(-n + 2) { border-bottom: 0; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Siwak — repères offre",
+  "max_blocks": 4,
+  "blocks": [
+    {
+      "type": "fact",
+      "name": "Repère",
+      "settings": [
+        { "type": "text", "id": "value", "label": "Valeur", "default": "20" },
+        { "type": "text", "id": "label", "label": "Libellé", "default": "siwaks" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Siwak — repères offre",
+      "blocks": [
+        { "type": "fact", "settings": { "value": "20", "label": "siwaks" } },
+        { "type": "fact", "settings": { "value": "4 mois", "label": "de routine" } },
+        { "type": "fact", "settings": { "value": "10 €", "label": "par mois" } },
+        { "type": "fact", "settings": { "value": "Offerte", "label": "livraison France" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
