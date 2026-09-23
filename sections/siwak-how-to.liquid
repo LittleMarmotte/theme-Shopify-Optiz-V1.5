@@ -21,7 +21,7 @@
       </article>
     {% endfor %}
   </div>
-  {% if section.settings.note != blank %}<p class="siwak-how-to__note">{{ section.settings.note | escape }}</p>{% endif %}
+  {% if request.design_mode and section.settings.note != blank %}<p class="siwak-how-to__note">{{ section.settings.note | escape }}</p>{% endif %}
 </section>
 
 {% stylesheet %}

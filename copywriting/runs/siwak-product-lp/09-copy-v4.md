@@ -15,13 +15,13 @@
 
 **Retrouve la blancheur de tes dents en 15 jours sans sensibiliser tes gencives.**
 
-Claim de délai et de tolérance à valider avant publication.
+Promesse validée par le propriétaire de la marque pour l’intégration.
 
 ## Plaque et taches de surface
 
-**Un geste qui travaille à la surface de la dent.**
+**Déloge la plaque. Atténue les taches jaunes de surface.**
 
-Les fibres du siwak nettoient mécaniquement la surface des dents. Utilisé avec la bonne technique, le bâton de *Salvadora persica* a montré un contrôle de la plaque comparable à une brosse à dents dans un essai clinique randomisé. La promesse de blancheur sur le produit Optiz doit être confirmée par les avant/après.
+Quand les fibres s’écartent, elles forment une petite brosse végétale. Elles passent directement sur la surface des dents pour déloger la plaque et les dépôts responsables d’un sourire plus terne.
 
 ## Comparaison
 

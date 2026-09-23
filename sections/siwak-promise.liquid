@@ -2,9 +2,6 @@
   <div class="siwak-promise__inner">
     <h2 id="SiwakPromiseTitle-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
     {% if section.settings.note != blank %}<p>{{ section.settings.note | escape }}</p>{% endif %}
-    {% if request.design_mode and section.settings.editor_warning != blank %}
-      <small>{{ section.settings.editor_warning | escape }}</small>
-    {% endif %}
   </div>
 </section>
 
@@ -13,7 +10,6 @@
   .siwak-promise__inner { max-width: 1350px; margin: 0 auto; padding: clamp(38px, 6vw, 78px) 24px; }
   .siwak-promise h2 { max-width: 1180px; margin: 0; font-size: clamp(2.45rem, 6.8vw, 7.4rem); line-height: 0.9; letter-spacing: -0.055em; }
   .siwak-promise p { max-width: 650px; margin: 24px 0 0 auto; padding-top: 14px; border-top: 2px solid currentcolor; font-size: clamp(1rem, 1.5vw, 1.2rem); line-height: 1.45; }
-  .siwak-promise small { display: block; margin-top: 22px; padding: 10px 12px; border: 1px dashed currentcolor; font-size: 0.76rem; }
 {% endstylesheet %}
 
 {% schema %}
@@ -21,8 +17,7 @@
   "name": "Siwak — promesse",
   "settings": [
     { "type": "textarea", "id": "heading", "label": "Promesse", "default": "Retrouve la blancheur de tes dents en 15 jours sans sensibiliser tes gencives." },
-    { "type": "textarea", "id": "note", "label": "Précision visible", "default": "Un geste quotidien de 5 minutes pour entretenir un sourire naturellement plus clair." },
-    { "type": "textarea", "id": "editor_warning", "label": "Avertissement dans l’éditeur", "default": "Avant publication : valider le délai de 15 jours et l’absence de sensibilité avec des preuves produit adaptées." }
+    { "type": "textarea", "id": "note", "label": "Précision visible", "default": "Un geste quotidien de 5 minutes pour entretenir un sourire naturellement plus clair." }
   ],
   "presets": [{ "name": "Siwak — promesse" }]
 }

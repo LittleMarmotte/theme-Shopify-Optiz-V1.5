@@ -28,7 +28,7 @@
     {% endfor %}
   </div>
 
-  {% if section.settings.proof_note != blank %}
+  {% if request.design_mode and section.settings.proof_note != blank %}
     <p class="siwak-proof__note"><strong>À compléter avant publication :</strong> {{ section.settings.proof_note | escape }}</p>
   {% endif %}
 </section>

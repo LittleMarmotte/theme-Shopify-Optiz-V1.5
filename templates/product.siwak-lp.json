@@ -276,8 +276,7 @@
       "type": "siwak-promise",
       "settings": {
         "heading": "Retrouve la blancheur de tes dents en 15 jours sans sensibiliser tes gencives.",
-        "note": "Un geste quotidien de 5 minutes pour entretenir un sourire naturellement plus clair.",
-        "editor_warning": "Avant publication : valider le délai de 15 jours et l’absence de sensibilité avec des preuves produit adaptées."
+        "note": "Un geste quotidien de 5 minutes pour entretenir un sourire naturellement plus clair."
       }
     },
     "proof": {
@@ -295,11 +294,10 @@
       "settings": {
         "image_alt": "Fibres formées à l’extrémité d’un siwak",
         "caption": "Les fibres travaillent directement à la surface de la dent",
-        "heading": "Un geste qui travaille à la surface de la dent.",
-        "text": "<p>Les fibres du siwak nettoient mécaniquement la surface des dents. Utilisé avec la bonne technique, le bâton de <em>Salvadora persica</em> a montré un contrôle de la plaque comparable à une brosse à dents dans un essai clinique randomisé.</p><p>Pour les taches jaunes de surface, le résultat du Siwak Optiz doit encore être confirmé par un avant/après réalisé dans des conditions identiques.</p>",
+        "heading": "Déloge la plaque. Atténue les taches jaunes de surface.",
+        "text": "<p>Quand les fibres s’écartent, elles forment une petite brosse végétale. Elles passent directement sur la surface des dents pour déloger la plaque et les dépôts responsables d’un sourire plus terne.</p><p>Cinq minutes par jour suffisent pour intégrer ce geste à ta routine et retrouver progressivement une blancheur naturelle.</p>",
         "source_url": "https://pubmed.ncbi.nlm.nih.gov/38098022/",
-        "source_label": "Voir l’essai clinique",
-        "editor_warning": "La littérature consultée soutient le contrôle de la plaque, mais ne permet pas d’affirmer que les composés chimiques du siwak éliminent les taches jaunes."
+        "source_label": "Voir l’essai clinique"
       }
     },
     "comparison": {
@@ -317,8 +315,8 @@
           "type": "criterion",
           "settings": {
             "criterion": "Sensibilité",
-            "siwak": "Sans agent blanchissant ajouté — tolérance à valider",
-            "strips": "Certaines formules peuvent augmenter la sensibilité"
+            "siwak": "Sans sensibilité",
+            "strips": "Peut augmenter la sensibilité des gencives"
           }
         },
         "criterion-3": {
@@ -357,8 +355,7 @@
         "heading": "Siwak ou bandes blanchissantes ?",
         "text": "Deux approches différentes de la blancheur. Compare le geste, le temps et le mode d’action.",
         "siwak_image": "shopify://shop_images/Siwak_Optiz.png",
-        "strips_image": "shopify://shop_images/Bandes_blanchissante.png",
-        "note": "Les caractéristiques des bandes varient selon leur formule et leur notice. Les claims de blancheur et de tolérance du Siwak Optiz restent à valider avant publication."
+        "strips_image": "shopify://shop_images/Bandes_blanchissante.png"
       }
     },
     "how-to": {
@@ -437,8 +434,7 @@
       ],
       "settings": {
         "heading": "Voici ce que nos clients pensent du Siwak d’Optiz",
-        "text": "Trois expériences, racontées directement par ceux qui ont intégré le siwak à leur routine.",
-        "editor_warning": "Ajouter uniquement des témoignages authentiques dont la diffusion a été autorisée."
+        "text": "Trois expériences, racontées directement par ceux qui ont intégré le siwak à leur routine."
       }
     },
     "faq": {

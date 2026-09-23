@@ -14,8 +14,11 @@
             {{ block.settings.poster | image_url: width: 1000 | image_tag: widths: '400, 600, 800, 1000', sizes: '(min-width: 800px) 33vw, 82vw', loading: 'lazy', alt: block.settings.poster.alt | default: block.settings.title }}
             <span class="siwak-testimonials__play" aria-hidden="true">▶</span>
           {% else %}
-            {{ 'lifestyle-1' | placeholder_svg_tag: 'siwak-testimonials__placeholder' }}
-            <span class="siwak-testimonials__play" aria-hidden="true">▶</span>
+            <div class="siwak-testimonials__placeholder" aria-hidden="true">
+              <span class="siwak-testimonials__play">▶</span>
+              <strong>VIDÉO CLIENT</strong>
+              <small>FORMAT 9:16</small>
+            </div>
           {% endif %}
         </div>
         {% if block.settings.title != blank %}<h3>{{ block.settings.title | escape }}</h3>{% endif %}
@@ -24,9 +27,6 @@
     {% endfor %}
   </div>
 
-  {% if request.design_mode and section.settings.editor_warning != blank %}
-    <p class="siwak-testimonials__warning">{{ section.settings.editor_warning | escape }}</p>
-  {% endif %}
 </section>
 
 {% stylesheet %}
@@ -36,11 +36,13 @@
   .siwak-testimonials__header p { margin: 0; padding-top: 14px; border-top: 2px solid currentcolor; line-height: 1.5; }
   .siwak-testimonials__videos { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(14px, 2.5vw, 30px); }
   .siwak-testimonials__media { position: relative; aspect-ratio: 9 / 16; overflow: hidden; border: 2px solid #171717; background: #171717; }
-  .siwak-testimonials__media video, .siwak-testimonials__media img, .siwak-testimonials__placeholder { width: 100%; height: 100%; display: block; object-fit: cover; }
+  .siwak-testimonials__media video, .siwak-testimonials__media img { width: 100%; height: 100%; display: block; object-fit: cover; }
+  .siwak-testimonials__placeholder { width: 100%; height: 100%; display: grid; place-items: center; align-content: center; gap: 14px; background: repeating-linear-gradient(-45deg, #171717 0, #171717 18px, #211f1f 18px, #211f1f 36px); color: #fff; }
+  .siwak-testimonials__placeholder strong { margin-top: 84px; font-size: 1rem; letter-spacing: .12em; }
+  .siwak-testimonials__placeholder small { font-size: .72rem; letter-spacing: .14em; opacity: .68; }
   .siwak-testimonials__play { position: absolute; left: 50%; top: 50%; display: grid; place-items: center; width: 62px; height: 62px; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%); background: #e52219; color: #fff; font-size: 1.15rem; }
   .siwak-testimonials__video h3 { margin: 14px 0 3px; font-size: 1.1rem; text-transform: uppercase; }
   .siwak-testimonials__video > p { margin: 0; font-size: 0.84rem; opacity: 0.8; }
-  .siwak-testimonials__warning { margin: 30px 0 0; padding: 11px 13px; border: 1px dashed currentcolor; font-size: 0.78rem; }
   @media (max-width: 749px) {
     .siwak-testimonials__header { grid-template-columns: 1fr; }
     .siwak-testimonials__videos { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px; }
@@ -54,8 +56,7 @@
   "max_blocks": 3,
   "settings": [
     { "type": "text", "id": "heading", "label": "Titre", "default": "Voici ce que nos clients pensent du Siwak d’Optiz" },
-    { "type": "textarea", "id": "text", "label": "Introduction", "default": "Trois expériences, racontées directement par ceux qui ont intégré le siwak à leur routine." },
-    { "type": "textarea", "id": "editor_warning", "label": "Avertissement dans l’éditeur", "default": "Ajouter uniquement des témoignages authentiques dont la diffusion a été autorisée." }
+    { "type": "textarea", "id": "text", "label": "Introduction", "default": "Trois expériences, racontées directement par ceux qui ont intégré le siwak à leur routine." }
   ],
   "blocks": [
     {
