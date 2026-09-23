@@ -1,6 +1,5 @@
 <section class="siwak-faq" aria-labelledby="SiwakFaqTitle-{{ section.id }}">
   <div class="siwak-faq__heading">
-    <p>06 / QUESTIONS</p>
     <h2 id="SiwakFaqTitle-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
   </div>
   <div class="siwak-faq__items">
@@ -16,7 +15,6 @@
 {% stylesheet %}
   .siwak-faq { display: grid; grid-template-columns: minmax(260px, 0.65fr) minmax(0, 1.35fr); gap: clamp(40px, 8vw, 130px); background: #f5f1e9; color: #171717; padding: clamp(60px, 9vw, 120px) max(20px, calc((100vw - 1320px) / 2)); }
   .siwak-faq__heading { align-self: start; position: sticky; top: 30px; }
-  .siwak-faq__heading p { margin: 0 0 24px; color: #e10600; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em; }
   .siwak-faq h2 { margin: 0; font-size: clamp(3rem, 6vw, 6rem); line-height: 0.9; letter-spacing: -0.05em; }
   .siwak-faq__items { border-top: 2px solid #171717; }
   .siwak-faq__item { border-bottom: 1px solid #171717; }

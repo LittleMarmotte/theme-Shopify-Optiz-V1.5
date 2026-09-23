@@ -1,6 +1,5 @@
 <section class="siwak-proof" aria-labelledby="SiwakProofTitle-{{ section.id }}">
   <div class="siwak-proof__intro">
-    <p class="siwak-proof__index">01 / LA PREUVE</p>
     <h2 id="SiwakProofTitle-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
     {% if section.settings.text != blank %}<div class="siwak-proof__text rte">{{ section.settings.text }}</div>{% endif %}
   </div>
@@ -36,8 +35,7 @@
 
 {% stylesheet %}
   .siwak-proof { background: #f5f1e9; color: #171717; padding: clamp(58px, 8vw, 112px) max(20px, calc((100vw - 1320px) / 2)); }
-  .siwak-proof__intro { display: grid; grid-template-columns: minmax(140px, 0.35fr) 1fr 0.8fr; gap: 26px; align-items: start; margin-bottom: 36px; }
-  .siwak-proof__index { margin: 9px 0 0; color: #e10600; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em; }
+  .siwak-proof__intro { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; align-items: end; margin-bottom: 36px; }
   .siwak-proof h2 { margin: 0; max-width: 620px; font-size: clamp(2.5rem, 6vw, 6.8rem); line-height: 0.88; letter-spacing: -0.055em; }
   .siwak-proof__text { max-width: 430px; font-size: clamp(1rem, 1.5vw, 1.25rem); line-height: 1.5; }
   .siwak-proof__text p { margin-top: 0; }

@@ -1,0 +1,42 @@
+<div class="siwak-product-trust" {{ block.shopify_attributes }}>
+  <div class="siwak-product-trust__item">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.8 2.9 8.2 7 10 4.1-1.8 7-5.2 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-5"/></svg>
+    <p><strong>{{ block.settings.guarantee_title | escape }}</strong><span>{{ block.settings.guarantee_text | escape }}</span></p>
+  </div>
+  <div class="siwak-product-trust__item">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+    <p><strong>{{ block.settings.shipping_title | escape }}</strong><span>{{ block.settings.shipping_text | escape }}</span></p>
+  </div>
+</div>
+
+{% stylesheet %}
+  .siwak-product-trust {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    border-block: 1px solid rgb(var(--color-foreground-rgb) / 0.22);
+  }
+  .siwak-product-trust__item { display: flex; gap: 11px; align-items: center; padding: 14px 10px; }
+  .siwak-product-trust__item + .siwak-product-trust__item { border-left: 1px solid rgb(var(--color-foreground-rgb) / 0.22); }
+  .siwak-product-trust svg { width: 30px; height: 30px; flex: 0 0 30px; fill: none; stroke: #e52219; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .siwak-product-trust p { display: grid; gap: 2px; margin: 0; line-height: 1.2; }
+  .siwak-product-trust strong { font-size: 0.79rem; text-transform: uppercase; }
+  .siwak-product-trust span { font-size: 0.76rem; opacity: 0.72; }
+  @media (max-width: 420px) {
+    .siwak-product-trust { grid-template-columns: 1fr; }
+    .siwak-product-trust__item + .siwak-product-trust__item { border-top: 1px solid rgb(var(--color-foreground-rgb) / 0.22); border-left: 0; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Garanties Siwak",
+  "settings": [
+    { "type": "text", "id": "guarantee_title", "label": "Titre garantie", "default": "Satisfait ou remboursé" },
+    { "type": "text", "id": "guarantee_text", "label": "Détail garantie", "default": "Remboursé sous 30 jours" },
+    { "type": "text", "id": "shipping_title", "label": "Titre expédition", "default": "Expédié sous 24 h" },
+    { "type": "text", "id": "shipping_text", "label": "Détail expédition", "default": "Depuis la France" }
+  ],
+  "presets": [{ "name": "Garanties Siwak" }]
+}
+{% endschema %}

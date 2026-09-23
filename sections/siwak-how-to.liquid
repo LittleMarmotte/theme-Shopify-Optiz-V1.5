@@ -1,7 +1,9 @@
 <section class="siwak-how-to" aria-labelledby="SiwakHowToTitle-{{ section.id }}">
   <header class="siwak-how-to__header">
-    <p>03 / MODE D’EMPLOI</p>
-    <h2 id="SiwakHowToTitle-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
+    <div>
+      <h2 id="SiwakHowToTitle-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
+      {% if section.settings.subheading != blank %}<p>{{ section.settings.subheading | escape }}</p>{% endif %}
+    </div>
   </header>
   <div class="siwak-how-to__steps">
     {% for block in section.blocks %}
@@ -24,8 +26,8 @@
 
 {% stylesheet %}
   .siwak-how-to { background: #fff; color: #171717; padding: clamp(58px, 8vw, 110px) max(20px, calc((100vw - 1400px) / 2)); }
-  .siwak-how-to__header { display: grid; grid-template-columns: minmax(150px, 0.3fr) 1fr; gap: 24px; align-items: end; margin-bottom: 42px; }
-  .siwak-how-to__header p { margin: 0 0 8px; color: #e10600; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em; }
+  .siwak-how-to__header { margin-bottom: 42px; }
+  .siwak-how-to__header p { margin: 15px 0 0; color: #e52219; font-size: clamp(1.1rem, 2vw, 1.45rem); font-weight: 800; }
   .siwak-how-to h2 { margin: 0; font-size: clamp(2.5rem, 6vw, 6rem); line-height: 0.92; letter-spacing: -0.05em; }
   .siwak-how-to__steps { display: grid; grid-template-columns: repeat(4, 1fr); border-block: 2px solid #171717; }
   .siwak-how-to__step { padding: 18px; border-right: 1px solid #171717; }
@@ -42,7 +44,6 @@
     .siwak-how-to__step:nth-child(-n + 2) { border-bottom: 1px solid #171717; }
   }
   @media (max-width: 599px) {
-    .siwak-how-to__header { grid-template-columns: 1fr; gap: 10px; }
     .siwak-how-to__steps { grid-template-columns: 1fr; }
     .siwak-how-to__step, .siwak-how-to__step:nth-child(2) { border-right: 0; border-bottom: 1px solid #171717; }
     .siwak-how-to__step:last-child { border-bottom: 0; }
@@ -54,7 +55,8 @@
   "name": "Siwak — mode d’emploi",
   "max_blocks": 4,
   "settings": [
-    { "type": "text", "id": "heading", "label": "Titre", "default": "Quatre gestes. C’est tout." },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Comment utiliser un siwak" },
+    { "type": "text", "id": "subheading", "label": "Sous-titre", "default": "5 min par jour et c’est tout" },
     { "type": "textarea", "id": "note", "label": "Note", "default": "Les consignes finales doivent rester cohérentes avec la notice fournie avec le produit." }
   ],
   "blocks": [

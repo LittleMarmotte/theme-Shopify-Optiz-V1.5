@@ -45,6 +45,19 @@
       "default": true
     },
     {
+      "type": "checkbox",
+      "id": "siwak_offer_style",
+      "label": "Style offres Siwak",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "siwak_offer_heading",
+      "label": "Titre du sélecteur Siwak",
+      "default": "Choisis ton offre",
+      "visible_if": "{{ block.settings.siwak_offer_style == true }}"
+    },
+    {
       "type": "text_alignment",
       "id": "alignment",
       "label": "t:settings.alignment",

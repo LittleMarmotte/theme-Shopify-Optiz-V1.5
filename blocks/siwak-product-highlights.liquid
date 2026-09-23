@@ -1,11 +1,21 @@
 <div id="siwak-buy" class="siwak-product-highlights" {{ block.shopify_attributes }}>
-  {% if block.settings.eyebrow != blank %}
-    <p class="siwak-product-highlights__eyebrow">{{ block.settings.eyebrow | escape }}</p>
-  {% endif %}
   <ul class="siwak-product-highlights__list" role="list">
-    {% if block.settings.line_1 != blank %}<li>{{ block.settings.line_1 | escape }}</li>{% endif %}
-    {% if block.settings.line_2 != blank %}<li>{{ block.settings.line_2 | escape }}</li>{% endif %}
-    {% if block.settings.line_3 != blank %}<li>{{ block.settings.line_3 | escape }}</li>{% endif %}
+    <li>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.5 4.2L18 9l-4.5 1.8L12 15l-1.5-4.2L6 9l4.5-1.8L12 3Zm6 10 .8 2.2L21 16l-2.2.8L18 19l-.8-2.2L15 16l2.2-.8L18 13Z"/></svg>
+      <span>{{ block.settings.line_1 | escape }}</span>
+    </li>
+    <li>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.8 2.9 8.2 7 10 4.1-1.8 7-5.2 7-10V6l-7-3Zm-3 9 2 2 4-5"/></svg>
+      <span>{{ block.settings.line_2 | escape }}</span>
+    </li>
+    <li>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>
+      <span>{{ block.settings.line_3 | escape }}</span>
+    </li>
+    <li>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14v13H5zM8 3h8v3M8 10h8M8 14h5"/></svg>
+      <span>{{ block.settings.line_4 | escape }}</span>
+    </li>
   </ul>
 </div>
 
@@ -17,37 +27,43 @@
     scroll-margin-top: 100px;
   }
 
-  .siwak-product-highlights__eyebrow {
-    margin: 0 0 10px;
-    color: #e10600;
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
   .siwak-product-highlights__list {
     display: grid;
-    gap: 7px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px 18px;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
   .siwak-product-highlights__list li {
-    display: grid;
-    grid-template-columns: 12px 1fr;
-    gap: 9px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     margin: 0;
+    font-size: 0.9rem;
+    font-weight: 750;
     line-height: 1.35;
   }
 
-  .siwak-product-highlights__list li::before {
-    content: '';
-    width: 7px;
-    height: 7px;
-    margin-top: 0.45em;
-    background: #e10600;
+  .siwak-product-highlights__list svg {
+    width: 25px;
+    height: 25px;
+    flex: 0 0 25px;
+    fill: none;
+    stroke: #e52219;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .siwak-product-highlights__list li:first-child svg {
+    fill: #e52219;
+    stroke: none;
+  }
+
+  @media (max-width: 420px) {
+    .siwak-product-highlights__list { grid-template-columns: 1fr; }
   }
 {% endstylesheet %}
 
@@ -55,10 +71,10 @@
 {
   "name": "Repères produit Siwak",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Sur-titre", "default": "Le siwak, simplement." },
-    { "type": "text", "id": "line_1", "label": "Ligne 1", "default": "5 siwaks par boîte" },
-    { "type": "text", "id": "line_2", "label": "Ligne 2", "default": "Un geste simple à apprendre" },
-    { "type": "text", "id": "line_3", "label": "Ligne 3", "default": "Formats 1 ou 4 boîtes" }
+    { "type": "text", "id": "line_1", "label": "Bénéfice 1", "default": "Blancheur naturelle" },
+    { "type": "text", "id": "line_2", "label": "Bénéfice 2", "default": "Sans sensibilité" },
+    { "type": "text", "id": "line_3", "label": "Bénéfice 3", "default": "5 min par jour" },
+    { "type": "text", "id": "line_4", "label": "Bénéfice 4", "default": "5 siwaks par boîte" }
   ],
   "presets": [{ "name": "Repères produit Siwak" }]
 }

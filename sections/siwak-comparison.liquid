@@ -1,0 +1,100 @@
+<section class="siwak-comparison" aria-labelledby="SiwakComparisonTitle-{{ section.id }}">
+  <header class="siwak-comparison__header">
+    <h2 id="SiwakComparisonTitle-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
+    {% if section.settings.text != blank %}<p>{{ section.settings.text | escape }}</p>{% endif %}
+  </header>
+
+  <div class="siwak-comparison__table" role="table" aria-label="Comparaison entre le Siwak Optiz et les bandes blanchissantes">
+    <div class="siwak-comparison__row siwak-comparison__row--products" role="row">
+      <div role="columnheader"><span>Comparaison</span></div>
+      <div role="columnheader" class="siwak-comparison__product">
+        {% if section.settings.siwak_image != blank %}
+          {{ section.settings.siwak_image | image_url: width: 900 | image_tag: widths: '300, 500, 700, 900', sizes: '(min-width: 750px) 30vw, 45vw', loading: 'lazy', alt: section.settings.siwak_image.alt | default: 'Boîte de siwaks Optiz' }}
+        {% else %}
+          {{ 'product-1' | placeholder_svg_tag: 'siwak-comparison__placeholder' }}
+        {% endif %}
+        <strong>Siwak Optiz</strong>
+      </div>
+      <div role="columnheader" class="siwak-comparison__product">
+        {% if section.settings.strips_image != blank %}
+          {{ section.settings.strips_image | image_url: width: 900 | image_tag: widths: '300, 500, 700, 900', sizes: '(min-width: 750px) 30vw, 45vw', loading: 'lazy', alt: section.settings.strips_image.alt | default: 'Bandes blanchissantes' }}
+        {% else %}
+          {{ 'product-2' | placeholder_svg_tag: 'siwak-comparison__placeholder' }}
+        {% endif %}
+        <strong>Bandes blanchissantes</strong>
+      </div>
+    </div>
+    {% for block in section.blocks %}
+      <div class="siwak-comparison__row" role="row" {{ block.shopify_attributes }}>
+        <strong role="rowheader">{{ block.settings.criterion | escape }}</strong>
+        <span role="cell">{{ block.settings.siwak | escape }}</span>
+        <span role="cell">{{ block.settings.strips | escape }}</span>
+      </div>
+    {% endfor %}
+  </div>
+  {% if section.settings.note != blank %}<p class="siwak-comparison__note">{{ section.settings.note | escape }}</p>{% endif %}
+</section>
+
+{% stylesheet %}
+  .siwak-comparison { background: #171717; color: #fff; padding: clamp(58px, 8vw, 112px) max(18px, calc((100vw - 1320px) / 2)); }
+  .siwak-comparison__header { display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 30px; align-items: end; margin-bottom: 40px; }
+  .siwak-comparison h2 { max-width: 820px; margin: 0; font-size: clamp(2.7rem, 6vw, 6.4rem); line-height: 0.9; letter-spacing: -0.055em; }
+  .siwak-comparison__header p { margin: 0; padding-top: 14px; border-top: 4px solid #e52219; font-size: 1rem; line-height: 1.5; }
+  .siwak-comparison__table { border: 2px solid #fff; }
+  .siwak-comparison__row { display: grid; grid-template-columns: 0.65fr 1fr 1fr; }
+  .siwak-comparison__row > * { display: flex; align-items: center; min-width: 0; padding: 20px; border-right: 1px solid rgb(255 255 255 / 0.45); border-top: 1px solid rgb(255 255 255 / 0.45); line-height: 1.4; }
+  .siwak-comparison__row > *:last-child { border-right: 0; }
+  .siwak-comparison__row > strong:first-child { color: #ff554d; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; }
+  .siwak-comparison__row--products > * { min-height: 245px; border-top: 0; }
+  .siwak-comparison__row--products > div:first-child { align-items: end; font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase; }
+  .siwak-comparison__product { position: relative; flex-direction: column; justify-content: end; gap: 12px; overflow: hidden; }
+  .siwak-comparison__product img, .siwak-comparison__placeholder { width: 100%; height: 185px; display: block; object-fit: contain; background: #f5f1e9; }
+  .siwak-comparison__product strong { font-size: clamp(1.05rem, 2vw, 1.5rem); }
+  .siwak-comparison__note { max-width: 850px; margin: 18px 0 0 auto; font-size: 0.78rem; line-height: 1.45; opacity: 0.72; }
+  @media (max-width: 749px) {
+    .siwak-comparison__header { grid-template-columns: 1fr; }
+    .siwak-comparison__row { grid-template-columns: 0.55fr 1fr 1fr; }
+    .siwak-comparison__row > * { padding: 12px 9px; font-size: 0.78rem; }
+    .siwak-comparison__row--products > * { min-height: 170px; }
+    .siwak-comparison__row--products > div:first-child { font-size: 0.6rem; }
+    .siwak-comparison__product img, .siwak-comparison__placeholder { height: 105px; }
+    .siwak-comparison__product strong { font-size: 0.88rem; text-align: center; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Siwak — comparaison",
+  "max_blocks": 6,
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Siwak ou bandes blanchissantes ?" },
+    { "type": "textarea", "id": "text", "label": "Introduction", "default": "Deux approches différentes de la blancheur. Compare le geste, le temps et le mode d’action." },
+    { "type": "image_picker", "id": "siwak_image", "label": "Image Siwak Optiz" },
+    { "type": "image_picker", "id": "strips_image", "label": "Image bandes blanchissantes" },
+    { "type": "textarea", "id": "note", "label": "Note", "default": "Les caractéristiques des bandes varient selon leur formule et leur notice. Les claims de blancheur et de tolérance du Siwak Optiz restent à valider avant publication." }
+  ],
+  "blocks": [
+    {
+      "type": "criterion",
+      "name": "Critère",
+      "settings": [
+        { "type": "text", "id": "criterion", "label": "Critère", "default": "Blancheur" },
+        { "type": "textarea", "id": "siwak", "label": "Siwak", "default": "Entretien d’une blancheur d’apparence naturelle" },
+        { "type": "textarea", "id": "strips", "label": "Bandes", "default": "Agents blanchissants selon la formule" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Siwak — comparaison",
+      "blocks": [
+        { "type": "criterion", "settings": { "criterion": "Blancheur", "siwak": "Entretien d’une blancheur d’apparence naturelle", "strips": "Agents blanchissants selon la formule" } },
+        { "type": "criterion", "settings": { "criterion": "Sensibilité", "siwak": "Sans agent blanchissant ajouté — tolérance à valider", "strips": "Certaines formules peuvent augmenter la sensibilité" } },
+        { "type": "criterion", "settings": { "criterion": "Temps d’usage", "siwak": "5 min par jour", "strips": "Souvent autour de 30 min selon la notice" } },
+        { "type": "criterion", "settings": { "criterion": "Mode d’action", "siwak": "Fibres : action mécanique sur la plaque et les dépôts de surface", "strips": "Action chimique sur la couleur selon la formule" } },
+        { "type": "criterion", "settings": { "criterion": "Entretien", "siwak": "S’inscrit dans une routine régulière", "strips": "Résultat variable selon la formule et les habitudes" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

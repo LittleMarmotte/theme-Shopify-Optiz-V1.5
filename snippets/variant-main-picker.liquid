@@ -55,11 +55,15 @@
 
         {%- if variant_style == 'swatch' or block_settings.variant_style == 'buttons' -%}
           <fieldset
-            class="variant-option variant-option--buttons{% if variant_style == 'swatch' %} variant-option--swatches{% else %} variant-option--{{ settings.variant_button_width }}{% endif %}"
+            class="variant-option variant-option--buttons{% if variant_style == 'swatch' %} variant-option--swatches{% else %} variant-option--{{ settings.variant_button_width }}{% endif %}{% if block_settings.siwak_offer_style %} variant-option--siwak-offer{% endif %}"
             {{ option_id_attribute }}
           >
             <legend>
-              {{ product_option.name | escape -}}
+              {% if block_settings.siwak_offer_style and block_settings.siwak_offer_heading != blank %}
+                {{ block_settings.siwak_offer_heading | escape }}
+              {% else %}
+                {{ product_option.name | escape -}}
+              {% endif %}
               {%- if variant_style == 'swatch' -%}
                 <span class="variant-option__swatch-value">{{ product_option.selected_value }}</span>
               {%- endif %}
@@ -105,7 +109,22 @@
                     mode: 'unscaled'
                   %}
                 {% else %}
-                  <span class="variant-option__button-label__text">{{ product_option_value | escape }}</span>
+                  {% if block_settings.siwak_offer_style %}
+                    <span class="siwak-offer-radio" aria-hidden="true"></span>
+                    <span class="siwak-offer-copy">
+                      <strong>{{ product_option_value | escape }}</strong>
+                      {% if product_option_value.variant != blank %}
+                        <small>
+                          {% if product_option_value.variant.compare_at_price > product_option_value.variant.price %}
+                            <s>{{ product_option_value.variant.compare_at_price | money }}</s>
+                          {% endif %}
+                          {{ product_option_value.variant.price | money }}
+                        </small>
+                      {% endif %}
+                    </span>
+                  {% else %}
+                    <span class="variant-option__button-label__text">{{ product_option_value | escape }}</span>
+                  {% endif %}
                 {% endif %}
                 {% render 'strikethrough-variant', product_option: product_option_value %}
               </label>
@@ -285,6 +304,62 @@
     text-align: left;
     text-wrap: auto;
   }
+
+  .variant-option--siwak-offer {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 9px;
+    width: 100%;
+  }
+
+  .variant-option--siwak-offer legend {
+    width: 100%;
+    margin-block-end: 4px;
+    font-size: 0.82rem;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .variant-option--siwak-offer .variant-option__button-label {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    justify-content: initial;
+    gap: 13px;
+    width: 100%;
+    min-height: 70px;
+    padding: 14px 16px;
+    border: 2px solid rgb(var(--color-foreground-rgb) / 0.24);
+    border-radius: 4px;
+    background: transparent;
+    color: inherit;
+    white-space: normal;
+  }
+
+  .variant-option--siwak-offer .variant-option__button-label:has(:checked) {
+    border-color: #e52219;
+    background: #171717;
+    color: #fff;
+  }
+
+  .siwak-offer-radio {
+    width: 20px;
+    height: 20px;
+    border: 2px solid currentcolor;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 4px transparent;
+  }
+
+  .variant-option--siwak-offer .variant-option__button-label:has(:checked) .siwak-offer-radio {
+    background: #e52219;
+    border-color: #fff;
+    box-shadow: inset 0 0 0 4px #171717;
+  }
+
+  .siwak-offer-copy { display: flex; justify-content: space-between; gap: 20px; align-items: baseline; text-align: left; }
+  .siwak-offer-copy strong { font-size: 1rem; }
+  .siwak-offer-copy small { font-size: 1rem; font-weight: 850; white-space: nowrap; }
+  .siwak-offer-copy s { margin-right: 5px; font-size: 0.8em; opacity: 0.62; }
 
   .variant-option--equal-width-buttons {
     --variant-min-width: clamp(44px, calc(var(--variant-option-padding-inline) * 2 + var(--variant-ch)), 100%);
