@@ -6,57 +6,80 @@
 
   <div class="siwak-comparison__table" role="table" aria-label="Comparaison entre le Siwak Optiz et les bandes blanchissantes">
     <div class="siwak-comparison__row siwak-comparison__row--products" role="row">
-      <div role="columnheader"><span>Comparaison</span></div>
-      <div role="columnheader" class="siwak-comparison__product">
-        {% if section.settings.siwak_image != blank %}
-          {{ section.settings.siwak_image | image_url: width: 900 | image_tag: widths: '300, 500, 700, 900', sizes: '(min-width: 750px) 30vw, 45vw', loading: 'lazy', alt: section.settings.siwak_image.alt | default: 'Boîte de siwaks Optiz' }}
-        {% else %}
-          {{ 'product-1' | placeholder_svg_tag: 'siwak-comparison__placeholder' }}
-        {% endif %}
+      <div class="siwak-comparison__corner" role="columnheader"><span>LE FACE-À-FACE</span></div>
+      <div role="columnheader" class="siwak-comparison__product siwak-comparison__product--siwak">
+        <div class="siwak-comparison__visual">
+          {% if section.settings.siwak_image != blank %}
+            {{ section.settings.siwak_image | image_url: width: 900, height: 900, crop: 'center' | image_tag: widths: '300, 500, 700, 900', sizes: '(min-width: 750px) 28vw, 45vw', loading: 'lazy', alt: section.settings.siwak_image.alt | default: 'Boîte de siwaks Optiz' }}
+          {% else %}
+            {{ 'product-1' | placeholder_svg_tag: 'siwak-comparison__placeholder' }}
+          {% endif %}
+        </div>
         <strong>Siwak Optiz</strong>
+        <small>LE GESTE NATUREL</small>
       </div>
       <div role="columnheader" class="siwak-comparison__product">
-        {% if section.settings.strips_image != blank %}
-          {{ section.settings.strips_image | image_url: width: 900 | image_tag: widths: '300, 500, 700, 900', sizes: '(min-width: 750px) 30vw, 45vw', loading: 'lazy', alt: section.settings.strips_image.alt | default: 'Bandes blanchissantes' }}
-        {% else %}
-          {{ 'product-2' | placeholder_svg_tag: 'siwak-comparison__placeholder' }}
-        {% endif %}
+        <div class="siwak-comparison__visual">
+          {% if section.settings.strips_image != blank %}
+            {{ section.settings.strips_image | image_url: width: 900, height: 900, crop: 'center' | image_tag: widths: '300, 500, 700, 900', sizes: '(min-width: 750px) 28vw, 45vw', loading: 'lazy', alt: section.settings.strips_image.alt | default: 'Bandes blanchissantes' }}
+          {% else %}
+            {{ 'product-2' | placeholder_svg_tag: 'siwak-comparison__placeholder' }}
+          {% endif %}
+        </div>
         <strong>Bandes blanchissantes</strong>
+        <small>LE TRAITEMENT CHIMIQUE</small>
       </div>
     </div>
     {% for block in section.blocks %}
       <div class="siwak-comparison__row" role="row" {{ block.shopify_attributes }}>
         <strong role="rowheader">{{ block.settings.criterion | escape }}</strong>
-        <span role="cell">{{ block.settings.siwak | escape }}</span>
-        <span role="cell">{{ block.settings.strips | escape }}</span>
+        <span class="siwak-comparison__answer siwak-comparison__answer--yes" role="cell"><b aria-hidden="true">✓</b>{{ block.settings.siwak | escape }}</span>
+        <span class="siwak-comparison__answer siwak-comparison__answer--no" role="cell"><b aria-hidden="true">×</b>{{ block.settings.strips | escape }}</span>
       </div>
     {% endfor %}
   </div>
 </section>
 
 {% stylesheet %}
-  .siwak-comparison { background: #171717; color: #fff; padding: clamp(58px, 8vw, 112px) max(18px, calc((100vw - 1320px) / 2)); }
+  .siwak-comparison { --optiz-red: #e52219; --optiz-ink: #171717; --optiz-paper: #f5f1e9; background: var(--optiz-paper); color: var(--optiz-ink); padding: clamp(58px, 8vw, 112px) max(18px, calc((100vw - 1320px) / 2)); }
   .siwak-comparison__header { display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 30px; align-items: end; margin-bottom: 40px; }
   .siwak-comparison h2 { max-width: 820px; margin: 0; font-size: clamp(2.7rem, 6vw, 6.4rem); line-height: 0.9; letter-spacing: -0.055em; }
-  .siwak-comparison__header p { margin: 0; padding-top: 14px; border-top: 4px solid #e52219; font-size: 1rem; line-height: 1.5; }
-  .siwak-comparison__table { border: 2px solid #fff; }
-  .siwak-comparison__row { display: grid; grid-template-columns: 0.65fr 1fr 1fr; }
-  .siwak-comparison__row > * { display: flex; align-items: center; min-width: 0; padding: 20px; border-right: 1px solid rgb(255 255 255 / 0.45); border-top: 1px solid rgb(255 255 255 / 0.45); line-height: 1.4; }
-  .siwak-comparison__row > *:last-child { border-right: 0; }
-  .siwak-comparison__row > strong:first-child { color: #ff554d; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; }
-  .siwak-comparison__row--products > * { min-height: 245px; border-top: 0; }
-  .siwak-comparison__row--products > div:first-child { align-items: end; font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase; }
-  .siwak-comparison__product { position: relative; flex-direction: column; justify-content: end; gap: 12px; overflow: hidden; }
-  .siwak-comparison__product img, .siwak-comparison__placeholder { width: 100%; height: 185px; display: block; object-fit: contain; background: #f5f1e9; }
-  .siwak-comparison__product strong { font-size: clamp(1.05rem, 2vw, 1.5rem); }
+  .siwak-comparison__header p { margin: 0; padding-top: 14px; border-top: 4px solid var(--optiz-red); font-size: 1rem; line-height: 1.5; }
+  .siwak-comparison__table { display: grid; gap: 2px; padding: 2px; border: 2px solid var(--optiz-ink); background: var(--optiz-ink); box-shadow: 12px 12px 0 var(--optiz-red); }
+  .siwak-comparison__row { display: grid; grid-template-columns: minmax(145px, .58fr) 1fr 1fr; gap: 2px; background: var(--optiz-ink); }
+  .siwak-comparison__row > * { display: flex; align-items: center; min-width: 0; padding: clamp(16px, 2vw, 25px); background: #fff; line-height: 1.4; }
+  .siwak-comparison__row > strong:first-child { background: var(--optiz-ink); color: #fff; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; }
+  .siwak-comparison__row--products > * { min-height: 330px; }
+  .siwak-comparison__corner { align-items: end; background: var(--optiz-ink); color: #fff; font-size: .72rem; font-weight: 800; letter-spacing: .14em; }
+  .siwak-comparison__product { position: relative; flex-direction: column; justify-content: flex-end; gap: 8px; overflow: hidden; text-align: center; }
+  .siwak-comparison__product--siwak { background: var(--optiz-red); color: #fff; }
+  .siwak-comparison__visual { width: min(100%, 240px); aspect-ratio: 1 / 1; margin: 0 auto 8px; overflow: hidden; border: 2px solid var(--optiz-ink); background: #fff; }
+  .siwak-comparison__product--siwak .siwak-comparison__visual { box-shadow: 7px 7px 0 var(--optiz-ink); }
+  .siwak-comparison__visual img, .siwak-comparison__placeholder { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center; background: #fff; }
+  .siwak-comparison__product strong { font-family: var(--font-heading--family); font-size: clamp(1.3rem, 2.4vw, 2rem); line-height: 1; text-transform: uppercase; }
+  .siwak-comparison__product small { font-size: .68rem; font-weight: 800; letter-spacing: .13em; opacity: .76; }
+  .siwak-comparison__answer { gap: 14px; font-size: clamp(.9rem, 1.25vw, 1.02rem); }
+  .siwak-comparison__answer b { display: grid; place-items: center; flex: 0 0 30px; width: 30px; height: 30px; border: 2px solid currentcolor; font-size: 1.15rem; line-height: 1; }
+  .siwak-comparison__answer--yes { border-left: 6px solid var(--optiz-red); font-weight: 700; }
+  .siwak-comparison__answer--yes b { background: var(--optiz-red); border-color: var(--optiz-red); color: #fff; }
+  .siwak-comparison__answer--no { background: #e9e4da; color: #625f5a; }
+  .siwak-comparison__answer--no b { color: var(--optiz-red); }
   @media (max-width: 749px) {
     .siwak-comparison__header { grid-template-columns: 1fr; }
-    .siwak-comparison__row { grid-template-columns: 0.55fr 1fr 1fr; }
-    .siwak-comparison__row > * { padding: 12px 9px; font-size: 0.78rem; }
-    .siwak-comparison__row--products > * { min-height: 170px; }
-    .siwak-comparison__row--products > div:first-child { font-size: 0.6rem; }
-    .siwak-comparison__product img, .siwak-comparison__placeholder { height: 105px; }
-    .siwak-comparison__product strong { font-size: 0.88rem; text-align: center; }
+    .siwak-comparison__table { box-shadow: 7px 7px 0 var(--optiz-red); }
+    .siwak-comparison__row--products { grid-template-columns: 1fr 1fr; }
+    .siwak-comparison__corner { display: none; }
+    .siwak-comparison__row--products > * { min-height: 230px; padding: 12px 9px; }
+    .siwak-comparison__visual { width: min(100%, 138px); }
+    .siwak-comparison__product--siwak .siwak-comparison__visual { box-shadow: 4px 4px 0 var(--optiz-ink); }
+    .siwak-comparison__product strong { font-size: 1rem; }
+    .siwak-comparison__product small { font-size: .54rem; }
+    .siwak-comparison__row:not(.siwak-comparison__row--products) { grid-template-columns: 1fr 1fr; }
+    .siwak-comparison__row:not(.siwak-comparison__row--products) > strong:first-child { grid-column: 1 / -1; padding: 10px 12px; font-size: .68rem; }
+    .siwak-comparison__row > * { padding: 14px 10px; font-size: .78rem; }
+    .siwak-comparison__answer { align-items: flex-start; gap: 8px; }
+    .siwak-comparison__answer b { flex-basis: 24px; width: 24px; height: 24px; font-size: .9rem; }
+    .siwak-comparison__answer--yes { border-left-width: 4px; }
   }
 {% endstylesheet %}
 
