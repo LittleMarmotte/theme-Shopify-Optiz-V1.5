@@ -134,18 +134,30 @@
               },
               "blocks": {}
             },
-            "variant-picker": {
-              "type": "variant-picker",
+            "offers": {
+              "type": "siwak-product-offers",
               "settings": {
-                "variant_style": "buttons",
-                "show_swatches": false,
-                "siwak_offer_style": true,
-                "siwak_offer_heading": "Choisis ton offre",
-                "alignment": "left",
-                "padding-block-start": 6,
-                "padding-block-end": 8,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
+                "kicker": "L’offre",
+                "heading": "Choisis ton rythme",
+                "initial_offer": "subscription",
+                "trial_kicker": "Pour essayer",
+                "trial_title": "1 boîte",
+                "trial_detail": "5 siwaks",
+                "trial_price": "12 €",
+                "trial_price_note": "achat unique",
+                "pack_kicker": "Pour 4 mois",
+                "pack_title": "4 boîtes",
+                "pack_detail": "20 siwaks · achat unique",
+                "pack_benefit": "Tu économises 3 €",
+                "pack_price": "45 €",
+                "pack_price_note": "11,25 € / boîte",
+                "subscription_badge": "Le plus malin",
+                "subscription_kicker": "La routine tranquille",
+                "subscription_title": "4 boîtes + abonnement",
+                "subscription_detail": "20 siwaks tous les 4 mois",
+                "subscription_benefit": "Livraison France offerte",
+                "subscription_price": "40 €",
+                "subscription_price_note": "10 € / mois"
               },
               "blocks": {}
             },
@@ -200,7 +212,7 @@
             "review",
             "price",
             "highlights",
-            "variant-picker",
+            "offers",
             "buy-buttons",
             "trust"
           ]

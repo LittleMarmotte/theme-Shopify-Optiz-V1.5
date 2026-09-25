@@ -1,0 +1,466 @@
+{% liquid
+  assign product_resource = closest.product
+  assign subscription_plan = product_resource.selling_plan_groups.first.selling_plans.first
+  assign initial_offer = block.settings.initial_offer
+
+  if initial_offer == 'subscription' and subscription_plan == blank
+    assign initial_offer = 'pack'
+  endif
+%}
+
+<siwak-product-offers
+  class="siwak-product-offers"
+  data-section-id="{{ section.id }}"
+  data-subscription-available="{% if subscription_plan != blank %}true{% else %}false{% endif %}"
+  {{ block.shopify_attributes }}
+>
+  <fieldset class="siwak-product-offers__fieldset">
+    <legend class="siwak-product-offers__legend">
+      <span>{{ block.settings.kicker | escape }}</span>
+      <strong>{{ block.settings.heading | escape }}</strong>
+    </legend>
+
+    <div class="siwak-product-offers__list">
+      <label class="siwak-product-offers__card">
+        <input
+          type="radio"
+          name="siwak-offer-{{ block.id }}"
+          value="trial"
+          data-quantity="1"
+          {% if initial_offer == 'trial' %}checked{% endif %}
+        >
+        <span class="siwak-product-offers__check" aria-hidden="true"></span>
+        <span class="siwak-product-offers__copy">
+          <small>{{ block.settings.trial_kicker | escape }}</small>
+          <strong>{{ block.settings.trial_title | escape }}</strong>
+          <span>{{ block.settings.trial_detail | escape }}</span>
+        </span>
+        <span class="siwak-product-offers__price">
+          <strong>{{ block.settings.trial_price | escape }}</strong>
+          <small>{{ block.settings.trial_price_note | escape }}</small>
+        </span>
+      </label>
+
+      <label class="siwak-product-offers__card">
+        <input
+          type="radio"
+          name="siwak-offer-{{ block.id }}"
+          value="pack"
+          data-quantity="4"
+          {% if initial_offer == 'pack' %}checked{% endif %}
+        >
+        <span class="siwak-product-offers__check" aria-hidden="true"></span>
+        <span class="siwak-product-offers__copy">
+          <small>{{ block.settings.pack_kicker | escape }}</small>
+          <strong>{{ block.settings.pack_title | escape }}</strong>
+          <span>{{ block.settings.pack_detail | escape }}</span>
+          <em>{{ block.settings.pack_benefit | escape }}</em>
+        </span>
+        <span class="siwak-product-offers__price">
+          <strong>{{ block.settings.pack_price | escape }}</strong>
+          <small>{{ block.settings.pack_price_note | escape }}</small>
+        </span>
+      </label>
+
+      <label class="siwak-product-offers__card siwak-product-offers__card--subscription{% if subscription_plan == blank %} siwak-product-offers__card--disabled{% endif %}">
+        <input
+          type="radio"
+          name="siwak-offer-{{ block.id }}"
+          value="subscription"
+          data-quantity="4"
+          data-selling-plan="{{ subscription_plan.id }}"
+          {% if initial_offer == 'subscription' %}checked{% endif %}
+          {% if subscription_plan == blank %}disabled{% endif %}
+        >
+        <span class="siwak-product-offers__badge">
+          {% if subscription_plan != blank %}
+            {{ block.settings.subscription_badge | escape }}
+          {% else %}
+            À CONNECTER
+          {% endif %}
+        </span>
+        <span class="siwak-product-offers__check" aria-hidden="true"></span>
+        <span class="siwak-product-offers__copy">
+          <small>{{ block.settings.subscription_kicker | escape }}</small>
+          <strong>{{ block.settings.subscription_title | escape }}</strong>
+          <span>{{ block.settings.subscription_detail | escape }}</span>
+          <em>{{ block.settings.subscription_benefit | escape }}</em>
+        </span>
+        <span class="siwak-product-offers__price">
+          <strong>{{ block.settings.subscription_price | escape }}</strong>
+          <small>{{ block.settings.subscription_price_note | escape }}</small>
+        </span>
+      </label>
+    </div>
+  </fieldset>
+
+  {% if subscription_plan == blank %}
+    <p class="siwak-product-offers__setup-note">
+      L’abonnement sera activé ici dès qu’un forfait de vente Shopify sera rattaché au produit.
+    </p>
+  {% endif %}
+</siwak-product-offers>
+
+{% stylesheet %}
+  .siwak-product-offers {
+    --offer-red: #e52219;
+    --offer-ink: #171717;
+    --offer-paper: #f5f1e9;
+    display: block;
+    width: 100%;
+  }
+
+  .siwak-product-offers__fieldset {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .siwak-product-offers__legend {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    width: 100%;
+    margin: 0 0 12px;
+    padding: 0;
+    background: var(--offer-ink);
+    color: #fff;
+  }
+
+  .siwak-product-offers__legend span {
+    align-self: stretch;
+    display: grid;
+    place-items: center;
+    padding: 8px 10px;
+    background: var(--offer-red);
+    font-size: 0.68rem;
+    font-weight: 850;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+  }
+
+  .siwak-product-offers__legend strong {
+    padding: 8px 12px;
+    font-family: var(--font-heading--family);
+    font-size: 1.08rem;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .siwak-product-offers__list {
+    display: grid;
+    gap: 10px;
+  }
+
+  .siwak-product-offers__card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    min-height: 86px;
+    padding: 13px 14px;
+    border: 2px solid var(--offer-ink);
+    background: #fff;
+    color: var(--offer-ink);
+    box-shadow: 4px 4px 0 var(--offer-ink);
+    cursor: pointer;
+    transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+  }
+
+  .siwak-product-offers__card:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 6px 6px 0 var(--offer-ink);
+  }
+
+  .siwak-product-offers__card:has(input:checked) {
+    background: var(--offer-paper);
+    box-shadow: 7px 7px 0 var(--offer-red);
+    transform: translate(-2px, -2px);
+  }
+
+  .siwak-product-offers__card:has(input:focus-visible) {
+    outline: 3px solid var(--offer-red);
+    outline-offset: 3px;
+  }
+
+  .siwak-product-offers__card > input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+
+  .siwak-product-offers__check {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border: 2px solid currentcolor;
+    background: transparent;
+  }
+
+  .siwak-product-offers__card:has(input:checked) .siwak-product-offers__check {
+    border-color: var(--offer-red);
+    background: var(--offer-red);
+    color: #fff;
+  }
+
+  .siwak-product-offers__card:has(input:checked) .siwak-product-offers__check::after {
+    content: '✓';
+    font-size: 1rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .siwak-product-offers__copy,
+  .siwak-product-offers__price {
+    display: grid;
+    min-width: 0;
+  }
+
+  .siwak-product-offers__copy small {
+    margin-bottom: 2px;
+    color: var(--offer-red);
+    font-size: 0.65rem;
+    font-weight: 850;
+    letter-spacing: 0.09em;
+    line-height: 1.1;
+    text-transform: uppercase;
+  }
+
+  .siwak-product-offers__copy > strong {
+    font-family: var(--font-heading--family);
+    font-size: 1.27rem;
+    letter-spacing: 0.01em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .siwak-product-offers__copy > span {
+    margin-top: 4px;
+    font-size: 0.78rem;
+    line-height: 1.25;
+    opacity: 0.72;
+  }
+
+  .siwak-product-offers__copy em {
+    justify-self: start;
+    margin-top: 6px;
+    padding: 3px 6px;
+    background: var(--offer-ink);
+    color: #fff;
+    font-size: 0.65rem;
+    font-style: normal;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .siwak-product-offers__price {
+    justify-items: end;
+    text-align: right;
+  }
+
+  .siwak-product-offers__price strong {
+    font-family: var(--font-heading--family);
+    font-size: 1.9rem;
+    line-height: 0.9;
+  }
+
+  .siwak-product-offers__price small {
+    max-width: 90px;
+    margin-top: 5px;
+    font-size: 0.66rem;
+    font-weight: 750;
+    line-height: 1.15;
+  }
+
+  .siwak-product-offers__card--subscription {
+    margin-top: 8px;
+    background: var(--offer-red);
+    color: #fff;
+  }
+
+  .siwak-product-offers__card--subscription:has(input:checked) {
+    background: var(--offer-red);
+    box-shadow: 7px 7px 0 var(--offer-ink);
+  }
+
+  .siwak-product-offers__card--subscription .siwak-product-offers__copy small {
+    color: #fff;
+  }
+
+  .siwak-product-offers__card--subscription .siwak-product-offers__copy em {
+    background: #fff;
+    color: var(--offer-ink);
+  }
+
+  .siwak-product-offers__card--subscription:has(input:checked) .siwak-product-offers__check {
+    border-color: #fff;
+    background: var(--offer-ink);
+  }
+
+  .siwak-product-offers__badge {
+    position: absolute;
+    top: -10px;
+    right: 12px;
+    padding: 4px 8px;
+    border: 2px solid var(--offer-ink);
+    background: var(--offer-paper);
+    color: var(--offer-ink);
+    font-size: 0.62rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    line-height: 1;
+    text-transform: uppercase;
+    transform: rotate(1.5deg);
+  }
+
+  .siwak-product-offers__card--disabled {
+    cursor: not-allowed;
+    filter: grayscale(0.2);
+    opacity: 0.58;
+  }
+
+  .siwak-product-offers__card--disabled:hover {
+    box-shadow: 4px 4px 0 var(--offer-ink);
+    transform: none;
+  }
+
+  .siwak-product-offers__setup-note {
+    margin: 11px 0 0;
+    padding-left: 10px;
+    border-left: 3px solid var(--offer-red);
+    font-size: 0.72rem;
+    line-height: 1.35;
+    opacity: 0.72;
+  }
+
+  .product-details:has(.siwak-product-offers) .product-form-buttons > .quantity-selector {
+    display: none;
+  }
+
+  @media (max-width: 420px) {
+    .siwak-product-offers__card {
+      grid-template-columns: 22px minmax(0, 1fr) auto;
+      gap: 9px;
+      padding: 12px 10px;
+    }
+
+    .siwak-product-offers__copy > strong { font-size: 1.12rem; }
+    .siwak-product-offers__price strong { font-size: 1.62rem; }
+    .siwak-product-offers__price small { max-width: 72px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .siwak-product-offers__card { transition: none; }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  class SiwakProductOffers extends HTMLElement {
+    connectedCallback() {
+      this.abortController = new AbortController();
+      this.radios = Array.from(this.querySelectorAll('input[type="radio"]'));
+      this.radios.forEach((radio) => {
+        radio.addEventListener('change', () => this.syncForm(), { signal: this.abortController.signal });
+      });
+      this.syncForm();
+    }
+
+    disconnectedCallback() {
+      this.abortController?.abort();
+    }
+
+    get productForm() {
+      const root = this.closest('.shopify-section') || document;
+      return root.querySelector('product-form-component form');
+    }
+
+    syncForm() {
+      const selected = this.radios.find((radio) => radio.checked && !radio.disabled);
+      const form = this.productForm;
+      if (!selected || !form) return;
+
+      const quantityInput = form.querySelector('input[name="quantity"]');
+      if (quantityInput) {
+        quantityInput.value = selected.dataset.quantity || '1';
+        quantityInput.dispatchEvent(new Event('input', { bubbles: true }));
+        quantityInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+
+      let sellingPlanInput = form.querySelector('input[data-siwak-selling-plan]');
+      const sellingPlanId = selected.dataset.sellingPlan;
+
+      if (sellingPlanId) {
+        if (!sellingPlanInput) {
+          sellingPlanInput = document.createElement('input');
+          sellingPlanInput.type = 'hidden';
+          sellingPlanInput.name = 'selling_plan';
+          sellingPlanInput.dataset.siwakSellingPlan = '';
+          form.appendChild(sellingPlanInput);
+        }
+        sellingPlanInput.value = sellingPlanId;
+      } else {
+        sellingPlanInput?.remove();
+      }
+    }
+  }
+
+  if (!customElements.get('siwak-product-offers')) {
+    customElements.define('siwak-product-offers', SiwakProductOffers);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Offres produit Siwak",
+  "tag": null,
+  "settings": [
+    { "type": "text", "id": "kicker", "label": "Repère", "default": "L’offre" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Choisis ton rythme" },
+    {
+      "type": "select",
+      "id": "initial_offer",
+      "label": "Offre sélectionnée par défaut",
+      "options": [
+        { "value": "trial", "label": "1 boîte" },
+        { "value": "pack", "label": "4 boîtes" },
+        { "value": "subscription", "label": "Abonnement" }
+      ],
+      "default": "subscription"
+    },
+    { "type": "header", "content": "1 boîte" },
+    { "type": "text", "id": "trial_kicker", "label": "Surtitre", "default": "Pour essayer" },
+    { "type": "text", "id": "trial_title", "label": "Titre", "default": "1 boîte" },
+    { "type": "text", "id": "trial_detail", "label": "Détail", "default": "5 siwaks" },
+    { "type": "text", "id": "trial_price", "label": "Prix affiché", "default": "12 €" },
+    { "type": "text", "id": "trial_price_note", "label": "Note de prix", "default": "achat unique" },
+    { "type": "header", "content": "4 boîtes" },
+    { "type": "text", "id": "pack_kicker", "label": "Surtitre", "default": "Pour 4 mois" },
+    { "type": "text", "id": "pack_title", "label": "Titre", "default": "4 boîtes" },
+    { "type": "text", "id": "pack_detail", "label": "Détail", "default": "20 siwaks · achat unique" },
+    { "type": "text", "id": "pack_benefit", "label": "Avantage", "default": "Tu économises 3 €" },
+    { "type": "text", "id": "pack_price", "label": "Prix affiché", "default": "45 €" },
+    { "type": "text", "id": "pack_price_note", "label": "Note de prix", "default": "11,25 € / boîte" },
+    { "type": "header", "content": "Abonnement" },
+    { "type": "text", "id": "subscription_badge", "label": "Badge", "default": "Le plus malin" },
+    { "type": "text", "id": "subscription_kicker", "label": "Surtitre", "default": "La routine tranquille" },
+    { "type": "text", "id": "subscription_title", "label": "Titre", "default": "4 boîtes + abonnement" },
+    { "type": "text", "id": "subscription_detail", "label": "Détail", "default": "20 siwaks tous les 4 mois" },
+    { "type": "text", "id": "subscription_benefit", "label": "Avantage", "default": "Livraison France offerte" },
+    { "type": "text", "id": "subscription_price", "label": "Prix affiché", "default": "40 €" },
+    { "type": "text", "id": "subscription_price_note", "label": "Note de prix", "default": "10 € / mois" }
+  ],
+  "presets": [
+    {
+      "name": "Offres produit Siwak",
+      "category": "Produit"
+    }
+  ]
+}
+{% endschema %}

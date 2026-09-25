@@ -66,6 +66,20 @@ Accepter l'**irrégularité contrôlée** : asymétrie, débordement, décalage 
 
 Chaque section importante doit avoir une idée décrivable en une phrase, par exemple : « un manifeste typographique traversé par un ruban rouge », et non « un titre avec trois cartes ».
 
+### Registre éditorial illustré
+
+Utiliser plus souvent, lorsque la section doit comparer, vendre ou expliquer un produit, un registre **magazine/cartoon imprimé** inspiré des encarts publicitaires et modes d’emploi illustrés :
+
+- aplats rouge, noir et blanc papier sans dégradé ;
+- contours noirs francs autour des images et informations importantes ;
+- ombres dures et légèrement décalées, comme un élément imprimé posé sur la page ;
+- titres condensés en capitales, prix ou mots clés volontairement surdimensionnés ;
+- cases cochées, croix, flèches, astérisques et petits encarts dessinés avec des formes simples ;
+- photos carrées ou détourées traitées comme des vignettes éditoriales ;
+- contrastes de blocs rappelant une BD, une affiche ou une double page de magazine.
+
+Ce registre doit donner de l’énergie et rendre l’information plus mémorable, pas infantiliser le produit. Le réserver aux moments qui gagnent à être démonstratifs — offre, comparaison, bénéfices, mode d’emploi — et conserver des sections plus calmes entre eux. Préférer une composition nette avec un ou deux gestes expressifs à une accumulation de stickers, rotations et effets dessinés.
+
 ## Éléments print
 
 Employer avec mesure :
@@ -88,6 +102,7 @@ Le panier, les variantes, le prix, la disponibilité, les formulaires et les CTA
 - Garder les états interactifs explicites.
 - Utiliser une hiérarchie forte, mais ne jamais sacrifier le libellé d'une action à l'esthétique.
 - Réserver les formes très arrondies aux cas où la fonction ou l'existant les justifie.
+- Pour les offres et sélecteurs importants, préférer des « tickets » éditoriaux : bordure noire, aplat franc, case de sélection explicite, prix massif et détail court. L'état choisi doit se lire par le contraste et une ombre dure, jamais par une ombre diffuse ou un simple halo.
 
 ## Photographie
 

@@ -58,6 +58,20 @@ Fichier : [assets/counter-reference-prochain-drop.png](assets/counter-reference-
 
 Le problème est l'exécution, pas le besoin commercial.
 
+## Référence interne — comparaison Siwak
+
+Fichier : `sections/siwak-comparison.liquid`
+
+### Ce qui devient une signature utile
+
+- les images produit carrées encadrées comme des vignettes de magazine ;
+- les aplats rouge/noir/blanc papier et les séparations très franches ;
+- le mélange entre photo réelle, titre condensé et pictogrammes simples ;
+- les ombres dures décalées qui donnent une matérialité cartoonesque ;
+- la densité assumée, rendue lisible par une hiérarchie immédiate.
+
+Réutiliser plus souvent ce langage pour les offres, comparaisons, bénéfices et modes d’emploi. Varier la composition selon la fonction : il s’agit d’un registre visuel Optiz, pas d’un composant à dupliquer à l’identique.
+
 ### Direction de correction
 
 Traiter le drop comme une annonce imprimée : date ou statut réel, titre plus manifeste, produits comme objets principaux, contraste rouge/noir/blanc, micro-informations typewriter et un seul CTA clair. Introduire une asymétrie ou un recadrage justifié. Ne pas ajouter une texture ou une rotation uniquement pour « faire print ».
