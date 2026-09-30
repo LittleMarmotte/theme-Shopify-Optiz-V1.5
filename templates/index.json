@@ -29,17 +29,22 @@
     "optiz_body_zones": {
       "type": "optiz-body-zones",
       "blocks": {
-        "zone_mouth": { "type": "zone", "settings": { "title": "Bouche et mâchoire", "products": "Mastic de Chios · Siwak · Brosse · Poudre", "link": "shopify://collections/produits" } },
-        "zone_hair": { "type": "zone", "settings": { "title": "Cheveux", "products": "Ghassoul du Maroc · Pommeau filtrant", "link": "shopify://collections/produits" } },
-        "zone_body": { "type": "zone", "settings": { "title": "Peau et corps", "products": "Savon · Ghassoul · Pommeau filtrant", "link": "shopify://collections/produits" } },
-        "zone_underwear": { "type": "zone", "settings": { "title": "Sous-vêtements", "products": "Caleçon Optiz en coton", "link": "shopify://collections/produits" } }
+        "product_mastic": { "type": "product", "settings": { "product": "mastic-de-chios", "zone": "mouth", "secondary_zone": "none", "note": "Résine naturelle de Chios · 50 g" } },
+        "product_siwak": { "type": "product", "settings": { "product": "siwak", "zone": "mouth", "secondary_zone": "none", "note": "Bâton végétal pour la routine bucco-dentaire" } },
+        "product_brush": { "type": "product", "settings": { "product": "brosse-a-dent-poils-de-cheval", "zone": "mouth", "secondary_zone": "none", "note": "Poils naturels · brossage doux" } },
+        "product_charcoal": { "type": "product", "settings": { "product": "poudre-dentaire-au-charbon", "zone": "mouth", "secondary_zone": "none", "note": "Poudre dentaire · pot 30 g" } },
+        "product_ghassoul": { "type": "product", "settings": { "product": "ghassoul", "zone": "hair", "secondary_zone": "body", "note": "Argile marocaine · peau et cheveux" } },
+        "product_soap": { "type": "product", "settings": { "product": "savon-artisanal", "zone": "body", "secondary_zone": "none", "note": "Saponifié à froid · pain 100 g" } },
+        "product_shower": { "type": "product", "settings": { "product": "pommeau-de-douche-filtrant", "zone": "body", "secondary_zone": "hair", "note": "Pommeau et filtre inclus" } },
+        "product_underwear": { "type": "product", "settings": { "product": "calecons-parachutes", "zone": "underwear", "secondary_zone": "none", "note": "Sous-vêtement Optiz" } }
       },
-      "block_order": ["zone_mouth", "zone_hair", "zone_body", "zone_underwear"],
+      "block_order": ["product_mastic", "product_siwak", "product_brush", "product_charcoal", "product_ghassoul", "product_soap", "product_shower", "product_underwear"],
       "settings": {
-        "eyebrow": "Une routine, zone par zone",
-        "heading": "Commence là où ça compte pour toi.",
-        "text": "<p>Bouche, cheveux, peau ou sous-vêtements : remplace progressivement les produits de ta routine.</p>",
-        "figure_note": "Choisis ta zone"
+        "eyebrow": "Choisis ta zone",
+        "heading": "Remplace ta routine, produit par produit.",
+        "text": "<p>Filtre la sélection selon la zone que tu veux repenser en premier.</p>",
+        "all_products_label": "Voir tous les produits",
+        "all_products_link": "shopify://collections/produits"
       }
     },
     "optiz_potential": {
