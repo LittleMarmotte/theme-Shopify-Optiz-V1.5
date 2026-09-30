@@ -1,0 +1,222 @@
+{% liquid
+  assign media_count = 0
+  for block in section.blocks
+    if block.settings.video != blank or block.settings.cover != blank
+      assign media_count = media_count | plus: 1
+    endif
+  endfor
+%}
+
+{% if media_count > 0 or request.design_mode %}
+<section class="optiz-videos optiz-videos--{{ section.id }}">
+  <div class="optiz-videos__inner page-width">
+    <header class="optiz-videos__header">
+      <div>
+        <p>{{ section.settings.eyebrow | escape }}</p>
+        <h2>{{ section.settings.heading | escape }}</h2>
+      </div>
+      {% if section.settings.text != blank %}<div class="rte">{{ section.settings.text }}</div>{% endif %}
+    </header>
+
+    <div class="optiz-videos__track" role="list">
+      {% for block in section.blocks %}
+        <article class="optiz-videos__card" role="listitem" {{ block.shopify_attributes }}>
+          <div class="optiz-videos__media">
+            {% if block.settings.video != blank %}
+              {{ block.settings.video | video_tag:
+                image_size: '700x',
+                controls: true,
+                muted: true,
+                loop: false,
+                autoplay: false,
+                preload: 'metadata',
+                class: 'optiz-videos__video'
+              }}
+            {% elsif block.settings.cover != blank %}
+              {{ block.settings.cover | image_url: width: 700 | image_tag:
+                widths: '320, 500, 700',
+                sizes: '(min-width: 990px) 25vw, 76vw',
+                loading: 'lazy',
+                class: 'optiz-videos__cover'
+              }}
+              {% if block.settings.link != blank %}
+                <a class="optiz-videos__play" href="{{ block.settings.link }}" aria-label="Regarder {{ block.settings.title | escape }}">
+                  <span aria-hidden="true">▶</span>
+                </a>
+              {% endif %}
+            {% else %}
+              {{ 'image' | placeholder_svg_tag: 'optiz-videos__cover optiz-videos__placeholder' }}
+            {% endif %}
+            <span class="optiz-videos__source">{{ block.settings.source | escape }}</span>
+          </div>
+          <div class="optiz-videos__caption">
+            <h3>{{ block.settings.title | escape }}</h3>
+            {% if block.settings.creator != blank %}<p>{{ block.settings.creator | escape }}</p>{% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% style %}
+  .optiz-videos--{{ section.id }} {
+    --optiz-red: #e52219;
+    --optiz-ink: #212121;
+    --optiz-paper: #f4f0e8;
+    padding: clamp(66px, 8vw, 108px) 0;
+    background: #fff;
+    color: var(--optiz-ink);
+    overflow: hidden;
+  }
+  .optiz-videos--{{ section.id }} .optiz-videos__inner {
+    padding-inline: clamp(20px, 4vw, 64px);
+  }
+  .optiz-videos--{{ section.id }} .optiz-videos__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(260px, .8fr);
+    gap: 34px;
+    align-items: end;
+    margin-bottom: 38px;
+  }
+  .optiz-videos--{{ section.id }} .optiz-videos__header p { margin: 0; }
+  .optiz-videos--{{ section.id }} .optiz-videos__header > div:first-child > p {
+    margin-bottom: 8px;
+    color: var(--optiz-red);
+    font-family: var(--font-subheading--family);
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+  .optiz-videos--{{ section.id }} h2 {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: clamp(3.2rem, 6vw, 6.4rem);
+    line-height: .88;
+    text-transform: uppercase;
+  }
+  .optiz-videos--{{ section.id }} .optiz-videos__header .rte {
+    max-width: 50ch;
+    font-size: 1.05rem;
+    line-height: 1.55;
+  }
+  .optiz-videos--{{ section.id }} .optiz-videos__track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(260px, 1fr);
+    grid-template-rows: 1fr;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 4px 8px 18px 0;
+    scrollbar-width: thin;
+  }
+  .optiz-videos--{{ section.id }} .optiz-videos__card {
+    width: min(310px, 78vw);
+    scroll-snap-align: start;
+  }
+  .optiz-videos--{{ section.id }} .optiz-videos__media {
+    position: relative;
+    aspect-ratio: 9 / 16;
+    overflow: hidden;
+    border: 2px solid var(--optiz-ink);
+    background: var(--optiz-ink);
+    box-shadow: 7px 7px 0 var(--optiz-red);
+  }
+  .optiz-videos--{{ section.id }} .optiz-videos__video,
+  .optiz-videos--{{ section.id }} .optiz-videos__cover {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+  .optiz-videos--{{ section.id }} .optiz-videos__placeholder { background: #ddd; fill: #888; }
+  .optiz-videos--{{ section.id }} .optiz-videos__play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    text-decoration: none;
+    background: rgba(0,0,0,.12);
+  }
+  .optiz-videos--{{ section.id }} .optiz-videos__play span {
+    width: 62px;
+    height: 62px;
+    display: grid;
+    place-items: center;
+    padding-left: 4px;
+    border: 2px solid #fff;
+    background: var(--optiz-red);
+    box-shadow: 4px 4px 0 #fff;
+  }
+  .optiz-videos--{{ section.id }} .optiz-videos__play:focus-visible { outline: 4px solid var(--optiz-red); outline-offset: -6px; }
+  .optiz-videos--{{ section.id }} .optiz-videos__source {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 6px 9px;
+    background: var(--optiz-paper);
+    border: 1px solid var(--optiz-ink);
+    color: var(--optiz-ink);
+    font-family: var(--font-subheading--family);
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .optiz-videos--{{ section.id }} .optiz-videos__caption { padding: 18px 0 0 8px; }
+  .optiz-videos--{{ section.id }} .optiz-videos__caption h3 {
+    margin: 0;
+    font-family: var(--font-heading--family);
+    font-size: 1.65rem;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .optiz-videos--{{ section.id }} .optiz-videos__caption p { margin: 7px 0 0; color: rgba(33,33,33,.66); }
+  @media (max-width: 749px) {
+    .optiz-videos--{{ section.id }} .optiz-videos__header { grid-template-columns: 1fr; gap: 16px; }
+    .optiz-videos--{{ section.id }} .optiz-videos__track {
+      margin-inline-end: calc(var(--page-margin, 20px) * -1);
+      padding-inline-end: 20px;
+    }
+    .optiz-videos--{{ section.id }} .optiz-videos__card { width: 76vw; max-width: 300px; }
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Optiz — Réels et TikTok",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Surtitre", "default": "Vu dans ta feed" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Ils parlent d’Optiz." },
+    { "type": "richtext", "id": "text", "label": "Texte", "default": "<p>Les conseils d’Hakim, les retours de créateurs et les vidéos de la communauté.</p>" }
+  ],
+  "blocks": [
+    {
+      "type": "video",
+      "name": "Vidéo verticale",
+      "settings": [
+        { "type": "video", "id": "video", "label": "Vidéo Shopify" },
+        { "type": "image_picker", "id": "cover", "label": "Couverture de remplacement" },
+        { "type": "url", "id": "link", "label": "Lien vers le Réel ou TikTok" },
+        { "type": "text", "id": "source", "label": "Catégorie", "default": "Conseil d’Hakim" },
+        { "type": "text", "id": "title", "label": "Titre", "default": "Une autre façon de penser sa routine" },
+        { "type": "text", "id": "creator", "label": "Créateur", "default": "@optiz.store" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Optiz — Réels et TikTok",
+      "blocks": [
+        { "type": "video", "settings": { "source": "Conseil d’Hakim", "title": "La vision derrière Optiz", "creator": "@optiz.store" } },
+        { "type": "video", "settings": { "source": "Retour créateur", "title": "Optiz testé en conditions réelles", "creator": "Créateur à renseigner" } },
+        { "type": "video", "settings": { "source": "Communauté", "title": "Une routine qui change", "creator": "Client à renseigner" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

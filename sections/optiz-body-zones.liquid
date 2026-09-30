@@ -1,0 +1,250 @@
+<section class="optiz-zones optiz-zones--{{ section.id }}">
+  <div class="optiz-zones__inner page-width">
+    <header class="optiz-zones__header">
+      <p class="optiz-zones__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      <h2>{{ section.settings.heading | escape }}</h2>
+      {% if section.settings.text != blank %}<div class="rte">{{ section.settings.text }}</div>{% endif %}
+    </header>
+
+    <div class="optiz-zones__layout">
+      <div class="optiz-zones__figure" aria-hidden="true">
+        <svg viewBox="0 0 260 520" role="presentation">
+          <path d="M130 20c-35 0-59 27-59 62 0 26 13 48 32 58l-8 31-52 30c-14 8-23 23-23 39v98h48l8 162h108l8-162h48v-98c0-16-9-31-23-39l-52-30-8-31c19-10 32-32 32-58 0-35-24-62-59-62Z"/>
+          <circle cx="130" cy="92" r="10"/>
+          <circle cx="130" cy="180" r="10"/>
+          <circle cx="130" cy="282" r="10"/>
+          <circle cx="130" cy="386" r="10"/>
+          <path class="optiz-zones__pulse" d="M130 92v294"/>
+        </svg>
+        <span>{{ section.settings.figure_note | escape }}</span>
+      </div>
+
+      <div class="optiz-zones__list">
+        {% for block in section.blocks %}
+          {% liquid
+            assign zone_link = block.settings.link | default: routes.all_products_collection_url
+          %}
+          <a class="optiz-zones__item" href="{{ zone_link }}" {{ block.shopify_attributes }}>
+            <span class="optiz-zones__marker" aria-hidden="true"></span>
+            <span class="optiz-zones__copy">
+              <strong>{{ block.settings.title | escape }}</strong>
+              <span>{{ block.settings.products | escape }}</span>
+            </span>
+            <span class="optiz-zones__arrow" aria-hidden="true">↗</span>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% style %}
+  .optiz-zones--{{ section.id }} {
+    --optiz-red: #e52219;
+    --optiz-ink: #212121;
+    --optiz-paper: #f4f0e8;
+    padding: clamp(64px, 8vw, 112px) 0;
+    background: var(--optiz-paper);
+    color: var(--optiz-ink);
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__inner {
+    padding-inline: clamp(20px, 4vw, 64px);
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr);
+    column-gap: 44px;
+    align-items: end;
+    margin-bottom: 44px;
+    border-bottom: 2px solid var(--optiz-ink);
+    padding-bottom: 24px;
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__eyebrow {
+    grid-column: 1 / -1;
+    margin: 0 0 8px;
+    color: var(--optiz-red);
+    font-family: var(--font-subheading--family);
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .optiz-zones--{{ section.id }} h2 {
+    margin: 0;
+    max-width: 780px;
+    font-family: var(--font-heading--family);
+    font-size: clamp(3rem, 6vw, 6.5rem);
+    line-height: .9;
+    text-transform: uppercase;
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__header .rte {
+    max-width: 52ch;
+    font-size: 1.05rem;
+    line-height: 1.55;
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__header .rte p { margin: 0; }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__layout {
+    display: grid;
+    grid-template-columns: minmax(240px, .72fr) minmax(0, 1.28fr);
+    gap: clamp(34px, 6vw, 90px);
+    align-items: center;
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__figure {
+    position: relative;
+    min-height: 490px;
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--optiz-ink);
+    background: var(--optiz-red);
+    box-shadow: 10px 10px 0 var(--optiz-ink);
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__figure svg {
+    width: min(72%, 280px);
+    height: auto;
+    overflow: visible;
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__figure svg > path:first-child {
+    fill: var(--optiz-paper);
+    stroke: var(--optiz-ink);
+    stroke-width: 5;
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__figure circle {
+    fill: var(--optiz-ink);
+    stroke: var(--optiz-paper);
+    stroke-width: 4;
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__pulse {
+    fill: none;
+    stroke: var(--optiz-paper);
+    stroke-width: 3;
+    stroke-dasharray: 7 12;
+    animation: optiz-zone-line-{{ section.id }} 10s linear infinite;
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__figure span {
+    position: absolute;
+    left: 14px;
+    bottom: 12px;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--optiz-paper);
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__list {
+    border-top: 2px solid var(--optiz-ink);
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__item {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) auto;
+    gap: 18px;
+    align-items: center;
+    min-height: 112px;
+    padding: 20px 6px;
+    border-bottom: 2px solid var(--optiz-ink);
+    color: inherit;
+    text-decoration: none;
+    transition: padding .18s ease, background .18s ease;
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__item:hover {
+    padding-inline: 16px;
+    background: #fff;
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__item:focus-visible {
+    outline: 3px solid var(--optiz-red);
+    outline-offset: 3px;
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__marker {
+    width: 14px;
+    height: 14px;
+    background: var(--optiz-red);
+    border: 2px solid var(--optiz-ink);
+    transform: rotate(45deg);
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__copy { display: grid; gap: 4px; }
+  .optiz-zones--{{ section.id }} .optiz-zones__copy strong {
+    font-family: var(--font-heading--family);
+    font-size: clamp(1.9rem, 3.4vw, 3.25rem);
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__copy span {
+    color: rgba(33, 33, 33, .7);
+    line-height: 1.35;
+  }
+
+  .optiz-zones--{{ section.id }} .optiz-zones__arrow {
+    font-size: 2rem;
+    color: var(--optiz-red);
+  }
+
+  @keyframes optiz-zone-line-{{ section.id }} { to { stroke-dashoffset: -190; } }
+
+  @media (max-width: 749px) {
+    .optiz-zones--{{ section.id }} .optiz-zones__header,
+    .optiz-zones--{{ section.id }} .optiz-zones__layout {
+      grid-template-columns: 1fr;
+    }
+    .optiz-zones--{{ section.id }} .optiz-zones__header { gap: 18px; }
+    .optiz-zones--{{ section.id }} .optiz-zones__figure { min-height: 360px; }
+    .optiz-zones--{{ section.id }} .optiz-zones__item { min-height: 98px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .optiz-zones--{{ section.id }} .optiz-zones__pulse { animation: none; }
+    .optiz-zones--{{ section.id }} .optiz-zones__item { transition: none; }
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Optiz — Zones du corps",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Surtitre", "default": "Une routine, zone par zone" },
+    { "type": "text", "id": "heading", "label": "Titre", "default": "Commence là où ça compte pour toi." },
+    { "type": "richtext", "id": "text", "label": "Texte", "default": "<p>Bouche, cheveux, peau ou sous-vêtements : remplace progressivement les produits de ta routine.</p>" },
+    { "type": "text", "id": "figure_note", "label": "Légende silhouette", "default": "Choisis ta zone" }
+  ],
+  "blocks": [
+    {
+      "type": "zone",
+      "name": "Zone",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Nom", "default": "Bouche et mâchoire" },
+        { "type": "text", "id": "products", "label": "Produits", "default": "Mastic de Chios · Siwak · Brosse · Poudre" },
+        { "type": "url", "id": "link", "label": "Lien" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Optiz — Zones du corps",
+      "blocks": [
+        { "type": "zone", "settings": { "title": "Bouche et mâchoire", "products": "Mastic de Chios · Siwak · Brosse · Poudre" } },
+        { "type": "zone", "settings": { "title": "Cheveux", "products": "Ghassoul du Maroc · Pommeau filtrant" } },
+        { "type": "zone", "settings": { "title": "Peau et corps", "products": "Savon · Ghassoul · Pommeau filtrant" } },
+        { "type": "zone", "settings": { "title": "Sous-vêtements", "products": "Caleçon Optiz en coton" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
