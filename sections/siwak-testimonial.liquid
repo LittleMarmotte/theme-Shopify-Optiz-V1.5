@@ -1,72 +1,501 @@
-<section class="siwak-testimonials" aria-labelledby="SiwakTestimonialsTitle-{{ section.id }}">
-  <header class="siwak-testimonials__header">
-    <h2 id="SiwakTestimonialsTitle-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
-    {% if section.settings.text != blank %}<p>{{ section.settings.text | escape }}</p>{% endif %}
-  </header>
+{% liquid
+  assign video_blocks = section.blocks | where: 'type', 'testimonial'
+  assign review_blocks = section.blocks | where: 'type', 'review'
+%}
 
-  <div class="siwak-testimonials__videos">
-    {% for block in section.blocks %}
-      <article class="siwak-testimonials__video" {{ block.shopify_attributes }}>
-        <div class="siwak-testimonials__media">
-          {% if block.settings.video != blank %}
-            {{ block.settings.video | video_tag: controls: true, image_size: '900x', preload: 'metadata' }}
-          {% elsif block.settings.poster != blank %}
-            {{ block.settings.poster | image_url: width: 1000 | image_tag: widths: '400, 600, 800, 1000', sizes: '(min-width: 800px) 33vw, 82vw', loading: 'lazy', alt: block.settings.poster.alt | default: block.settings.title }}
-            <span class="siwak-testimonials__play" aria-hidden="true">▶</span>
-          {% else %}
-            <div class="siwak-testimonials__placeholder" aria-hidden="true">
-              <span class="siwak-testimonials__play">▶</span>
-              <strong>VIDÉO CLIENT</strong>
-              <small>FORMAT 9:16</small>
-            </div>
-          {% endif %}
+<siwak-testimonial-carousel class="siwak-testimonials siwak-testimonials--{{ section.id }}">
+  <section aria-labelledby="SiwakTestimonialsTitle-{{ section.id }}">
+    <header class="siwak-testimonials__header">
+      {% if section.settings.eyebrow != blank %}<p class="siwak-testimonials__eyebrow">{{ section.settings.eyebrow | escape }}</p>{% endif %}
+      <h2 id="SiwakTestimonialsTitle-{{ section.id }}">{{ section.settings.heading | escape | newline_to_br }}</h2>
+      {% if section.settings.text != blank %}<p class="siwak-testimonials__intro">{{ section.settings.text | escape }}</p>{% endif %}
+    </header>
+
+    {% if video_blocks.size > 0 %}
+      <div class="siwak-testimonials__carousel">
+        <button class="siwak-testimonials__arrow siwak-testimonials__arrow--prev" type="button" data-carousel-prev aria-label="Témoignage vidéo précédent" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>
+        </button>
+
+        <div class="siwak-testimonials__track" id="SiwakVideoTrack-{{ section.id }}" data-carousel-track tabindex="0" aria-label="Témoignages vidéo">
+          {% for block in video_blocks %}
+            {% liquid
+              assign external_url = block.settings.external_video_url | strip
+              assign embed_url = ''
+              assign provider = ''
+              assign external_id = ''
+
+              if external_url contains 'youtube.com/shorts/'
+                assign provider = 'YouTube'
+                assign external_id = external_url | split: 'youtube.com/shorts/' | last | split: '?' | first | split: '&' | first | split: '/' | first
+              elsif external_url contains 'youtu.be/'
+                assign provider = 'YouTube'
+                assign external_id = external_url | split: 'youtu.be/' | last | split: '?' | first | split: '&' | first | split: '/' | first
+              elsif external_url contains 'youtube.com/watch' and external_url contains 'v='
+                assign provider = 'YouTube'
+                assign external_id = external_url | split: 'v=' | last | split: '&' | first | split: '?' | first | split: '/' | first
+              elsif external_url contains 'youtube.com/embed/'
+                assign provider = 'YouTube'
+                assign external_id = external_url | split: 'youtube.com/embed/' | last | split: '?' | first | split: '&' | first | split: '/' | first
+              elsif external_url contains 'tiktok.com/' and external_url contains '/video/'
+                assign provider = 'TikTok'
+                assign external_id = external_url | split: '/video/' | last | split: '?' | first | split: '&' | first | split: '/' | first
+              elsif external_url contains 'instagram.com/reel/'
+                assign provider = 'Instagram'
+                assign external_id = external_url | split: 'instagram.com/reel/' | last | split: '?' | first | split: '&' | first | split: '/' | first
+                assign embed_url = 'https://www.instagram.com/reel/' | append: external_id | append: '/embed/'
+              elsif external_url contains 'instagram.com/reels/'
+                assign provider = 'Instagram'
+                assign external_id = external_url | split: 'instagram.com/reels/' | last | split: '?' | first | split: '&' | first | split: '/' | first
+                assign embed_url = 'https://www.instagram.com/reel/' | append: external_id | append: '/embed/'
+              elsif external_url contains 'instagram.com/p/'
+                assign provider = 'Instagram'
+                assign external_id = external_url | split: 'instagram.com/p/' | last | split: '?' | first | split: '&' | first | split: '/' | first
+                assign embed_url = 'https://www.instagram.com/p/' | append: external_id | append: '/embed/'
+              endif
+
+              if provider == 'YouTube' and external_id != blank
+                assign embed_url = 'https://www.youtube-nocookie.com/embed/' | append: external_id | append: '?autoplay=0&playsinline=1&rel=0'
+              elsif provider == 'TikTok' and external_id != blank
+                assign embed_url = 'https://www.tiktok.com/player/v1/' | append: external_id | append: '?autoplay=0&controls=1&progress_bar=1&play_button=1&volume_control=1&fullscreen_button=1'
+              endif
+
+              assign video_title = block.settings.title | default: 'Témoignage client'
+              assign poster_url = block.settings.poster | image_url: width: 900
+            %}
+
+            <article class="siwak-testimonials__video-card{% if block.settings.video != blank %} has-native-video{% endif %}" {{ block.shopify_attributes }}>
+              <div class="siwak-testimonials__media">
+                {% if block.settings.video != blank %}
+                  {{ block.settings.video
+                    | video_tag:
+                      autoplay: false,
+                      loop: true,
+                      controls: false,
+                      muted: true,
+                      playsinline: true,
+                      preload: 'metadata',
+                      image_size: '900x',
+                      poster: poster_url,
+                      class: 'siwak-testimonials__native-video'
+                  }}
+                  <button class="siwak-testimonials__play-toggle" type="button" data-video-toggle aria-label="Lire {{ video_title | escape }}">
+                    <svg class="siwak-testimonials__icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>
+                    <svg class="siwak-testimonials__icon-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4v16H6zm8 0h4v16h-4z"/></svg>
+                  </button>
+                  <button class="siwak-testimonials__sound-toggle" type="button" data-sound-toggle aria-label="Activer le son">
+                    <svg class="siwak-testimonials__icon-muted" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9zm12.5 1.5 3 3m0-3-3 3"/></svg>
+                    <svg class="siwak-testimonials__icon-sound" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9zm12-1a5 5 0 0 1 0 8"/></svg>
+                  </button>
+                {% elsif embed_url != blank %}
+                  <iframe
+                    src="{{ embed_url | escape }}"
+                    title="Témoignage vidéo {{ provider }} — {{ video_title | escape }}"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen
+                    referrerpolicy="strict-origin-when-cross-origin"
+                  ></iframe>
+                {% elsif block.settings.poster != blank %}
+                  {{ block.settings.poster
+                    | image_url: width: 900
+                    | image_tag:
+                      widths: '400, 600, 900',
+                      sizes: '(min-width: 990px) 230px, 74vw',
+                      loading: 'lazy',
+                      alt: block.settings.poster.alt | default: video_title
+                  }}
+                {% else %}
+                  <div class="siwak-testimonials__placeholder">
+                    <span aria-hidden="true">▶</span>
+                    <strong>VIDÉO CLIENT</strong>
+                    <small>SÉLECTIONNE UNE VIDÉO SHOPIFY</small>
+                  </div>
+                {% endif %}
+
+                {% if external_url != blank and embed_url == blank and block.settings.video == blank and request.design_mode %}
+                  <p class="siwak-testimonials__editor-error">Lien non reconnu. Utilise l’URL complète d’un Reel Instagram, d’une vidéo TikTok ou d’une vidéo YouTube.</p>
+                {% endif %}
+              </div>
+
+              {% if block.settings.title != blank or block.settings.context != blank %}
+                <div class="siwak-testimonials__video-caption">
+                  {% if block.settings.title != blank %}<strong>{{ block.settings.title | escape }}</strong>{% endif %}
+                  {% if block.settings.context != blank %}<span>{{ block.settings.context | escape }}</span>{% endif %}
+                </div>
+              {% endif %}
+            </article>
+          {% endfor %}
         </div>
-        {% if block.settings.title != blank %}<h3>{{ block.settings.title | escape }}</h3>{% endif %}
-        {% if block.settings.context != blank %}<p>{{ block.settings.context | escape }}</p>{% endif %}
-      </article>
-    {% endfor %}
-  </div>
 
-</section>
+        <button class="siwak-testimonials__arrow siwak-testimonials__arrow--next" type="button" data-carousel-next aria-label="Témoignage vidéo suivant">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+      <div class="siwak-testimonials__navigation" aria-label="Navigation des témoignages vidéo">
+        <p class="siwak-testimonials__swipe-hint">GLISSE POUR DÉCOUVRIR <span aria-hidden="true">→</span></p>
+        <div class="siwak-testimonials__dots">
+          {% for block in video_blocks %}
+            <button type="button" class="siwak-testimonials__dot" data-carousel-dot="{{ forloop.index0 }}" aria-label="Voir le témoignage vidéo {{ forloop.index }}" aria-controls="SiwakVideoTrack-{{ section.id }}" {% if forloop.first %}aria-current="true"{% endif %}><span></span></button>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
 
-{% stylesheet %}
-  .siwak-testimonials { background: #e52219; color: #fff; padding: clamp(58px, 8vw, 112px) max(20px, calc((100vw - 1320px) / 2)); }
-  .siwak-testimonials__header { display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 36px; align-items: end; margin-bottom: 42px; }
-  .siwak-testimonials h2 { max-width: 900px; margin: 0; font-size: clamp(2.6rem, 6vw, 6.4rem); line-height: 0.9; letter-spacing: -0.055em; }
-  .siwak-testimonials__header p { margin: 0; padding-top: 14px; border-top: 2px solid currentcolor; line-height: 1.5; }
-  .siwak-testimonials__videos { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(14px, 2.5vw, 30px); }
-  .siwak-testimonials__media { position: relative; aspect-ratio: 9 / 16; overflow: hidden; border: 2px solid #171717; background: #171717; }
-  .siwak-testimonials__media video, .siwak-testimonials__media img { width: 100%; height: 100%; display: block; object-fit: cover; }
-  .siwak-testimonials__placeholder { width: 100%; height: 100%; display: grid; place-items: center; align-content: center; gap: 14px; background: repeating-linear-gradient(-45deg, #171717 0, #171717 18px, #211f1f 18px, #211f1f 36px); color: #fff; }
-  .siwak-testimonials__placeholder strong { margin-top: 84px; font-size: 1rem; letter-spacing: .12em; }
-  .siwak-testimonials__placeholder small { font-size: .72rem; letter-spacing: .14em; opacity: .68; }
-  .siwak-testimonials__play { position: absolute; left: 50%; top: 50%; display: grid; place-items: center; width: 62px; height: 62px; border: 2px solid #fff; border-radius: 50%; transform: translate(-50%, -50%); background: #e52219; color: #fff; font-size: 1.15rem; }
-  .siwak-testimonials__video h3 { margin: 14px 0 3px; font-size: 1.1rem; text-transform: uppercase; }
-  .siwak-testimonials__video > p { margin: 0; font-size: 0.84rem; opacity: 0.8; }
-  @media (max-width: 749px) {
-    .siwak-testimonials__header { grid-template-columns: 1fr; }
-    .siwak-testimonials__videos { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px; }
-    .siwak-testimonials__video { flex: 0 0 82%; scroll-snap-align: start; }
+    {% if review_blocks.size > 0 %}
+      <div class="siwak-testimonials__reviews" role="region" aria-label="Avis clients sur le Siwak">
+        <div class="siwak-testimonials__review-grid">
+          {% for block in review_blocks %}
+            <article class="siwak-testimonials__review" {{ block.shopify_attributes }}>
+              <div class="siwak-testimonials__stars" role="img" aria-label="{{ block.settings.rating }} étoiles sur 5">
+                {% for index in (1..5) %}<span aria-hidden="true">{% if index <= block.settings.rating %}★{% else %}☆{% endif %}</span>{% endfor %}
+              </div>
+              {% if block.settings.review_title != blank %}<h3>{{ block.settings.review_title | escape }}</h3>{% endif %}
+              {% if block.settings.review_text != blank %}<p>{{ block.settings.review_text | escape }}</p>{% endif %}
+              <footer>
+                <strong>{{ block.settings.author | escape }}</strong>
+                
+              </footer>
+            </article>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </section>
+</siwak-testimonial-carousel>
+
+{% style %}
+  .siwak-testimonials--{{ section.id }} { --optiz-red:#e52219; --optiz-ink:#171717; --optiz-paper:#fff; display:block; overflow:hidden; border-top:6px solid var(--optiz-red); background:var(--optiz-paper); color:var(--optiz-ink); }
+  .siwak-testimonials--{{ section.id }} > section { padding:clamp(54px,7vw,104px) 0; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__header { width:min(1120px,calc(100% - 40px)); margin:0 auto clamp(32px,5vw,62px); text-align:center; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__eyebrow { width:fit-content; margin:0 auto 12px; padding:5px 10px; border:2px solid var(--optiz-ink); background:var(--optiz-red); color:#fff; font-size:.75rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+  .siwak-testimonials--{{ section.id }} h2 { max-width:980px; margin:0 auto; font-family:var(--font-heading--family); font-size:clamp(3rem,6.7vw,7rem); font-weight:var(--font-heading--weight); line-height:.86; letter-spacing:-.045em; text-transform:uppercase; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__intro { max-width:660px; margin:20px auto 0; font-size:clamp(.96rem,1.3vw,1.1rem); line-height:1.55; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__carousel { position:relative; width:min(1600px,100%); margin:0 auto; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__track { display:grid; grid-auto-flow:column; grid-auto-columns:clamp(210px,18vw,250px); gap:clamp(12px,1.6vw,22px); overflow-x:auto; overscroll-behavior-inline:contain; padding:4px clamp(48px,5vw,76px) 18px; scroll-behavior:smooth; scroll-padding-inline:clamp(48px,5vw,76px); scroll-snap-type:inline mandatory; scrollbar-width:none; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__track::-webkit-scrollbar { display:none; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__video-card { min-width:0; scroll-snap-align:start; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__media { position:relative; aspect-ratio:9/16; overflow:hidden; border:2px solid var(--optiz-ink); border-radius:12px; background:var(--optiz-ink); }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__media video,
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__media img,
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__media iframe { display:block; width:100%; height:100%; border:0; object-fit:cover; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__native-video { cursor:pointer; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__play-toggle,
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__sound-toggle,
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__arrow { display:grid; place-items:center; margin:0; padding:0; border:2px solid var(--optiz-ink); background:var(--optiz-red); color:#fff; cursor:pointer; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__play-toggle { position:absolute; z-index:2; top:50%; left:50%; width:64px; height:64px; border-color:#fff; border-radius:50%; transform:translate(-50%,-50%); }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__sound-toggle { position:absolute; z-index:2; top:14px; right:14px; width:42px; height:42px; border-color:#fff; border-radius:50%; background:var(--optiz-ink); }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__play-toggle svg { width:25px; height:25px; fill:currentColor; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__sound-toggle svg { width:21px; height:21px; fill:currentColor; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__icon-pause,
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__icon-sound,
+  .siwak-testimonials--{{ section.id }} .is-playing .siwak-testimonials__icon-play,
+  .siwak-testimonials--{{ section.id }} .has-sound .siwak-testimonials__icon-muted { display:none; }
+  .siwak-testimonials--{{ section.id }} .is-playing .siwak-testimonials__icon-pause,
+  .siwak-testimonials--{{ section.id }} .has-sound .siwak-testimonials__icon-sound { display:block; }
+  .siwak-testimonials--{{ section.id }} .is-playing .siwak-testimonials__play-toggle { opacity:0; }
+  .siwak-testimonials--{{ section.id }} .is-playing .siwak-testimonials__media:hover .siwak-testimonials__play-toggle,
+  .siwak-testimonials--{{ section.id }} .is-playing .siwak-testimonials__play-toggle:focus-visible { opacity:1; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__arrow { position:absolute; z-index:4; top:50%; width:52px; height:52px; border-radius:50%; transform:translateY(-50%); background:#fff; color:var(--optiz-ink); box-shadow:4px 4px 0 var(--optiz-red); }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__arrow--prev { left:14px; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__arrow--next { right:14px; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__arrow svg { width:25px; height:25px; fill:none; stroke:currentColor; stroke-width:2.5; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__arrow:disabled { opacity:.28; cursor:default; box-shadow:none; }
+  .siwak-testimonials--{{ section.id }} button:focus-visible,
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__track:focus-visible { outline:3px solid var(--optiz-red); outline-offset:3px; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__video-caption { display:grid; gap:2px; padding:12px 2px 0; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__video-caption strong { font-family:var(--font-heading--family); font-size:1.15rem; line-height:1; text-transform:uppercase; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__video-caption span { font-size:.78rem; opacity:.68; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__placeholder { display:grid; place-items:center; align-content:center; gap:12px; width:100%; height:100%; padding:22px; background:repeating-linear-gradient(-45deg,#171717 0,#171717 18px,#211f1f 18px,#211f1f 36px); color:#fff; text-align:center; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__placeholder span { display:grid; place-items:center; width:62px; height:62px; margin-bottom:22px; border:2px solid #fff; border-radius:50%; background:var(--optiz-red); }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__placeholder strong { font-size:.9rem; letter-spacing:.1em; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__placeholder small { font-size:.65rem; letter-spacing:.1em; opacity:.68; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__editor-error { position:absolute; inset:auto 10px 10px; z-index:3; margin:0; padding:9px; background:#fff; color:var(--optiz-ink); font-size:.72rem; line-height:1.35; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__reviews { width:min(1320px,calc(100% - 40px)); margin:clamp(52px,7vw,92px) auto 0; border-top:3px solid var(--optiz-ink); }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__review-grid { display:grid; grid-template-columns:repeat(3,1fr); }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__review { display:flex; flex-direction:column; min-width:0; padding:clamp(24px,3vw,38px); border-right:1px solid var(--optiz-ink); }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__review:last-child { border-right:0; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__stars { color:var(--optiz-red); font-size:1.15rem; letter-spacing:.08em; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__review h3 { margin:14px 0 8px; font-family:var(--font-heading--family); font-size:clamp(1.5rem,2.3vw,2.15rem); line-height:1; text-transform:uppercase; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__review > p { margin:0 0 26px; line-height:1.55; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__review footer { display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; margin-top:auto; font-size:.76rem; letter-spacing:.06em; text-transform:uppercase; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__review footer span { color:var(--optiz-red); font-weight:800; }
+  @media (max-width:749px) {
+    .siwak-testimonials--{{ section.id }} > section { padding-block:48px; }
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__header { text-align:left; }
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__eyebrow { margin-left:0; }
+    .siwak-testimonials--{{ section.id }} h2 { margin-left:0; font-size:clamp(2.8rem,15vw,4.8rem); }
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__intro { margin-left:0; }
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__track { grid-auto-columns:74vw; padding-inline:20px; scroll-padding-inline:20px; }
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__arrow { display:none; }
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__review-grid { display:flex; overflow-x:auto; scroll-snap-type:x mandatory; scrollbar-width:none; }
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__review-grid::-webkit-scrollbar { display:none; }
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__review { flex:0 0 86%; border-right:1px solid var(--optiz-ink); scroll-snap-align:start; }
   }
-{% endstylesheet %}
+  @media (prefers-reduced-motion:reduce) { .siwak-testimonials--{{ section.id }} .siwak-testimonials__track { scroll-behavior:auto; } }
+
+  /* Portrait story rail inspired by the reference, with Optiz's printed accents. */
+  .siwak-testimonials--{{ section.id }} { --optiz-paper:#fdf3f1; border-top:0; }
+  .siwak-testimonials--{{ section.id }} > section { padding:clamp(36px,5vw,64px) 0; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__header { margin-bottom:28px; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__eyebrow { padding:0; border:0; background:none; color:var(--optiz-red); font-family:'Courier New',monospace; font-size:12px; letter-spacing:.12em; }
+  .siwak-testimonials--{{ section.id }} h2 { max-width:850px; font-size:clamp(40px,5vw,66px); line-height:1; letter-spacing:-.025em; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__intro { margin-top:14px; font-size:15px; color:#62605c; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__carousel { max-width:1400px; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__track { grid-auto-columns:clamp(220px,22vw,270px); gap:16px; padding:4px 64px 12px; scroll-padding-inline:64px; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__video-card { border:1px solid #292724; border-radius:18px; overflow:hidden; background:#fffdf9; box-shadow:3px 3px 0 #ddcec8; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__media { border:0; border-radius:0; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__video-caption { padding:12px 14px 14px; gap:4px; border-top:3px solid var(--optiz-red); }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__video-caption strong { font-size:21px; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__video-caption span { font-size:11px; color:#62605c; opacity:1; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__play-toggle { width:56px; height:56px; border:1px solid #fffdf9; background:var(--optiz-red); box-shadow:0 0 0 5px rgb(255 253 249 / 18%); }
+  .siwak-testimonials--{{ section.id }} .is-playing .siwak-testimonials__play-toggle { top:auto; left:12px; bottom:12px; width:44px; height:44px; transform:none; opacity:1; box-shadow:none; background:rgb(23 23 23 / 75%); }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__sound-toggle { top:12px; right:12px; width:44px; height:44px; border-width:1px; background:rgb(23 23 23 / 75%); }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__arrow { width:44px; height:44px; border-width:1px; background:#fffdf9; box-shadow:2px 2px 0 var(--optiz-red); }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__navigation { display:none; justify-content:center; align-items:center; gap:18px; width:min(1120px,calc(100% - 40px)); margin:4px auto 0; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__swipe-hint { display:none; margin:0; font:700 10px/1.4 'Courier New',monospace; letter-spacing:.06em; color:#62605c; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__swipe-hint span { color:var(--optiz-red); font-size:18px; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__dots { display:flex; flex-wrap:wrap; justify-content:center; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__dot { display:grid; place-items:center; width:44px; height:44px; padding:0; border:0; background:transparent; cursor:pointer; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__dot span { width:7px; height:7px; border-radius:50%; background:#baa9a2; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__dot[aria-current='true'] span { width:22px; border-radius:8px; background:var(--optiz-red); }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__reviews { margin-top:36px; border-top-width:1px; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__placeholder { background:#f5f1e9; color:var(--optiz-ink); }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__placeholder span { color:#fff; margin-bottom:8px; }
+  @media (max-width:749px) {
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__header { text-align:center; }
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__eyebrow { margin-inline:auto; }
+    .siwak-testimonials--{{ section.id }} h2 { font-size:clamp(36px,10vw,46px); margin-inline:auto; }
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__intro { font-size:14px; }
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__track { grid-auto-columns:min(66vw,270px); gap:12px; padding-inline:20px; scroll-padding-inline:20px; }
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__navigation { display:flex; justify-content:space-between; gap:4px; }
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__swipe-hint { display:block; }
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__dot { width:30px; min-height:44px; }
+  }
+
+  /* Match the supplied Primals screenshot's structure in Optiz colours. */
+  .siwak-testimonials--{{ section.id }} > section { padding:32px 0 40px; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__header { margin-bottom:24px; text-align:center; }
+  .siwak-testimonials--{{ section.id }} h2 { max-width:820px; font-size:clamp(40px,5.5vw,68px); line-height:1; letter-spacing:-.015em; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__video-card { border:0; border-radius:20px; box-shadow:0 12px 24px rgb(80 30 20 / 10%); }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__media { border-radius:20px; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__video-caption { display:none; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__play-toggle { width:64px; height:64px; border:0; background:rgb(229 34 25 / 75%); box-shadow:none; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__sound-toggle { top:16px; right:16px; border:0; background:rgb(229 34 25 / 75%); }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__navigation { display:none; }
+  @media(max-width:749px) {
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__header { width:calc(100% - 40px); }
+    .siwak-testimonials--{{ section.id }} h2 { font-size:clamp(36px,8.5vw,46px); }
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__track { grid-auto-columns:min(61vw,330px); gap:20px; padding:4px 16px 18px; scroll-padding-inline:16px; }
+  }
+
+  /* Compact customer quotes directly below the portrait videos. */
+  .siwak-testimonials--{{ section.id }} > section { padding:28px 0; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__header { margin-bottom:20px; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__reviews { width:min(860px,calc(100% - 40px)); margin:16px auto 0; border:0; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__review-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:10px; overflow:visible; padding:0; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__review { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:start; padding:15px 18px; border:1px solid #e6d7d2; border-radius:0; background:#fffdf9; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__stars { grid-row:1; grid-column:1; color:#f4b400; font-size:15px; line-height:1.2; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__review h3 { grid-row:2; grid-column:1 / -1; margin:7px 0 5px; font-size:23px; line-height:1.1; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__review > p { grid-row:3; grid-column:1 / -1; margin:0; font-size:14px; line-height:1.5; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__review footer { grid-row:1; grid-column:2; margin:0; padding-left:12px; font:700 12px/1.4 'Courier New',monospace; color:#c71e16; text-transform:none; letter-spacing:0; }
+  .siwak-testimonials--{{ section.id }} .siwak-testimonials__review:last-child { border-right:1px solid #e6d7d2; }
+  @media(max-width:749px) {
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__reviews { width:calc(100% - 32px); margin-top:12px; }
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__review { padding:14px 15px; }
+    .siwak-testimonials--{{ section.id }} .siwak-testimonials__review h3 { font-size:22px; }
+  }
+{% endstyle %}
+
+<script>
+  if (!customElements.get('siwak-testimonial-carousel')) {
+    customElements.define('siwak-testimonial-carousel', class SiwakTestimonialCarousel extends HTMLElement {
+      connectedCallback() {
+        if (this.dataset.ready === 'true') return;
+        this.dataset.ready = 'true';
+        this.controller = new AbortController();
+        const signal = this.controller.signal;
+        this.track = this.querySelector('[data-carousel-track]');
+        this.previous = this.querySelector('[data-carousel-prev]');
+        this.next = this.querySelector('[data-carousel-next]');
+        this.dots = [...this.querySelectorAll('[data-carousel-dot]')];
+        this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+        this.querySelectorAll('.has-native-video').forEach((card) => {
+          const video = card.querySelector('video');
+          const playButton = card.querySelector('[data-video-toggle]');
+          const soundButton = card.querySelector('[data-sound-toggle]');
+          if (!video || !playButton || !soundButton) return;
+
+          const sync = () => {
+            card.classList.toggle('is-playing', !video.paused);
+            card.classList.toggle('has-sound', !video.muted);
+            playButton.setAttribute('aria-label', video.paused ? 'Lire le témoignage' : 'Mettre le témoignage en pause');
+            soundButton.setAttribute('aria-label', video.muted ? 'Activer le son' : 'Couper le son');
+          };
+          const togglePlayback = () => {
+            if (video.paused) {
+              this.querySelectorAll('video').forEach((other) => { if (other !== video) other.pause(); });
+              video.play().catch(() => {});
+            } else video.pause();
+          };
+
+          playButton.addEventListener('click', togglePlayback, { signal });
+          video.addEventListener('click', togglePlayback, { signal });
+          soundButton.addEventListener('click', () => { video.muted = !video.muted; sync(); }, { signal });
+          video.addEventListener('play', sync, { signal });
+          video.addEventListener('pause', sync, { signal });
+          video.addEventListener('volumechange', sync, { signal });
+          sync();
+        });
+
+        if (this.track && this.previous && this.next) {
+          const updateArrows = () => {
+            const maximum = this.track.scrollWidth - this.track.clientWidth;
+            this.previous.disabled = this.track.scrollLeft <= 2;
+            this.next.disabled = this.track.scrollLeft >= maximum - 2;
+            const cards = [...this.track.querySelectorAll('.siwak-testimonials__video-card')];
+            const first = cards[0];
+            const step = (first?.getBoundingClientRect().width || 1) + (parseFloat(getComputedStyle(this.track).columnGap) || 0);
+            const index = Math.min(cards.length - 1, Math.max(0, Math.round(this.track.scrollLeft / step)));
+            this.dots.forEach((dot, i) => { if (i === index) dot.setAttribute('aria-current', 'true'); else dot.removeAttribute('aria-current'); });
+          };
+          const move = (direction) => {
+            const card = this.track.querySelector('.siwak-testimonials__video-card');
+            const gap = parseFloat(getComputedStyle(this.track).columnGap) || 0;
+            this.track.scrollBy({ left: direction * ((card?.getBoundingClientRect().width || this.track.clientWidth) + gap), behavior: this.reducedMotion.matches ? 'auto' : 'smooth' });
+          };
+          this.previous.addEventListener('click', () => move(-1), { signal });
+          this.next.addEventListener('click', () => move(1), { signal });
+          this.dots.forEach((dot, index) => dot.addEventListener('click', () => {
+            const card = this.track.querySelector('.siwak-testimonials__video-card');
+            const step = (card?.getBoundingClientRect().width || this.track.clientWidth) + (parseFloat(getComputedStyle(this.track).columnGap) || 0);
+            this.track.scrollTo({ left: index * step, behavior: this.reducedMotion.matches ? 'auto' : 'smooth' });
+          }, { signal }));
+          this.track.addEventListener('keydown', (event) => {
+            if (event.target !== this.track || !['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+            event.preventDefault();
+            move(event.key === 'ArrowRight' ? 1 : -1);
+          }, { signal });
+          this.track.addEventListener('scroll', updateArrows, { passive: true, signal });
+          window.addEventListener('resize', updateArrows, { passive: true, signal });
+          this.resizeObserver = new ResizeObserver(updateArrows);
+          this.resizeObserver.observe(this.track);
+          updateArrows();
+        }
+        this.visibilityObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => { if (!entry.isIntersecting) entry.target.querySelector('video')?.pause(); });
+        }, { threshold: 0.3 });
+        this.querySelectorAll('.has-native-video').forEach((card) => this.visibilityObserver.observe(card));
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden) this.querySelectorAll('video').forEach((video) => video.pause());
+        }, { signal });
+      }
+      disconnectedCallback() {
+        this.controller?.abort();
+        this.resizeObserver?.disconnect();
+        this.visibilityObserver?.disconnect();
+        this.querySelectorAll('video').forEach((video) => video.pause());
+        delete this.dataset.ready;
+      }
+    });
+  }
+</script>
 
 {% schema %}
 {
   "name": "Siwak — avis vidéo",
-  "max_blocks": 3,
+  "max_blocks": 12,
   "settings": [
-    { "type": "text", "id": "heading", "label": "Titre", "default": "Voici ce que nos clients pensent du Siwak d’Optiz" },
-    { "type": "textarea", "id": "text", "label": "Introduction", "default": "Trois expériences, racontées directement par ceux qui ont intégré le siwak à leur routine." }
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Surtitre",
+      "default": "Ils l’ont testé"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Titre",
+      "default": "Rejoins ceux qui ont\nadopté le geste Siwak."
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Introduction",
+      "default": "Des gestes réels, des retours directs et aucune mise en scène compliquée."
+    }
   ],
   "blocks": [
     {
       "type": "testimonial",
-      "name": "Témoignage vidéo",
+      "name": "Vidéo témoignage",
       "settings": [
-        { "type": "video", "id": "video", "label": "Vidéo verticale" },
-        { "type": "image_picker", "id": "poster", "label": "Affiche provisoire" },
-        { "type": "text", "id": "title", "label": "Prénom", "default": "Témoignage client" },
-        { "type": "text", "id": "context", "label": "Contexte", "default": "Durée d’utilisation à préciser" }
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Vidéo Shopify",
+          "info": "Recommandé : permet le lecteur natif Optiz comme sur la référence."
+        },
+        {
+          "type": "url",
+          "id": "external_video_url",
+          "label": "Lien Instagram, TikTok ou YouTube",
+          "info": "Solution de secours : le lecteur et ses contrôles restent ceux de la plateforme sociale."
+        },
+        {
+          "type": "image_picker",
+          "id": "poster",
+          "label": "Affiche vidéo (optionnelle)"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Prénom",
+          "default": "Témoignage client"
+        },
+        {
+          "type": "text",
+          "id": "context",
+          "label": "Contexte",
+          "default": "Utilisateur du Siwak Optiz"
+        }
+      ]
+    },
+    {
+      "type": "review",
+      "name": "Avis client",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Note",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "text",
+          "id": "review_title",
+          "label": "Titre"
+        },
+        {
+          "type": "textarea",
+          "id": "review_text",
+          "label": "Avis"
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Prénom"
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "Achat vérifié",
+          "default": true
+        }
       ]
     }
   ],
@@ -74,7 +503,30 @@
     {
       "name": "Siwak — avis vidéo",
       "blocks": [
-        { "type": "testimonial" }, { "type": "testimonial" }, { "type": "testimonial" }
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "review"
+        },
+        {
+          "type": "review"
+        },
+        {
+          "type": "review"
+        }
       ]
     }
   ]

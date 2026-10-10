@@ -1,2 +1,11 @@
 {{ 'overflow-list.css' | asset_url | preload_tag: as: 'style' }}
 {{ 'base.css' | asset_url | stylesheet_tag: preload: true }}
+{{ 'optiz-review-stars.css' | asset_url | stylesheet_tag }}
+{{ 'optiz-interface.css' | asset_url | stylesheet_tag }}
+{{ 'optiz-opus-cart.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'optiz-opus-cart.js' | asset_url }}" data-opus-stylesheet="{{ 'optiz-opus-cart.css' | asset_url }}" defer></script>
+
+{% if template.suffix == 'siwak-lp' %}
+  {{ 'siwak-random-reviews.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'siwak-random-reviews.js' | asset_url }}" defer></script>
+{% endif %}

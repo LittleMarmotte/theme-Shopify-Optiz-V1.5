@@ -91,6 +91,10 @@
           {{- 'icon-close-menu.svg' | inline_asset_content -}}
         </span>
       </button>
+      <div class="optiz-menu-intro">
+        <span class="optiz-interface-eyebrow">Optiz</span>
+        <p class="optiz-menu-intro__title">Tes essentiels.<br>Ton quotidien.</p>
+      </div>
       <nav
         class="menu-drawer__navigation"
         style="
@@ -589,6 +593,11 @@
           {% endif %}
         </ul>
       </nav>
+      <div class="optiz-menu-outro">
+        <span class="optiz-interface-eyebrow">Un geste à adopter</span>
+        <p>Découvre le Siwak Optiz et fais une place à ton sourire.</p>
+        <a class="optiz-interface-button" href="{{ routes.root_url }}{% unless routes.root_url == '/' %}/{% endunless %}products/siwak?view=siwak-lp">Découvrir le Siwak <span aria-hidden="true">→</span></a>
+      </div>
       <div
         class="menu-drawer__utility-links menu-drawer__animated-element"
         style="--menu-drawer-animation-index: {{ linklist.links.size }};"

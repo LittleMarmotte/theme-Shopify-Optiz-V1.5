@@ -1,0 +1,278 @@
+/* Siwak LP purchase panel. Native prices, reviews and product forms remain dynamic. */
+.shopify-section:has(.siwak-purchase-panel) > .section-background,
+.product-information:has(.siwak-purchase-panel) {
+  background: #f5f1e9;
+}
+
+.siwak-purchase-panel {
+  --color-foreground: #171717;
+  --color-foreground-rgb: 23 23 23;
+  --color-foreground-secondary: #625e57;
+  --color-background: #f5f1e9;
+  min-width: 0;
+  color: #171717;
+}
+
+.product-information .siwak-purchase-panel > .group-block {
+  width: 100%;
+  padding: 22px;
+  border: 0;
+  border-block-start: 5px solid #e52219;
+  border-radius: 0;
+  background: #f5f1e9;
+  color: #171717;
+}
+
+.siwak-purchase-panel > .group-block > .group-block-content {
+  gap: 12px;
+}
+
+.siwak-purchase-panel__eyebrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  padding-block-end: 0;
+  border-block-end: 0;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.siwak-purchase-panel__eyebrow > span:first-child {
+  color: #e52219;
+}
+
+.siwak-purchase-panel [ref='productTitleLink'] .text-block,
+.siwak-purchase-panel [ref='productTitleLink'] p {
+  margin: 0;
+  color: #171717;
+  font-family: var(--font-heading--family);
+  font-size: clamp(36px, 3.3vw, 50px);
+  font-weight: 700;
+  line-height: .98;
+  letter-spacing: -.02em;
+  text-transform: uppercase;
+}
+
+.siwak-purchase-panel .rating-wrapper {
+  color: #171717;
+  font-size: 14px;
+}
+
+.siwak-purchase-panel product-price {
+  color: #171717;
+  padding-block: 2px 4px;
+}
+
+.siwak-purchase-panel product-price .price {
+  color: #171717;
+  font-family: var(--font-heading--family);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.siwak-purchase-panel product-price .tax-note {
+  margin-block-start: 5px;
+  color: #625e57;
+  font-family: var(--font-body--family);
+  font-size: 10px;
+  line-height: 1.4;
+  text-transform: none;
+}
+
+.siwak-purchase-panel .siwak-product-highlights {
+  padding: 0;
+  border: 1px solid #d5cdbf;
+  background: #fff;
+  color: #171717;
+}
+
+.siwak-purchase-panel .siwak-product-highlights__list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+}
+
+.siwak-purchase-panel .siwak-product-highlights__list li {
+  min-width: 0;
+  min-height: 60px;
+  padding: 11px 10px;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.siwak-purchase-panel .siwak-product-highlights__list li:nth-child(odd) {
+  border-inline-end: 1px solid #d5cdbf;
+}
+
+.siwak-purchase-panel .siwak-product-highlights__list li:nth-child(-n+2) {
+  border-block-end: 1px solid #d5cdbf;
+}
+
+.siwak-purchase-panel .siwak-product-highlights__list svg {
+  width: 24px;
+  height: 24px;
+  flex-basis: 24px;
+}
+
+.siwak-purchase-panel .siwak-product-offers {
+  margin-block-start: 6px;
+}
+
+.siwak-purchase-panel .siwak-product-offers__legend {
+  margin-block-end: 12px;
+  border-block-end: 1px solid #625e57;
+}
+
+.siwak-purchase-panel .siwak-product-offers__list {
+  gap: 12px;
+  padding-inline-end: 5px;
+  padding-block-end: 5px;
+}
+
+.siwak-purchase-panel .siwak-product-offers__card {
+  min-height: 78px;
+  padding: 12px;
+  box-shadow: 3px 3px 0 #625e57;
+}
+
+.siwak-purchase-panel .siwak-product-offers__card:has(input:checked) {
+  box-shadow: 5px 5px 0 #e52219;
+}
+
+.siwak-purchase-panel .siwak-product-offers__card--subscription:has(input:checked) {
+  box-shadow: 5px 5px 0 #e52219;
+}
+
+.siwak-purchase-panel .quantity-selector-wrapper {
+  --color-background: #f5f1e9;
+  --color-foreground: #171717;
+  --color-foreground-rgb: 23 23 23;
+  color: #171717;
+}
+
+.siwak-purchase-panel .quantity-selector {
+  background: #f5f1e9;
+  color: #171717;
+  border-color: #f5f1e9;
+}
+
+.siwak-purchase-panel .siwak-product-trust {
+  color: #171717;
+}
+
+@media (max-width: 749px) {
+  .product-information:has(.siwak-purchase-panel) .product-information__grid {
+    row-gap: 18px;
+  }
+
+  .product-information .siwak-purchase-panel > .group-block {
+    padding: 18px 14px 22px;
+  }
+
+  .siwak-purchase-panel [ref='productTitleLink'] .text-block,
+  .siwak-purchase-panel [ref='productTitleLink'] p {
+    font-size: clamp(34px, 8.9vw, 44px);
+  }
+
+  .siwak-purchase-panel > .group-block > .group-block-content {
+    gap: 10px;
+  }
+
+  .siwak-purchase-panel .siwak-product-highlights__list li {
+    min-height: 56px;
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+
+  .siwak-purchase-panel .siwak-product-offers__copy > strong {
+    font-size: 1.1rem;
+  }
+
+  .siwak-purchase-panel .siwak-product-offers__copy > span {
+    font-size: .72rem;
+  }
+
+  .siwak-purchase-panel .siwak-product-offers__copy em {
+    font-size: .6rem;
+  }
+
+  .siwak-purchase-panel .siwak-product-offers__price strong {
+    font-size: 1.65rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .product-information .siwak-purchase-panel > .group-block {
+    padding: 28px;
+  }
+
+  .siwak-purchase-panel .siwak-product-highlights__list li {
+    font-size: 14px;
+    min-height: 64px;
+  }
+}
+
+/* Keep the native quantity control framed and readable on the paper surface. */
+.siwak-purchase-panel .product-form-buttons > .quantity-selector-wrapper {
+  width: fit-content;
+  border: 2px solid #171717;
+  border-radius: 0;
+  background: #fff;
+}
+
+.siwak-purchase-panel .product-form-buttons .quantity-selector {
+  min-height: 48px;
+  height: 48px;
+  background: #fff;
+  border: 0;
+}
+
+.siwak-purchase-panel .quantity-selector :is(input, button) {
+  color: #171717;
+  background: transparent;
+}
+
+/* A separate solid backplate cannot be replaced by native button box-shadows. */
+.siwak-purchase-panel .product-form-buttons {
+  padding-inline-end: 8px;
+  padding-block-end: 10px;
+}
+
+.siwak-purchase-panel .product-form-buttons add-to-cart-component {
+  display: block;
+  position: relative;
+  width: 100%;
+  isolation: isolate;
+  overflow: visible;
+}
+
+.siwak-purchase-panel .product-form-buttons add-to-cart-component::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #62605c;
+  translate: 3px 3px;
+  pointer-events: none;
+}
+
+.siwak-purchase-panel .product-form-buttons add-to-cart-component .add-to-cart-button {
+  position: relative;
+  z-index: 1;
+  rotate: 0deg;
+  box-shadow: none !important;
+}
+
+.siwak-purchase-panel .product-form-buttons add-to-cart-component:has(button:disabled)::before {
+  background: #aaa;
+}
+
+.siwak-purchase-panel .product-form-buttons add-to-cart-component .add-to-cart-button:not(:disabled):active {
+  translate: 2px 2px;
+}

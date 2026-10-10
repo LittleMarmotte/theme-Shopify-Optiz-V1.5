@@ -1,0 +1,34 @@
+/* Review stars on the Optiz development theme. Keep ratings and partial fills intact. */
+#MainContent .rating {
+  --star-fill-color: #f4b400 !important;
+  --star-fill-color-rgb: 244 180 0 !important;
+}
+#MainContent .siwak-testimonials__stars {
+  color: #f4b400 !important;
+}
+#MainContent .kl_reviews__star {
+  fill: #f4b400 !important;
+}
+#MainContent .kl_reviews__star,
+#MainContent .kl_reviews__full_star,
+#MainContent .kl_reviews__partial_star {
+  color: #f4b400 !important;
+}
+#MainContent .kl_reviews__full_star .kl_reviews__star,
+#MainContent .kl_reviews__full_star .kl_reviews__star path {
+  fill: #f4b400 !important;
+}
+#MainContent .kl_reviews__star :is(path, polygon)[fill="currentColor"],
+#MainContent .kl_reviews__star :is(path, polygon)[fill="#000"],
+#MainContent .kl_reviews__star :is(path, polygon)[fill="#000000"],
+#MainContent .kl_reviews__star :is(path, polygon)[fill="black"] {
+  fill: #f4b400 !important;
+}
+#MainContent .kl_reviews__star stop:is([stop-color="#000"], [stop-color="#000000"], [stop-color="black"], [stop-color="currentColor"]) {
+  stop-color: #f4b400 !important;
+}
+
+/* Hide buyer-verification labels consistently; retain review verification data. */
+#MainContent [class*="kl_reviews"][class*="verified"] {
+  display: none !important;
+}

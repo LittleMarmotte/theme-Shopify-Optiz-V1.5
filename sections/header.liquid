@@ -21,7 +21,7 @@
   if section.settings.enable_transparent_header_home and template.name == 'index'
     assign transparent = 'always'
     assign transparent_text_color_setting = section.settings.text_color_transparent_home
-  elsif section.settings.enable_transparent_header_product and template.name == 'product'
+  elsif section.settings.enable_transparent_header_product and template.name == 'product' and template.suffix != 'siwak-lp'
     assign transparent = 'always'
     assign transparent_text_color_setting = section.settings.text_color_transparent_product
   elsif section.settings.enable_transparent_header_collection and template.name == 'collection'
@@ -339,6 +339,9 @@
 
 <header-component
   id="header-component"
+  {% if template.name == 'product' and template.suffix == 'siwak-lp' %}
+    data-siwak-header
+  {% endif %}
   class="{{ class }}"
   data-theme-color="rgb({{ section.settings.background_color_top.rgb | default: settings.page_background_color.rgb }})"
   data-bubble-style="{{ section.settings.bubble_style }}"
@@ -487,6 +490,28 @@
 ></script>
 
 {% stylesheet %}
+  @media screen and (max-width: 749px) {
+    #header-component[data-siwak-header] .header-logo {
+      min-width: 0;
+      max-width: 100%;
+      height: auto;
+      padding-block: 8px;
+    }
+
+    #header-component[data-siwak-header] .header-logo > span {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    #header-component[data-siwak-header] .header-logo__image {
+      width: auto;
+      max-width: 100%;
+      height: auto;
+      max-height: 52px;
+      object-fit: contain;
+    }
+  }
+
   body {
     --header-height: 60px;
     --header-group-height: var(--header-height);

@@ -1,0 +1,245 @@
+/* Product media treatment loaded only by the Siwak landing page media block. */
+#siwak-buy {
+  scroll-margin-top: 120px;
+}
+
+media-gallery.siwak-product-gallery > slideshow-component > slideshow-container {
+  border-radius: var(--media-radius, 24px);
+}
+
+media-gallery.siwak-product-gallery > slideshow-component .slideshow-controls__thumbnail {
+  border: 2px solid transparent;
+  border-radius: var(--thumbnail-radius, 10px);
+  overflow: hidden;
+  scroll-snap-align: center;
+}
+
+media-gallery.siwak-product-gallery > slideshow-component .slideshow-controls__thumbnail img {
+  border-radius: inherit;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+media-gallery.siwak-product-gallery
+  > slideshow-component
+  .slideshow-controls__thumbnail[aria-selected='true'] {
+  border: 2px solid #e52219;
+  outline: none;
+}
+
+media-gallery.siwak-product-gallery
+  > slideshow-component
+  .slideshow-controls__thumbnail:focus-visible {
+  outline: 2px solid #171717;
+  outline-offset: -5px;
+}
+
+media-gallery.siwak-product-gallery
+  > slideshow-component
+  > slideshow-controls[thumbnails] {
+  position: relative;
+  min-width: 0;
+  margin-block-start: 12px;
+}
+
+media-gallery.siwak-product-gallery
+  > slideshow-component
+  > slideshow-controls[thumbnails]
+  .slideshow-controls__thumbnails-container {
+  min-width: 0;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: x proximity;
+}
+
+media-gallery.siwak-product-gallery
+  > slideshow-component
+  > slideshow-controls[thumbnails]
+  .slideshow-controls__arrows {
+  flex: 0 0 44px;
+}
+
+media-gallery.siwak-product-gallery
+  > slideshow-component
+  > slideshow-controls[thumbnails]
+  .slideshow-controls__arrows .slideshow-control {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #171717;
+  box-shadow: none;
+}
+
+media-gallery.siwak-product-gallery
+  > slideshow-component
+  > slideshow-controls[thumbnails]
+  .slideshow-controls__arrows .slideshow-control:hover {
+  color: #e52219;
+}
+
+media-gallery.siwak-product-gallery
+  > slideshow-component
+  > slideshow-controls[thumbnails]
+  .slideshow-controls__arrows .slideshow-control:focus-visible {
+  outline: 2px solid #171717;
+  outline-offset: -4px;
+  color: #e52219;
+}
+
+@media screen and (min-width: 750px) {
+  /* The scroll viewport clips its contents; the outer container does not. */
+  media-gallery.siwak-product-gallery > slideshow-component > slideshow-container > slideshow-slides {
+    border-radius: var(--media-radius, 24px);
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .product-information:has(media-gallery.siwak-product-gallery) {
+    padding-block-start: 8px;
+  }
+
+  media-gallery.siwak-product-gallery {
+    --siwak-gallery-scale: 0.9;
+    --siwak-gallery-radius: 24px;
+  }
+
+  /* Scale the complete frame, keeping its layout space and every image edge. */
+  media-gallery.siwak-product-gallery > slideshow-component > slideshow-container {
+    border-radius: var(--siwak-gallery-radius);
+    transform: scale(var(--siwak-gallery-scale));
+    transform-origin: center top;
+  }
+
+  media-gallery.siwak-product-gallery > slideshow-component > slideshow-container > slideshow-slides {
+    border-radius: var(--siwak-gallery-radius);
+  }
+
+  media-gallery.siwak-product-gallery > slideshow-component > slideshow-container .product-media__image {
+    object-fit: contain !important;
+  }
+
+  media-gallery.siwak-product-gallery > slideshow-component > slideshow-container:has(:focus-visible)::after {
+    content: '';
+    position: absolute;
+    z-index: 5;
+    inset: 3px;
+    border: 2px solid #fff;
+    outline: 2px solid #171717;
+    outline-offset: -4px;
+    border-radius: calc(var(--siwak-gallery-radius) - 3px);
+    pointer-events: none;
+  }
+
+  media-gallery.siwak-product-gallery > slideshow-component > slideshow-controls[thumbnails] {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    grid-template-rows: auto;
+    gap: 0;
+    align-items: center;
+    padding-inline: 8px;
+    margin-block-start: 14px;
+  }
+
+  /* Three square previews, with separate 44px arrow columns. Nothing overlaps
+     the images: at 390px the image rail is 286px and each preview is 88.7px. */
+  media-gallery.siwak-product-gallery
+    > slideshow-component
+    > slideshow-controls[thumbnails]
+    .slideshow-controls__thumbnails-container {
+    grid-area: auto;
+    grid-column: 2;
+    grid-row: 1;
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    padding: 0;
+  }
+
+  media-gallery.siwak-product-gallery
+    > slideshow-component
+    > slideshow-controls[thumbnails]
+    .slideshow-controls__thumbnails {
+    display: flex;
+    width: 100%;
+    min-width: 100%;
+    flex-direction: row;
+    gap: 10px;
+    padding: 0;
+    margin: 0;
+  }
+
+  media-gallery.siwak-product-gallery
+    > slideshow-component
+    > slideshow-controls[thumbnails]
+    .slideshow-controls__thumbnail {
+    flex: 0 0 calc((100% - 20px) / 3);
+    width: calc((100% - 20px) / 3);
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  media-gallery.siwak-product-gallery
+    > slideshow-component
+    > slideshow-controls[thumbnails]
+    .slideshow-controls__arrows {
+    grid-area: auto;
+    grid-row: 1;
+    position: static;
+    width: 44px;
+    height: 44px;
+    transform: none;
+  }
+
+  media-gallery.siwak-product-gallery
+    > slideshow-component
+    > slideshow-controls[thumbnails]
+    .slideshow-controls__arrows:first-child {
+    grid-column: 1;
+  }
+
+  media-gallery.siwak-product-gallery
+    > slideshow-component
+    > slideshow-controls[thumbnails]
+    .slideshow-controls__arrows:last-child {
+    grid-column: 3;
+  }
+
+  /* Dots remain readable on both white packshots and dark lifestyle pictures. */
+  media-gallery.siwak-product-gallery > slideshow-component > slideshow-controls:has(.slideshow-controls__dots) {
+    mix-blend-mode: normal;
+    padding-block-end: 12px;
+  }
+
+  media-gallery.siwak-product-gallery .slideshow-controls__dots {
+    background: rgb(255 255 255 / 90%);
+    border: 1px solid rgb(16 16 16 / 10%);
+    padding: 11px 16px;
+    gap: 12px;
+  }
+
+  media-gallery.siwak-product-gallery .slideshow-controls__dots button {
+    --color: rgb(16 16 16 / 26%);
+    --color-active: #e52219;
+    --color-hover: #101010;
+  }
+
+  media-gallery.siwak-product-gallery .slideshow-controls__dots button[aria-selected='true'] {
+    --color: var(--color-active);
+  }
+
+  media-gallery.siwak-product-gallery .slideshow-controls__dots button::after {
+    box-shadow: none;
+  }
+}
+
+@media screen and (max-width: 749px) and (prefers-reduced-motion: reduce) {
+  media-gallery.siwak-product-gallery > slideshow-component > slideshow-container {
+    transform: none;
+  }
+}

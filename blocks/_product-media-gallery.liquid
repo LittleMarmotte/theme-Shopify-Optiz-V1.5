@@ -1,3 +1,14 @@
+{% liquid
+  assign siwak_gallery = false
+  if template.suffix == 'siwak-lp'
+    assign siwak_gallery = true
+  endif
+%}
+
+{% if siwak_gallery %}
+  {{ 'siwak-gallery.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'siwak-gallery.js' | asset_url }}" type="module"></script>
+{% endif %}
 
 {% render 'product-media-gallery-content',
   media_presentation: block.settings.media_presentation,
@@ -5,7 +16,8 @@
   block_id: block.id,
   block_shopify_attributes: block.shopify_attributes,
   block: block,
-  section: section
+  section: section,
+  siwak_gallery: siwak_gallery
 %}
 
 {% schema %}

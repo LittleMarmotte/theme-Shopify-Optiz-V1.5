@@ -1,0 +1,773 @@
+{% liquid
+  assign desktop_video = section.settings.video
+  assign mobile_video = section.settings.video_mobile
+  assign desktop_poster = section.settings.poster
+  assign mobile_poster = section.settings.poster_mobile
+  assign mobile_scroll_length = section.settings.scroll_length_mobile | default: section.settings.scroll_length
+
+  if desktop_poster == blank and desktop_video != blank
+    assign desktop_poster = desktop_video.preview_image
+  endif
+
+  if mobile_poster == blank
+    if mobile_video != blank
+      assign mobile_poster = mobile_video.preview_image
+    else
+      assign mobile_poster = desktop_poster
+    endif
+  endif
+%}
+
+<section
+  id="SiwakScrollVideo-{{ section.id }}"
+  class="siwak-scroll-video siwak-scroll-video--{{ section.id }}{% if mobile_video != blank %} has-mobile-video{% endif %}{% if mobile_poster != blank %} has-mobile-poster{% endif %}"
+  data-siwak-scroll-video
+  data-section-id="{{ section.id }}"
+  data-scroll-root="auto"
+  style="--siwak-scroll-length: {{ section.settings.scroll_length }}vh; --siwak-scroll-length-mobile: {{ mobile_scroll_length }}vh; --siwak-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"
+>
+  <div class="siwak-scroll-video__stage">
+    <div class="siwak-scroll-video__media" aria-hidden="true">
+      {% if desktop_poster != blank %}
+        {{ desktop_poster
+          | image_url: width: 2400
+          | image_tag:
+            widths: '750, 1100, 1500, 2000, 2400',
+            sizes: '100vw',
+            loading: 'eager',
+            class: 'siwak-scroll-video__poster siwak-scroll-video__poster--desktop',
+            alt: ''
+        }}
+      {% else %}
+        {{ 'product-1' | placeholder_svg_tag: 'siwak-scroll-video__poster siwak-scroll-video__poster--desktop siwak-scroll-video__placeholder' }}
+      {% endif %}
+
+      {% if mobile_poster != blank %}
+        {{ mobile_poster
+          | image_url: width: 1500
+          | image_tag:
+            widths: '480, 750, 1100, 1500',
+            sizes: '100vw',
+            loading: 'eager',
+            class: 'siwak-scroll-video__poster siwak-scroll-video__poster--mobile',
+            alt: ''
+        }}
+      {% endif %}
+
+      {% if desktop_video != blank %}
+        {{ desktop_video
+          | video_tag:
+            autoplay: false,
+            loop: false,
+            controls: false,
+            muted: true,
+            playsinline: true,
+            preload: 'metadata',
+            poster: nil,
+            class: 'siwak-scroll-video__video siwak-scroll-video__video--desktop',
+            tabindex: '-1'
+        }}
+      {% else %}
+        <video
+          class="siwak-scroll-video__video siwak-scroll-video__video--desktop"
+          muted
+          playsinline
+          preload="metadata"
+          tabindex="-1"
+        >
+          <source src="{{ 'siwak-scroll-v6.mp4' | asset_url }}" type="video/mp4">
+        </video>
+      {% endif %}
+
+      {% if mobile_video != blank %}
+        {{ mobile_video
+          | video_tag:
+            autoplay: false,
+            loop: false,
+            controls: false,
+            muted: true,
+            playsinline: true,
+            preload: 'metadata',
+            poster: nil,
+            class: 'siwak-scroll-video__video siwak-scroll-video__video--mobile',
+            tabindex: '-1'
+        }}
+      {% endif %}
+
+      <div class="siwak-scroll-video__shade"></div>
+    </div>
+
+    <div class="siwak-scroll-video__steps">
+      {% for block in section.blocks %}
+        <div
+          class="siwak-scroll-video__step siwak-scroll-video__step--{{ block.settings.horizontal }} siwak-scroll-video__step--{{ block.settings.vertical }}"
+          data-scroll-step
+          data-start="{{ block.settings.start }}"
+          data-end="{{ block.settings.end }}"
+          {{ block.shopify_attributes }}
+        >
+          <p>{{ block.settings.text | escape }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if section.settings.show_progress %}
+      <div class="siwak-scroll-video__progress" aria-hidden="true">
+        <span data-scroll-progress></span>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% style %}
+  .siwak-scroll-video--{{ section.id }} {
+    --optiz-red: #e52219;
+    --optiz-ink: #171717;
+    --optiz-paper: #fff;
+    --siwak-animation-background: #f7f7f6;
+    position: relative;
+    width: 100%;
+    height: var(--siwak-scroll-length);
+    background: var(--siwak-animation-background);
+    color: #fff;
+  }
+
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__stage {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100svh;
+    min-height: 520px;
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--siwak-animation-background);
+  }
+
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__media,
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__shade,
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__steps {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* Blend the white video backdrop into the light grey stage. */
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__media {
+    mix-blend-mode: multiply;
+  }
+
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__poster,
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: {{ section.settings.media_fit }};
+    object-position: center;
+  }
+
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__video {
+    z-index: 1;
+    background: var(--optiz-paper);
+    opacity: 0;
+  }
+
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__video[data-frame-ready='true'] {
+    opacity: 1;
+  }
+
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__video--mobile,
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__poster--mobile {
+    display: none;
+  }
+
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__placeholder {
+    background: #262626;
+    fill: #403f3d;
+  }
+
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__shade {
+    z-index: 2;
+    background: linear-gradient(0deg, rgb(0 0 0 / var(--siwak-overlay-opacity)) 0%, transparent 30%);
+    pointer-events: none;
+  }
+
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__steps {
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__step {
+    --step-opacity: 0;
+    --step-shift: 18px;
+    position: absolute;
+    width: min(560px, calc(100% - 48px));
+    opacity: var(--step-opacity);
+    transform: translate3d(0, var(--step-shift), 0);
+    will-change: opacity, transform;
+  }
+
+  .siwak-scroll-video--{{ section.id }}:not(.is-ready) .siwak-scroll-video__step:first-child {
+    --step-opacity: 1;
+    --step-shift: 0px;
+  }
+
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__step p {
+    display: inline-block;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    padding: .12em .24em .16em;
+    background: var(--optiz-paper);
+    color: var(--optiz-ink);
+    font-family: var(--font-heading--family);
+    font-size: clamp(2.15rem, 6vw, 6.7rem);
+    font-weight: var(--font-heading--weight);
+    line-height: 1.08;
+    overflow-wrap: break-word;
+    letter-spacing: -.035em;
+    text-transform: uppercase;
+    box-shadow: 3px 3px 0 var(--optiz-red);
+  }
+
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__step--left { left: clamp(24px, 6vw, 96px); text-align: left; }
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__step--center { left: 50%; text-align: center; transform: translate3d(-50%, var(--step-shift), 0); }
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__step--right { right: clamp(24px, 6vw, 96px); text-align: right; }
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__step--top { top: clamp(72px, 13vh, 150px); }
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__step--middle { top: 50%; margin-top: -.5em; }
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__step--bottom { bottom: clamp(72px, 12vh, 140px); }
+
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__progress {
+    position: absolute;
+    z-index: 4;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 7px;
+    background: rgb(255 255 255 / .2);
+    overflow: hidden;
+  }
+
+  .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__progress span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--optiz-red);
+    transform: scaleX(0);
+    transform-origin: left center;
+    will-change: transform;
+  }
+
+  .siwak-scroll-video--{{ section.id }}.has-video-error .siwak-scroll-video__video {
+    display: none;
+  }
+
+  @media (max-width: 749px) {
+    .siwak-scroll-video--{{ section.id }} {
+      height: var(--siwak-scroll-length-mobile);
+    }
+
+    .siwak-scroll-video--{{ section.id }}.has-mobile-video .siwak-scroll-video__video--desktop,
+    .siwak-scroll-video--{{ section.id }}.has-mobile-poster .siwak-scroll-video__poster--desktop {
+      display: none;
+    }
+
+    .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__video--mobile,
+    .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__poster--mobile {
+      display: block;
+    }
+
+    .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__step {
+      --mobile-step-top: 50%;
+      right: auto;
+      top: var(--mobile-step-top);
+      bottom: auto;
+      left: 20px;
+      width: calc(100% - 40px);
+      margin-top: 0;
+      text-align: left;
+      transform: translate3d(0, calc(-50% + var(--step-shift)), 0);
+    }
+
+    .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__step:nth-child(4n + 1) { --mobile-step-top: 46%; }
+    .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__step:nth-child(4n + 2) { --mobile-step-top: 52%; }
+    .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__step:nth-child(4n + 3) { --mobile-step-top: 48%; }
+    .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__step:nth-child(4n) { --mobile-step-top: 54%; }
+
+    .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__step p {
+      font-size: clamp(2rem, 12vw, 4.4rem);
+      box-shadow: 2px 2px 0 var(--optiz-red);
+    }
+
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .siwak-scroll-video--{{ section.id }} {
+      height: auto;
+    }
+
+    .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__stage {
+      position: relative;
+      height: auto;
+      min-height: 100svh;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__media {
+      position: absolute;
+    }
+
+    .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__steps {
+      position: relative;
+      inset: auto;
+      display: grid;
+      gap: 10px;
+      width: 100%;
+      padding: 80px 20px 42px;
+    }
+
+    .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__step,
+    .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__step--center {
+      --step-opacity: 1;
+      --step-shift: 0px;
+      position: relative;
+      inset: auto;
+      width: fit-content;
+      max-width: 100%;
+      margin: 0;
+      transform: none;
+      text-align: left;
+      will-change: auto;
+    }
+
+    .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__step p {
+      font-size: clamp(1.55rem, 7vw, 2.5rem);
+      box-shadow: 2px 2px 0 var(--optiz-red);
+    }
+
+    .siwak-scroll-video--{{ section.id }} .siwak-scroll-video__progress {
+      display: none;
+    }
+  }
+{% endstyle %}
+
+{% javascript %}
+  (() => {
+    const instances = new Map();
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+    class SiwakScrollVideo {
+      constructor(root) {
+        this.root = root;
+        this.stage = root.querySelector('.siwak-scroll-video__stage');
+        this.steps = [...root.querySelectorAll('[data-scroll-step]')];
+        this.progressBar = root.querySelector('[data-scroll-progress]');
+        this.desktopVideo = root.querySelector('.siwak-scroll-video__video--desktop');
+        this.mobileVideo = root.querySelector('.siwak-scroll-video__video--mobile');
+        this.mobileMedia = window.matchMedia('(max-width: 749px)');
+        this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+        this.scrollContainer = document.querySelector('.page-wrapper');
+        this.frame = 0;
+        this.progress = 0;
+        this.primed = false;
+
+        this.onScroll = this.requestUpdate.bind(this);
+        this.onResize = this.requestUpdate.bind(this);
+        this.onMediaChange = this.handleMediaChange.bind(this);
+        this.onPrime = this.primeVideo.bind(this);
+        this.onVideoError = this.handleVideoError.bind(this);
+        this.onVideoReady = this.handleVideoReady.bind(this);
+
+        window.addEventListener('scroll', this.onScroll, { passive: true });
+        window.addEventListener('resize', this.onResize, { passive: true });
+        this.scrollContainer?.addEventListener('scroll', this.onScroll, { passive: true });
+        this.mobileMedia.addEventListener?.('change', this.onMediaChange);
+        this.reducedMotion.addEventListener?.('change', this.onMediaChange);
+        this.root.addEventListener('pointerdown', this.onPrime, { once: true, passive: true });
+
+        [this.desktopVideo, this.mobileVideo].filter(Boolean).forEach((video) => {
+          video.muted = true;
+          video.playsInline = true;
+          video.pause();
+          video.addEventListener('loadedmetadata', this.onScroll);
+          video.addEventListener('error', this.onVideoError);
+          video.addEventListener('loadeddata', this.onVideoReady);
+          video.addEventListener('seeked', this.onVideoReady);
+          if (video.readyState >= 2) video.dataset.frameReady = 'true';
+        });
+
+        // Prepare a paused first frame before the section enters the viewport.
+        // The static box poster remains visible until the video has decoded data.
+        this.preloadObserver = new IntersectionObserver(([entry]) => {
+          if (!entry.isIntersecting) return;
+          [this.desktopVideo, this.mobileVideo].filter(Boolean).forEach((video) => {
+            if (video.readyState < 2) {
+              video.preload = 'auto';
+              video.load();
+            }
+          });
+          this.preloadObserver.disconnect();
+        }, { rootMargin: '600px 0px' });
+        this.preloadObserver.observe(this.root);
+
+        this.root.classList.add('is-ready');
+        this.requestUpdate();
+      }
+
+      get activeVideo() {
+        return this.mobileMedia.matches && this.mobileVideo ? this.mobileVideo : this.desktopVideo;
+      }
+
+      handleVideoReady(event) {
+        const video = event.currentTarget;
+        if (video.readyState >= 2) {
+          video.dataset.frameReady = 'true';
+          video.pause();
+        }
+        this.requestUpdate();
+      }
+
+      handleVideoError(event) {
+        if (event.currentTarget === this.activeVideo) this.root.classList.add('has-video-error');
+      }
+
+      handleMediaChange() {
+        this.root.classList.remove('has-video-error');
+        [this.desktopVideo, this.mobileVideo].filter(Boolean).forEach((video) => video.pause());
+        this.requestUpdate();
+      }
+
+      primeVideo() {
+        if (this.primed || this.reducedMotion.matches) return;
+        const video = this.activeVideo;
+        if (!video) return;
+        this.primed = true;
+        const playAttempt = video.play();
+        if (playAttempt?.then) {
+          playAttempt.then(() => {
+            video.pause();
+            this.updateVideo();
+          }).catch(() => {});
+        }
+      }
+
+      requestUpdate() {
+        if (this.frame) return;
+        this.frame = requestAnimationFrame(() => {
+          this.frame = 0;
+          this.update();
+        });
+      }
+
+      update() {
+        if (this.reducedMotion.matches) {
+          this.progress = 0;
+          this.root.style.removeProperty('--siwak-animation-background');
+          this.activeVideo?.pause();
+          return;
+        }
+
+        const rect = this.root.getBoundingClientRect();
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+        const scrollRange = Math.max(this.root.offsetHeight - viewportHeight, 1);
+        this.progress = clamp(-rect.top / scrollRange, 0, 1);
+
+        this.updateVideo();
+        this.updateBackground();
+        this.updateSteps();
+        if (this.progressBar) this.progressBar.style.transform = `scaleX(${this.progress})`;
+      }
+
+      updateBackground() {
+        const smooth = (value) => {
+          const t = clamp(value, 0, 1);
+          return t * t * (3 - 2 * t);
+        };
+        // Darken gently, then return to the original grey over the last 22%.
+        const depth = smooth(this.progress / .75)
+          * (1 - smooth((this.progress - .78) / .22));
+        const light = [247, 247, 246];
+        const dark = [198, 196, 191];
+        const rgb = light.map((channel, index) =>
+          Math.round(channel + (dark[index] - channel) * depth));
+        this.root.style.setProperty('--siwak-animation-background', `rgb(${rgb.join(' ')})`);
+      }
+
+      updateVideo() {
+        const video = this.activeVideo;
+        if (!video || !Number.isFinite(video.duration) || video.duration <= 0) return;
+
+        const endPadding = Math.min(.04, video.duration / 100);
+        const targetTime = this.progress * Math.max(video.duration - endPadding, 0);
+        const threshold = Math.max(video.duration / 600, .016);
+
+        video.pause();
+        if (Math.abs(video.currentTime - targetTime) >= threshold) {
+          try {
+            video.currentTime = targetTime;
+          } catch (error) {
+            // Metadata can briefly report a duration before seeking is available.
+          }
+        }
+      }
+
+      updateSteps() {
+        const percent = this.progress * 100;
+        const mobileSequenceStart = 8;
+        const mobileSequenceSpan = (100 - mobileSequenceStart) / Math.max(this.steps.length, 1);
+
+        this.steps.forEach((step, index) => {
+          const configuredStart = clamp(Number(step.dataset.start) || 0, 0, 100);
+          const configuredEnd = clamp(Number(step.dataset.end) || 100, configuredStart + .1, 100);
+          const start = this.mobileMedia.matches
+            ? mobileSequenceStart + (mobileSequenceSpan * index)
+            : configuredStart;
+          const end = this.mobileMedia.matches
+            ? mobileSequenceStart + (mobileSequenceSpan * (index + 1))
+            : configuredEnd;
+          const span = Math.max(end - start, .1);
+          const fade = Math.min(this.mobileMedia.matches ? 4 : 5, span * .32);
+          let opacity = 0;
+
+          if (percent > start && percent < end) {
+            opacity = Math.min(1, (percent - start) / fade, (end - percent) / fade);
+          }
+
+          step.style.setProperty('--step-opacity', opacity.toFixed(3));
+          step.style.setProperty('--step-shift', `${((1 - opacity) * 18).toFixed(2)}px`);
+        });
+      }
+
+      destroy() {
+        this.preloadObserver?.disconnect();
+        this.root.style.removeProperty('--siwak-animation-background');
+        if (this.frame) cancelAnimationFrame(this.frame);
+        window.removeEventListener('scroll', this.onScroll);
+        window.removeEventListener('resize', this.onResize);
+        this.scrollContainer?.removeEventListener('scroll', this.onScroll);
+        this.mobileMedia.removeEventListener?.('change', this.onMediaChange);
+        this.reducedMotion.removeEventListener?.('change', this.onMediaChange);
+        this.root.removeEventListener('pointerdown', this.onPrime);
+        [this.desktopVideo, this.mobileVideo].filter(Boolean).forEach((video) => {
+          video.removeEventListener('loadedmetadata', this.onScroll);
+          video.removeEventListener('error', this.onVideoError);
+          video.removeEventListener('loadeddata', this.onVideoReady);
+          video.removeEventListener('seeked', this.onVideoReady);
+          delete video.dataset.frameReady;
+          video.pause();
+        });
+      }
+    }
+
+    const init = (scope = document) => {
+      scope.querySelectorAll('[data-siwak-scroll-video]').forEach((root) => {
+        if (instances.has(root)) return;
+        instances.set(root, new SiwakScrollVideo(root));
+      });
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => init(), { once: true });
+    } else {
+      init();
+    }
+
+    document.addEventListener('shopify:section:load', (event) => init(event.target));
+    document.addEventListener('shopify:section:unload', (event) => {
+      const root = event.target.matches?.('[data-siwak-scroll-video]')
+        ? event.target
+        : event.target.querySelector?.('[data-siwak-scroll-video]');
+      if (!root || !instances.has(root)) return;
+      instances.get(root).destroy();
+      instances.delete(root);
+    });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Siwak — vidéo scroll",
+  "tag": "div",
+  "class": "siwak-scroll-video-wrapper",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Vidéo desktop"
+    },
+    {
+      "type": "video",
+      "id": "video_mobile",
+      "label": "Vidéo mobile",
+      "info": "Facultatif. La vidéo desktop est utilisée si ce champ est vide."
+    },
+    {
+      "type": "image_picker",
+      "id": "poster",
+      "label": "Poster desktop",
+      "info": "L’aperçu de la vidéo est utilisé si ce champ est vide."
+    },
+    {
+      "type": "image_picker",
+      "id": "poster_mobile",
+      "label": "Poster mobile",
+      "info": "Facultatif. Le poster desktop est utilisé si ce champ est vide."
+    },
+    {
+      "type": "select",
+      "id": "media_fit",
+      "label": "Recadrage",
+      "options": [
+        { "value": "cover", "label": "Remplir l’écran" },
+        { "value": "contain", "label": "Voir toute la vidéo" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "range",
+      "id": "scroll_length",
+      "label": "Longueur de la séquence — desktop",
+      "min": 400,
+      "max": 1000,
+      "step": 50,
+      "unit": "vh",
+      "default": 550,
+      "info": "Une valeur élevée ralentit la progression de la vidéo."
+    },
+    {
+      "type": "range",
+      "id": "scroll_length_mobile",
+      "label": "Longueur de la séquence — mobile",
+      "min": 300,
+      "max": 800,
+      "step": 50,
+      "unit": "vh",
+      "default": 450,
+      "info": "Une distance plus courte rend la vidéo plus réactive sur mobile."
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Assombrissement derrière les textes",
+      "min": 0,
+      "max": 70,
+      "step": 5,
+      "unit": "%",
+      "default": 30
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress",
+      "label": "Afficher la barre de progression",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Texte d’étape",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Texte",
+          "default": "Étape du Siwak"
+        },
+        {
+          "type": "range",
+          "id": "start",
+          "label": "Apparition — desktop",
+          "min": 0,
+          "max": 99,
+          "step": 1,
+          "unit": "%",
+          "default": 20
+        },
+        {
+          "type": "range",
+          "id": "end",
+          "label": "Disparition — desktop",
+          "min": 1,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 40,
+          "info": "Sur mobile, les textes s’enchaînent automatiquement sans se superposer."
+        },
+        {
+          "type": "select",
+          "id": "horizontal",
+          "label": "Position horizontale — desktop",
+          "options": [
+            { "value": "left", "label": "Gauche" },
+            { "value": "center", "label": "Centre" },
+            { "value": "right", "label": "Droite" }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "select",
+          "id": "vertical",
+          "label": "Position verticale — desktop",
+          "options": [
+            { "value": "top", "label": "Haut" },
+            { "value": "middle", "label": "Milieu" },
+            { "value": "bottom", "label": "Bas" }
+          ],
+          "default": "bottom"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Siwak — vidéo scroll",
+      "blocks": [
+        {
+          "type": "step",
+          "settings": {
+            "text": "5 bâtonnets de Siwak",
+            "start": 20,
+            "end": 40,
+            "horizontal": "left",
+            "vertical": "bottom"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "text": "Retirez l’écorce",
+            "start": 55,
+            "end": 70,
+            "horizontal": "right",
+            "vertical": "top"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "text": "Mâchez les fibres",
+            "start": 70,
+            "end": 88,
+            "horizontal": "left",
+            "vertical": "bottom"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "text": "Prêt à être utilisé.",
+            "start": 88,
+            "end": 100,
+            "horizontal": "center",
+            "vertical": "bottom"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

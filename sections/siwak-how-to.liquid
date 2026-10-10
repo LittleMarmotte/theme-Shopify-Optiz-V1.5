@@ -1,13 +1,25 @@
+<siwak-how-to-slider>
 <section class="siwak-how-to" aria-labelledby="SiwakHowToTitle-{{ section.id }}">
   <header class="siwak-how-to__header">
     <div>
       <h2 id="SiwakHowToTitle-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
-      {% if section.settings.subheading != blank %}<p>{{ section.settings.subheading | escape }}</p>{% endif %}
+      <div class="siwak-how-to__subline">
+        {% if section.settings.subheading != blank %}<p>{{ section.settings.subheading | escape }}</p>{% endif %}
+        {% if section.blocks.size > 0 %}<span class="siwak-how-to__stamp">{{ section.blocks.size }} GESTES</span>{% endif %}
+      </div>
     </div>
   </header>
-  <div class="siwak-how-to__steps">
+  {% if section.blocks.size > 0 %}
+    <ol class="siwak-how-to__route" aria-label="Le parcours en {{ section.blocks.size }} étapes">
+      {% for block in section.blocks %}
+        <li><span class="siwak-how-to__route-number" aria-hidden="true">0{{ forloop.index }}</span><span>{{ block.settings.title | escape }}</span></li>
+      {% endfor %}
+    </ol>
+    {% if section.blocks.size > 1 %}<p class="siwak-how-to__swipe-hint">GLISSE POUR VOIR LES ÉTAPES <span aria-hidden="true">→</span></p>{% endif %}
+  {% endif %}
+  <div class="siwak-how-to__steps" id="SiwakHowToSteps-{{ section.id }}" data-step-track tabindex="0" aria-label="Étapes du mode d’emploi">
     {% for block in section.blocks %}
-      <article class="siwak-how-to__step" {{ block.shopify_attributes }}>
+      <article id="SiwakHowToStep-{{ section.id }}-{{ forloop.index }}" class="siwak-how-to__step" {{ block.shopify_attributes }}>
         <div class="siwak-how-to__media">
           {% if block.settings.image != blank %}
             {{ block.settings.image | image_url: width: 1200 | image_tag: widths: '360, 540, 720, 960, 1200', sizes: '(min-width: 990px) 25vw, (min-width: 600px) 50vw, 100vw', loading: 'lazy', alt: block.settings.image.alt | default: block.settings.title }}
@@ -21,19 +33,30 @@
       </article>
     {% endfor %}
   </div>
+  {% if section.blocks.size > 1 %}
+    <nav class="siwak-how-to__dots" aria-label="Choisir une étape">
+      {% for block in section.blocks %}
+        <button class="siwak-how-to__dot" type="button" data-step-dot="{{ forloop.index0 }}" aria-label="Étape {{ forloop.index }} : {{ block.settings.title | escape }}" aria-controls="SiwakHowToStep-{{ section.id }}-{{ forloop.index }}"{% if forloop.first %} aria-current="step"{% endif %}><span aria-hidden="true"></span></button>
+      {% endfor %}
+    </nav>
+  {% endif %}
   {% if request.design_mode and section.settings.note != blank %}<p class="siwak-how-to__note">{{ section.settings.note | escape }}</p>{% endif %}
 </section>
+</siwak-how-to-slider>
 
 {% stylesheet %}
-  .siwak-how-to { background: #fff; color: #171717; padding: clamp(58px, 8vw, 110px) max(20px, calc((100vw - 1400px) / 2)); }
-  .siwak-how-to__header { margin-bottom: 42px; }
+  siwak-how-to-slider { display: block; }
+  .siwak-how-to__dots { display: none; }
+  .siwak-how-to { --howto-grey: #e5e4e1; background: var(--howto-grey); color: #171717; padding: clamp(36px, 6vw, 84px) max(20px, calc((100vw - 1400px) / 2)); }
+  .siwak-how-to__header { margin-bottom: 24px; }
   .siwak-how-to__header p { margin: 15px 0 0; color: #e52219; font-size: clamp(1.1rem, 2vw, 1.45rem); font-weight: 800; }
   .siwak-how-to h2 { margin: 0; font-size: clamp(2.5rem, 6vw, 6rem); line-height: 0.92; letter-spacing: -0.05em; }
   .siwak-how-to__steps { display: grid; grid-template-columns: repeat(4, 1fr); border-block: 2px solid #171717; }
   .siwak-how-to__step { padding: 18px; border-right: 1px solid #171717; }
   .siwak-how-to__step:last-child { border-right: 0; }
-  .siwak-how-to__media { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: #eee9df; }
+  .siwak-how-to__media { position: relative; aspect-ratio: 4 / 5; overflow: hidden; isolation: isolate; background: var(--howto-grey); }
   .siwak-how-to__media img, .siwak-how-to__placeholder { width: 100%; height: 100%; display: block; object-fit: cover; }
+  .siwak-how-to__media img { mix-blend-mode: multiply; }
   .siwak-how-to__media span { position: absolute; top: 0; right: 0; min-width: 52px; padding: 9px; background: #e10600; color: #fff; text-align: center; font-size: 1.25rem; font-weight: 900; }
   .siwak-how-to__step h3 { margin: 18px 0 7px; font-size: 1.35rem; text-transform: uppercase; }
   .siwak-how-to__step p { margin: 0; line-height: 1.5; }
@@ -43,12 +66,98 @@
     .siwak-how-to__step:nth-child(2) { border-right: 0; }
     .siwak-how-to__step:nth-child(-n + 2) { border-bottom: 1px solid #171717; }
   }
-  @media (max-width: 599px) {
-    .siwak-how-to__steps { grid-template-columns: 1fr; }
-    .siwak-how-to__step, .siwak-how-to__step:nth-child(2) { border-right: 0; border-bottom: 1px solid #171717; }
-    .siwak-how-to__step:last-child { border-bottom: 0; }
+  @media (max-width: 749px) {
+    .siwak-how-to__steps { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 88%; overflow-x: auto; gap: 12px; scroll-snap-type: x mandatory; overscroll-behavior-inline: contain; scrollbar-width: none; }
+    .siwak-how-to__steps::-webkit-scrollbar { display: none; }
+    .siwak-how-to__step, .siwak-how-to__step:nth-child(2), .siwak-how-to__step:nth-child(-n + 2) { min-width: 0; border-right: 1px solid #171717; border-bottom: 0; scroll-snap-align: start; }
+    .siwak-how-to__step:last-child { border-right: 0; }
+    .siwak-how-to__dots { display: flex; justify-content: center; margin-top: 12px; }
+    .siwak-how-to__dot { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; cursor: pointer; }
+    .siwak-how-to__dot span { display: block; width: 8px; height: 8px; border-radius: 50%; background: #b9b9b9; }
+    .siwak-how-to__dot[aria-current="step"] span { background: #e52219; }
+    .siwak-how-to__dot:focus-visible, .siwak-how-to__steps:focus-visible { outline: 2px solid #e52219; outline-offset: 3px; }
+  }
+
+  .siwak-how-to__subline { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; margin-top: 18px; }
+  .siwak-how-to__subline p { margin: 0; }
+  .siwak-how-to__stamp { display: inline-block; flex-shrink: 0; padding: 7px 10px; border: 1.5px solid #171717; background: #e52219; color: #fff; box-shadow: 3px 3px 0 #171717; font: 700 11px/1.1 "Courier New", monospace; letter-spacing: .05em; transform: rotate(-2deg); }
+  .siwak-how-to__route { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 0 0 22px; padding: 0; list-style: none; }
+  .siwak-how-to__route li { position: relative; display: flex; align-items: center; gap: 9px; min-width: 0; font-family: var(--font-heading--family); font-size: 20px; font-weight: 700; line-height: 1.1; text-transform: uppercase; }
+  .siwak-how-to__route li:not(:last-child)::after { content: "→"; margin-inline-start: auto; padding-inline-end: 8px; color: #77716b; }
+  .siwak-how-to__route-number { display: grid; flex: 0 0 32px; place-items: center; width: 32px; height: 32px; border: 1.5px solid #171717; background: #f5f1e9; color: #e52219; font: 700 13px/1 "Courier New", monospace; }
+  .siwak-how-to__swipe-hint { display: none; }
+  @media (max-width: 749px) {
+    .siwak-how-to__header { margin-bottom: 20px; }
+    .siwak-how-to__route { gap: 8px; margin-bottom: 14px; }
+    .siwak-how-to__route li { flex-direction: column; align-items: flex-start; gap: 7px; font-size: 15px; }
+    .siwak-how-to__route li:not(:last-child)::after { position: absolute; top: 7px; right: 0; padding: 0; font-size: 18px; }
+    .siwak-how-to__swipe-hint { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 12px; color: #625e57; font: 700 10px/1.4 "Courier New", monospace; letter-spacing: .04em; }
+    .siwak-how-to__swipe-hint span { color: #e52219; font-size: 26px; line-height: 1; }
   }
 {% endstylesheet %}
+
+{% javascript %}
+
+if (!customElements.get('siwak-how-to-slider')) {
+  customElements.define('siwak-how-to-slider', class extends HTMLElement {
+    connectedCallback() {
+      this.controller?.abort();
+      this.controller = new AbortController();
+      const { signal } = this.controller;
+      this.track = this.querySelector('[data-step-track]');
+      this.steps = [...this.querySelectorAll('.siwak-how-to__step')];
+      this.dots = [...this.querySelectorAll('[data-step-dot]')];
+      if (!this.track || !this.dots.length) return;
+      const update = () => {
+        if (!window.matchMedia('(max-width: 749px)').matches) return;
+        const edge = this.track.getBoundingClientRect().left;
+        let active = 0;
+        let distance = Infinity;
+        this.steps.forEach((step, index) => {
+          const delta = Math.abs(step.getBoundingClientRect().left - edge);
+          if (delta < distance) { distance = delta; active = index; }
+        });
+        this.dots.forEach((dot, index) => {
+          if (index === active) dot.setAttribute('aria-current', 'step');
+          else dot.removeAttribute('aria-current');
+        });
+      };
+      const goTo = (index) => {
+        const step = this.steps[index];
+        if (!step) return;
+        this.track.scrollBy({
+          left: step.getBoundingClientRect().left - this.track.getBoundingClientRect().left,
+          behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'
+        });
+      };
+      this.dots.forEach((dot, index) => dot.addEventListener('click', () => goTo(index), { signal }));
+      this.track.addEventListener('scroll', () => {
+        cancelAnimationFrame(this.frame);
+        this.frame = requestAnimationFrame(update);
+      }, { passive: true, signal });
+      this.track.addEventListener('keydown', (event) => {
+        if (event.target !== this.track || !window.matchMedia('(max-width: 749px)').matches) return;
+        if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+        event.preventDefault();
+        const active = Math.max(0, this.dots.findIndex(dot => dot.hasAttribute('aria-current')));
+        goTo(Math.min(this.steps.length - 1, Math.max(0, active + (event.key === 'ArrowRight' ? 1 : -1))));
+      }, { signal });
+      this.observer = new ResizeObserver(update);
+      this.observer.observe(this.track);
+      this.addEventListener('shopify:block:select', (event) => {
+        const step = event.target.closest('.siwak-how-to__step');
+        if (step && window.matchMedia('(max-width: 749px)').matches) goTo(this.steps.indexOf(step));
+      }, { signal });
+      update();
+    }
+    disconnectedCallback() {
+      this.controller?.abort();
+      this.observer?.disconnect();
+      cancelAnimationFrame(this.frame);
+    }
+  });
+}
+{% endjavascript %}
 
 {% schema %}
 {

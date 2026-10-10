@@ -1,0 +1,197 @@
+#MainContent #klaviyo-product-reviews-wrapper[data-siwak-random-state] .kl_reviews__list_container,
+#MainContent #klaviyo-product-reviews-wrapper[data-siwak-random-state] .kl_reviews__filters__pill:has(#kl_reviews__sort_by_reviews) {
+  display: none !important;
+}
+.siwak-random-reviews[hidden], .siwak-random-reviews-status[hidden] { display: none !important; }
+.siwak-random-reviews { width: 100%; }
+.siwak-random-reviews-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.siwak-random-reviews-more { display: block; margin: 24px auto 0; min-height: 44px; }
+.siwak-random-reviews-status { padding: 24px 0; font: inherit; color: #62605c; }
+
+/* Editorial paper treatment, scoped to the Siwak LP's existing Klaviyo widget. */
+#MainContent #klaviyo-product-reviews-wrapper {
+  --kl-reviews-reviews-primary-background-color: #fdf3f1;
+  --kl-reviews-reviews-secondary-background-color: #fffdf9;
+  --kl-reviews-reviews-primary-font-font-family: var(--font-body--family, Inter, sans-serif);
+  --kl-reviews-reviews-primary-font-color: #171717;
+  --kl-reviews-reviews-secondary-font-color: #62605c;
+  --kl-reviews-reviews-accent-color: #e52219;
+  --kl-reviews-reviews-star-color: #f4b400;
+  --kl-reviews-reviews-empty-star-color: #dedbd3;
+  --kl-reviews-reviews-corner-radius: 0px;
+  --kl-reviews-reviews-filter-corner-radius: 0px;
+  --kl-reviews-reviews-button-corner-radius: 0px;
+  width: 100%;
+  min-width: 0;
+  max-width: 1120px;
+  margin: 32px auto 48px;
+  padding: clamp(20px, 3vw, 40px);
+  border: 1px solid #d7d2c9;
+  border-top: 5px solid #e52219;
+  background: #fdf3f1;
+  color: #171717;
+  box-sizing: border-box;
+}
+#MainContent #klaviyo-product-reviews-wrapper *,
+#MainContent #klaviyo-product-reviews-wrapper *::before,
+#MainContent #klaviyo-product-reviews-wrapper *::after { box-sizing: border-box; }
+
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__summary__header {
+  margin: 0 0 24px;
+  color: #171717;
+  font-family: var(--font-heading--family, 'Barlow Condensed', sans-serif);
+  font-size: clamp(36px, 4vw, 54px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -.02em;
+  text-transform: uppercase;
+  text-align: left;
+}
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__summary__header::after {
+  content: '';
+  display: block;
+  width: 64px;
+  height: 4px;
+  margin-top: 14px;
+  background: #e52219;
+}
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__summary { margin-bottom: 24px; }
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__summary__average { gap: 4px; align-items: baseline; }
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__summary__average_value {
+  font-family: var(--font-heading--family, 'Barlow Condensed', sans-serif);
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1;
+  color: #171717;
+}
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__summary__average_denominator { font-size: 20px; color: #62605c; }
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__summary__stars__count { margin-top: 6px; font-size: 13px; font-weight: 600; }
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__summary__image_photo {
+  border: 1px solid #d7d2c9;
+  border-radius: 0;
+  object-fit: cover;
+}
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__histogram__bar--foreground { background: #e52219; }
+
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__list__tabs {
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px 0;
+  border-top: 1px solid #bcb7ae;
+  border-bottom: 1px solid #bcb7ae;
+}
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__list__tab_buttons { gap: 16px; }
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__list__tab {
+  min-height: 44px;
+  padding: 8px 0;
+  font-family: var(--font-heading--family, 'Barlow Condensed', sans-serif);
+  font-size: 23px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #62605c;
+}
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__list__tab--active { color: #171717; border-color: #e52219; }
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__button {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid #171717;
+  border-radius: 0;
+  background: #fffdf9;
+  color: #171717;
+  font-family: var(--font-heading--family, 'Barlow Condensed', sans-serif);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__button_bar { gap: 10px; flex-wrap: wrap; }
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__button_bar .kl_reviews__button:last-child,
+#MainContent #klaviyo-product-reviews-wrapper .siwak-random-reviews-more {
+  border-color: #e52219;
+  background: #e52219;
+  color: #fffdf9;
+  box-shadow: 3px 3px 0 #62605c;
+}
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__button:hover { background: #eee9e0; }
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__button_bar .kl_reviews__button:last-child:hover,
+#MainContent #klaviyo-product-reviews-wrapper .siwak-random-reviews-more:hover { background: #cc1c14; }
+#MainContent #klaviyo-product-reviews-wrapper :is(button, input, select, a):focus-visible { outline: 2px solid #e52219; outline-offset: 3px; }
+
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__filters { gap: 10px; flex-wrap: wrap; padding: 16px 0 20px; }
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__search { flex: 1 1 240px; min-width: 0; }
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__input_with_search_icon,
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__filters__pill {
+  min-height: 44px;
+  border: 1px solid #bcb7ae;
+  border-radius: 0;
+  background: #fffdf9;
+  color: #171717;
+  font-size: 14px;
+}
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__filters__pill select { min-height: 42px; max-width: 100%; font: inherit; color: inherit; }
+
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__review_item {
+  min-width: 0;
+  margin: 0;
+  padding: 22px;
+  border: 1px solid #bcb7ae;
+  border-top: 3px solid #171717;
+  background: #fffdf9;
+  box-shadow: 3px 3px 0 #ded9cf;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+#MainContent #klaviyo-product-reviews-wrapper .siwak-random-reviews-list > .kl_reviews__review_item:only-child,
+#MainContent #klaviyo-product-reviews-wrapper .siwak-random-reviews-list > .kl_reviews__review_item:last-child:nth-child(odd) { grid-column: 1 / -1; }
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__review_stars_and_time { gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__review__title {
+  margin: 0 0 10px;
+  font-family: var(--font-heading--family, 'Barlow Condensed', sans-serif);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__review__title:empty { display: none; }
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__review__author {
+  margin: 0 0 12px;
+  color: #c71e16;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__review__content {
+  margin: 0;
+  font-family: var(--font-body--family, Inter, sans-serif);
+  font-size: 15px;
+  line-height: 1.65;
+  color: #33312d;
+}
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__review__timestamp { color: #62605c; font-size: 11px; line-height: 1.4; }
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__review__image_row { gap: 10px; margin-top: 14px; }
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__review__image { border: 1px solid #d7d2c9; border-radius: 0; }
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__review__response {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-left: 2px solid #e52219;
+  background: #f5f1e9;
+}
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__review__response_content { font-size: 14px; line-height: 1.6; }
+#MainContent #klaviyo-product-reviews-wrapper .kl_reviews__review__response_title { font-size: 12px; font-weight: 600; }
+#MainContent #klaviyo-product-reviews-wrapper :is(.kl_reviews__review__response, .kl_reviews__review__image_row):empty { display: none; }
+#MainContent #klaviyo-product-reviews-wrapper .siwak-random-reviews-more { min-width: 190px; margin-top: 24px; }
+
+@media (max-width: 749px) {
+  #MainContent #klaviyo-product-reviews-wrapper { margin: 20px auto 32px; padding: 20px 16px 24px; }
+  #MainContent #klaviyo-product-reviews-wrapper .siwak-random-reviews-list { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  #MainContent #klaviyo-product-reviews-wrapper .kl_reviews__review_item { padding: 18px; }
+  #MainContent #klaviyo-product-reviews-wrapper .kl_reviews__review__title { font-size: 23px; }
+  #MainContent #klaviyo-product-reviews-wrapper .kl_reviews__review__content { font-size: 14px; line-height: 1.65; }
+  #MainContent #klaviyo-product-reviews-wrapper .kl_reviews__summary__average_value { font-size: 54px; }
+  #MainContent #klaviyo-product-reviews-wrapper .kl_reviews__button_bar { width: 100%; }
+  #MainContent #klaviyo-product-reviews-wrapper .kl_reviews__button_bar .kl_reviews__button { flex: 1 1 130px; font-size: 18px; }
+  #MainContent #klaviyo-product-reviews-wrapper .kl_reviews__filters { gap: 8px; }
+  #MainContent #klaviyo-product-reviews-wrapper .kl_reviews__search { flex-basis: 100%; }
+  #MainContent #klaviyo-product-reviews-wrapper .siwak-random-reviews-more { width: calc(100% - 3px); }
+}

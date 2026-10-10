@@ -7,10 +7,10 @@
 %}
 
 <div
-  class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
+  class="optiz-footer-background section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
 ></div>
 <div
-  class="section section--{{ section.settings.section_width }}{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
+  class="optiz-footer section section--{{ section.settings.section_width }}{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
 >
   {% liquid
     assign total_blocks = section.blocks.size
@@ -35,6 +35,13 @@
       assign has_isolated_grid_item_tablet = true
     endif
   %}
+  <div class="optiz-footer__layout">
+    <div class="optiz-footer__brand">
+      <a class="optiz-footer__wordmark" href="{{ routes.root_url }}" aria-label="{{ shop.name | escape }} — accueil">OPTIZ</a>
+      <h2 class="optiz-footer__title">Le prochain geste est à toi.</h2>
+      <p class="optiz-footer__copy">Des essentiels simples pour prendre soin de toi, jusque dans les petits détails.</p>
+      <a class="optiz-interface-button" href="{{ routes.all_products_collection_url }}">Découvrir les essentiels <span aria-hidden="true">→</span></a>
+    </div>
   <div
     class="
       footer-content
@@ -51,6 +58,20 @@
     "
   >
     {% content_for 'blocks' %}
+  </div>
+  </div>
+  <div class="optiz-footer__bottom">
+    <div class="optiz-footer__reassurance">
+      <span><b aria-hidden="true">↗</b> Expédié sous 24 h</span>
+      <span><b aria-hidden="true">✓</b> Paiement sécurisé</span>
+    </div>
+    {% if shop.enabled_payment_types.size > 0 %}
+      <ul class="optiz-footer__payments" role="list" aria-label="Moyens de paiement acceptés">
+        {% for type in shop.enabled_payment_types %}
+          <li>{{ type | payment_type_svg_tag: class: 'icon icon--full-color' }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
   </div>
 </div>
 

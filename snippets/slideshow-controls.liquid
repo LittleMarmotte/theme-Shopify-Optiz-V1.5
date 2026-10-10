@@ -15,6 +15,7 @@
   @param {number} [thumbnail_radius] - The border radius for thumbnails in pixels
   @param {string} [class] - Additional classes to apply to the controls
   @param {boolean} [secondary] - Whether the controls are secondary
+  @param {boolean} [siwak_gallery] - Render large image thumbnails for the Siwak gallery
 
   @example
   {%- render 'slideshow-controls', style: 'dots', item_count: 10 -%}
@@ -123,12 +124,20 @@
                     assign focal_point_style = 'object-position: ' | append: media.presentation.focal_point | append: ';'
                   endif
                 %}
-                {{
-                  media.preview_image
-                  | image_url: width: 144
-                  | image_tag: loading: 'lazy', alt: media.alt, style: focal_point_style
-                  | escape
-                }}
+                {% if siwak_gallery %}
+                  {{
+                    media.preview_image
+                    | image_url: width: 288
+                    | image_tag: loading: 'lazy', alt: media.alt, style: focal_point_style
+                  }}
+                {% else %}
+                  {{
+                    media.preview_image
+                    | image_url: width: 144
+                    | image_tag: loading: 'lazy', alt: media.alt, style: focal_point_style
+                    | escape
+                  }}
+                {% endif %}
 
                 {% if media.media_type == 'video' or media.media_type == 'external_video' %}
                   <span class="slideshow-controls__thumbnail-badge">

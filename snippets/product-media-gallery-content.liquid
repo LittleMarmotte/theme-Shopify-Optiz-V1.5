@@ -9,6 +9,7 @@
   @param {string} block_shopify_attributes - Block shopify attributes
   @param {block} block - The current block object
   @param {section} section - The current section object
+  @param {boolean} [siwak_gallery] - Apply the Siwak landing page gallery treatment
 
   @example
   {% render 'product-media-gallery-content',
@@ -83,6 +84,19 @@
   assign animate_arrows = true
   if media_presentation == 'carousel'
     assign animate_arrows = false
+  endif
+
+  assign siwak_thumbnail_arrows = false
+  assign siwak_mobile_thumbnail_arrows = false
+  if siwak_gallery
+    assign siwak_controls_icon_style = block_settings.icons_style
+  endif
+  if siwak_gallery and slideshow_controls_style == 'thumbnails'
+    assign siwak_thumbnail_arrows = true
+    assign render_slideshow_arrows = false
+  endif
+  if siwak_gallery and block_settings.slideshow_mobile_controls_style == 'thumbnails'
+    assign siwak_mobile_thumbnail_arrows = true
   endif
 
   if slideshow_controls_style == 'thumbnails'
@@ -349,6 +363,7 @@
     class="
       spacing-style
       sticky-content
+      {% if siwak_gallery %}siwak-product-gallery{% endif %}
       {% if media_presentation == 'grid' %}
         media-gallery--{{ block_settings.media_columns }}-column
         {% if block_settings.media_columns == "two" and block_settings.large_first_image%}media-gallery--large-first-image{% endif %}
@@ -363,8 +378,12 @@
     "
     style="{% render 'spacing-style', settings: block_settings %} --thumbnail-width: {{ block_settings.thumbnail_width }}px; --media-radius: {{ block_settings.media_radius }}px;{% if block_settings.icons_style contains 'large' %} --slideshow-icon-padding: 0px;{% endif %}--image-gap: {{ block_settings.image_gap }}px;{% unless block_settings.aspect_ratio == 'adapt' %} --gallery-aspect-ratio: {{ block_settings.aspect_ratio }};{% endunless %}"
     data-presentation="{{ media_presentation }}"
+    {% if siwak_gallery %}id="siwak-buy" data-siwak-gallery{% endif %}
     {{ block_shopify_attributes }}
   >
+    {% if siwak_gallery %}
+      <siwak-gallery-scroll hidden aria-hidden="true"></siwak-gallery-scroll>
+    {% endif %}
     {% capture slides %}
       {% for media in sorted_media %}
         {% capture children %}
@@ -420,7 +439,12 @@
             controls_on_media: controls_on_media,
             pagination_position: pagination_position,
             aspect_ratio: block_settings.aspect_ratio,
-            thumbnail_radius: block_settings.thumbnail_radius
+            thumbnail_radius: block_settings.thumbnail_radius,
+            show_arrows: siwak_thumbnail_arrows,
+            arrows_on_media: false,
+            icon_style: siwak_controls_icon_style,
+            shape: 'none',
+            siwak_gallery: siwak_gallery
           -%}
         {% endif %}
 
@@ -433,7 +457,12 @@
             controls_on_media: mobile_controls_on_media,
             pagination_position: 'center',
             aspect_ratio: block_settings.aspect_ratio,
-            thumbnail_radius: block_settings.thumbnail_radius
+            thumbnail_radius: block_settings.thumbnail_radius,
+            show_arrows: siwak_mobile_thumbnail_arrows,
+            arrows_on_media: false,
+            icon_style: siwak_controls_icon_style,
+            shape: 'none',
+            siwak_gallery: siwak_gallery
           -%}
         {% endif %}
       {% endcapture %}
