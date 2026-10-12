@@ -140,26 +140,7 @@
               "type": "siwak-product-offers",
               "settings": {
                 "kicker": "L’offre",
-                "heading": "Choisis ton rythme",
-                "initial_offer": "subscription",
-                "trial_kicker": "Pour essayer",
-                "trial_title": "1 boîte",
-                "trial_detail": "5 siwaks",
-                "trial_price": "12 €",
-                "trial_price_note": "achat unique",
-                "pack_kicker": "Pour 4 mois",
-                "pack_title": "4 boîtes",
-                "pack_detail": "20 siwaks · achat unique",
-                "pack_benefit": "Tu économises 3 €",
-                "pack_price": "45 €",
-                "pack_price_note": "11,25 € / boîte",
-                "subscription_badge": "Le plus malin",
-                "subscription_kicker": "La routine tranquille",
-                "subscription_title": "4 boîtes + abonnement",
-                "subscription_detail": "20 siwaks tous les 4 mois",
-                "subscription_benefit": "Livraison France offerte",
-                "subscription_price": "40 €",
-                "subscription_price_note": "10 € / mois"
+                "heading": "Choisis ton rythme"
               },
               "blocks": {}
             },
@@ -708,7 +689,7 @@
           "type": "question",
           "settings": {
             "question": "Qu’est-ce qui change avec le Siwak Optiz ?",
-            "answer": "<p>Tu reçois <strong>5 siwaks par boîte</strong>, avec un mode d’emploi pour apprendre le bon geste. Tu choisis une boîte pour essayer, un lot ou un renouvellement tous les 4 mois selon ta routine. Et tu as <strong>30 jours pour tester</strong> : si le produit ne te plaît pas, la garantie satisfait ou remboursé s’applique même après ouverture.</p>"
+            "answer": "<p>Tu reçois <strong>5 siwaks par boîte</strong>, avec un mode d’emploi pour apprendre le bon geste. Tu choisis une boîte pour essayer, un lot ou un renouvellement selon la fréquence de l’abonnement selon ta routine. Et tu as <strong>30 jours pour tester</strong> : si le produit ne te plaît pas, la garantie satisfait ou remboursé s’applique même après ouverture.</p>"
           }
         },
         "optiz_faq_5": {
