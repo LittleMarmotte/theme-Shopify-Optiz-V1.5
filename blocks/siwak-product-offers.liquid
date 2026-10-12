@@ -47,9 +47,20 @@
         {% liquid
           assign gift_key = 'gift_' | append: i
           assign gift = block.settings[gift_key]
+          assign sku_key = gift_key | append: '_sku'
+          assign gift_variant = gift.selected_or_first_available_variant
+          if block.settings[sku_key] != blank
+            assign gift_variant = gift.variants | where: 'sku', block.settings[sku_key] | first
+          endif
+          assign gift_available = gift_variant.available
+          if gift_variant == blank
+            assign gift_available = false
+          elsif gift_variant.inventory_management != blank and gift_variant.inventory_quantity <= 0
+            assign gift_available = false
+          endif
         %}
         {% if gift != blank %}
-          <label class="siwak-product-offers__gift"><span class="siwak-product-offers__visual" aria-hidden="true">Image<br>cadeau</span><span><strong>{{ gift.title | escape }}</strong><br>OFFERT <s>{{ gift.price | money }}</s></span><input type="radio" name="siwak-gift-{{ block.id }}" value="{{ gift.selected_or_first_available_variant.id }}" data-title="{{ gift.title | escape }}" {% unless gift.available %}disabled{% endunless %}><span>{% if gift.available %}Choisir{% else %}Épuisé{% endif %}</span></label>
+          <label class="siwak-product-offers__gift"><span class="siwak-product-offers__visual" aria-hidden="true">Image<br>cadeau</span><span><strong>{{ gift.title | escape }}{% unless gift_variant.title == 'Default Title' %} {{ gift_variant.title | escape }}{% endunless %}</strong><br>OFFERT <s>{{ gift_variant.price | money }}</s></span><input type="radio" name="siwak-gift-{{ block.id }}" value="{{ gift_variant.id }}" data-title="{{ gift.title | escape }}" {% unless gift_available %}disabled{% endunless %}><span>{% if gift_available %}Choisir{% else %}Épuisé{% endif %}</span></label>
         {% endif %}
       {% endfor %}
       {% if block.settings.gift_1 == blank and block.settings.gift_2 == blank and block.settings.gift_3 == blank and block.settings.gift_4 == blank and block.settings.gift_5 == blank and block.settings.gift_6 == blank %}<p>La sélection de cadeaux arrive bientôt.</p>{% endif %}
@@ -534,6 +545,42 @@ if (!customElements.get('siwak-product-offers')) customElements.define('siwak-pr
       "type": "product",
       "id": "gift_6",
       "label": "Cadeau Optiz 6"
+    },
+    {
+      "type": "text",
+      "id": "gift_1_sku",
+      "label": "SKU exact du cadeau 1",
+      "info": "Verrouille le format proposé. Vide : première variante disponible."
+    },
+    {
+      "type": "text",
+      "id": "gift_2_sku",
+      "label": "SKU exact du cadeau 2",
+      "info": "Verrouille le format proposé. Vide : première variante disponible."
+    },
+    {
+      "type": "text",
+      "id": "gift_3_sku",
+      "label": "SKU exact du cadeau 3",
+      "info": "Verrouille le format proposé. Vide : première variante disponible."
+    },
+    {
+      "type": "text",
+      "id": "gift_4_sku",
+      "label": "SKU exact du cadeau 4",
+      "info": "Verrouille le format proposé. Vide : première variante disponible."
+    },
+    {
+      "type": "text",
+      "id": "gift_5_sku",
+      "label": "SKU exact du cadeau 5",
+      "info": "Verrouille le format proposé. Vide : première variante disponible."
+    },
+    {
+      "type": "text",
+      "id": "gift_6_sku",
+      "label": "SKU exact du cadeau 6",
+      "info": "Verrouille le format proposé. Vide : première variante disponible."
     }
   ],
   "presets": [

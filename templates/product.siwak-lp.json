@@ -141,7 +141,17 @@
               "settings": {
                 "kicker": "L’offre",
                 "heading": "Choisis ton rythme",
-                "selling_plan_id": "711747076478"
+                "selling_plan_id": "711747076478",
+                "gift_1": "brosse-a-dent-poils-de-cheval",
+                "gift_1_sku": "OPT-BDC-001",
+                "gift_2": "savon-artisanal",
+                "gift_2_sku": "OPT-SAV-100",
+                "gift_3": "mastic-de-chios",
+                "gift_3_sku": "OPT-MAS-50",
+                "gift_4": "ghassoul",
+                "gift_4_sku": "OPT-GHA-250",
+                "gift_5": "poudre-dentaire-au-charbon",
+                "gift_5_sku": "OPT-POU-30"
               },
               "blocks": {}
             },
