@@ -436,6 +436,7 @@ class ProductFormComponent extends Component {
     });
 
     const itemCount = Number(formData.get('quantity')) || Number(this.dataset.quantityDefault);
+    const siwakMerchandiseId = formData.get('id');
     const deferredEventPromise = CartLinesUpdateEvent.createPromise();
 
     this.dispatchEvent(
@@ -467,6 +468,7 @@ class ProductFormComponent extends Component {
         existingSiwakGift = cart.items.some((item) => item.properties?._optiz_siwak_gift === 'true');
       } catch {
         for (const container of allAddToCartContainers) container.enable();
+        deferredEventPromise.reject(new Error('Gift cart verification failed'));
         this.#setLiveRegionText('Impossible de vérifier le cadeau. Réessaie dans un instant.');
         return;
       }
@@ -550,7 +552,7 @@ class ProductFormComponent extends Component {
 
           return;
         } else {
-          const id = formData.get('id');
+          const id = siwakMerchandiseId;
 
           if (addToCartTextError) {
             addToCartTextError.classList.add('hidden');
