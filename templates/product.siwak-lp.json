@@ -311,29 +311,29 @@
           "settings": {
             "rating": 5,
             "review_title": "Très bien",
-            "review_text": "Des dents vraiment propres et blanches. Et de façon tellement naturelle.",
-            "author": "Anonyme",
-            "verified": false
+            "review_text": "Meilleur bâton de siwak que j'ai acheté pour l'instant, top 👌",
+            "author": "Baptiste",
+            "verified": true
           }
         },
         "review-2": {
           "type": "review",
           "settings": {
             "rating": 5,
-            "review_title": "Des dents toutes douces",
-            "review_text": "Il laisse les dents très lisses et elles blanchissent petit à petit. Seul bémol : c'est un peu difficile d'atteindre l'arrière des dents.",
-            "author": "Alicia",
-            "verified": false
+            "review_title": "Super",
+            "review_text": "Incroyable stv pas bouffé du fluor mais garder tes dents blanches",
+            "author": "Bédu",
+            "verified": true
           }
         },
         "review-3": {
           "type": "review",
           "settings": {
             "rating": 5,
-            "review_title": "Super !",
-            "review_text": "Les dents sont propres après et nettement plus blanches. Pas un sourire hollywoodien, mais dans les tons naturellement clairs.",
-            "author": "Anonyme",
-            "verified": false
+            "review_title": "Livré rapidement",
+            "review_text": "Livraison super rapide, c’est top ! Je rentre chez moi mardi et je teste directement 👌",
+            "author": "Nathan",
+            "verified": true
           }
         }
       },
@@ -348,9 +348,9 @@
         "review-3"
       ],
       "settings": {
-        "eyebrow": "",
-        "heading": "Rejoins les milliers qui ont\nlâché les mauvaises routines.",
-        "text": "à modifier urgent"
+        "eyebrow": "pourquoi pas toi ?",
+        "heading": "Des milliers ont lâché leur mauvaise routine.",
+        "text": ""
       }
     },
     "customer-marquee": {
@@ -506,25 +506,25 @@
         "criterion-1": {
           "type": "criterion",
           "settings": {
-            "criterion": "Geste",
-            "siwak": "Des fibres végétales à préparer",
-            "strips": "Des bandes à placer sur les dents"
+            "criterion": "Santé gingivale",
+            "siwak": "Soignes tes gencives avec la vitamine C.",
+            "strips": "Peut rendre tes gencives sensibles."
           }
         },
         "criterion-2": {
           "type": "criterion",
           "settings": {
             "criterion": "Temps d’usage",
-            "siwak": "5 min par jour dans ta routine",
-            "strips": "Un temps de pose à respecter"
+            "siwak": "5 min par jour.",
+            "strips": "30 min par jour."
           }
         },
         "criterion-3": {
           "type": "criterion",
           "settings": {
-            "criterion": "Routine",
-            "siwak": "Un bâtonnet à emporter",
-            "strips": "Un protocole selon la formule"
+            "criterion": "Durabilité de la blancheur",
+            "siwak": "La blancheur n’est qu’une conséquence d’une bouche saine.",
+            "strips": "Répéter chaque jour sinon tu retombe à 0."
           }
         }
       },
@@ -534,20 +534,20 @@
         "criterion-3"
       ],
       "settings": {
-        "eyebrow": "LE FACE-À-FACE",
-        "heading": "LES BANDES, TU CONNAIS.",
-        "heading_accent": "ESSAIE LE GESTE SIWAK.",
-        "text": "Tu cherches un sourire plus clair. Choisis aussi le geste qui va avec ta routine.",
+        "eyebrow": "Ne fais comme tout le monde",
+        "heading": "Ne tombe pas dans le piège",
+        "heading_accent": "Fais confiance au Siwak",
+        "text": "",
         "versus_label": "VS",
-        "siwak_heading": "SIWAK OPTIZ",
-        "siwak_subheading": "UN GESTE AU QUOTIDIEN",
+        "siwak_heading": "SIWAK",
+        "siwak_subheading": "Résulat après 1 semaines de brossage. Et en plus :",
         "siwak_image": "shopify://shop_images/optiz-siwak-cutout.png",
         "siwak_image_alt": "Bâton de siwak Optiz et ses fibres préparées",
         "strips_heading": "BANDES BLANCHISSANTES",
-        "strips_subheading": "UN TEMPS DE POSE",
+        "strips_subheading": "Résulat rapide mais :",
         "strips_image": "shopify://shop_images/optiz-drdent-purple-strips-cutout-v4.png",
         "strips_image_alt": "Bandes blanchissantes violettes DR DENT",
-        "button_label": "CHOISIR MON SIWAK",
+        "button_label": "Je choisi le siwak",
         "note": ""
       }
     },
@@ -635,11 +635,11 @@
         "photo_hmQFzz"
       ],
       "settings": {
-        "eyebrow": "LE PROCHAIN GESTE EST À TOI",
-        "heading": "TON GLOW-UP",
-        "heading_accent": "VA JUSQU’AU SOURIRE.",
-        "text": "<p>Tu prends déjà soin de toi. Fais aussi une place à ton sourire. Un bâtonnet, des fibres à préparer, cinq minutes dans ta routine : voilà le geste Siwak Optiz.</p>",
-        "button_label": "CHOISIR MON SIWAK",
+        "eyebrow": "Des centaines l'ont fais pourquoi pas toi ?",
+        "heading": "Fini le jaune,",
+        "heading_accent": "Fais le switch.",
+        "text": "<p>Tu prends déjà soin de toi. Fais aussi une place à ton sourire. Un produit naturel, des fibres, des principes actifs naturels, et fini les dents jaunes.</p>",
+        "button_label": "Je fais le Switch",
         "image": "shopify://shop_images/optiz-siwak-box-stone-cutout-v2.png",
         "image_alt": "Boîte Optiz de siwaks sur son socle en pierre",
         "show_caption": false,
@@ -690,8 +690,8 @@
         "step-4"
       ],
       "settings": {
-        "heading": "Comment utiliser un siwak",
-        "subheading": "5 min par jours et c’est tout",
+        "heading": "5 min par jours",
+        "subheading": "Comment utiliser un siwak?",
         "note": ""
       }
     },
