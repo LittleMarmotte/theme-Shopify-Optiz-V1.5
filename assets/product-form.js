@@ -357,7 +357,7 @@ class ProductFormComponent extends Component {
    * @param {number} [overrideQuantity]
    * @param {Event} [event]
    */
-  #processAddToCart(overrideVariantId, overrideQuantity, event) {
+  async #processAddToCart(overrideVariantId, overrideQuantity, event) {
     const { addToCartTextError } = this.refs;
 
     if (this.#timeout) clearTimeout(this.#timeout);
@@ -451,6 +451,39 @@ class ProductFormComponent extends Component {
         promise: deferredEventPromise.promise,
       })
     );
+
+    // Add the selected Siwak gift in the same request, always as a one-time item.
+    // Shopify's automatic BXGY rule verifies eligibility and applies the free price.
+    const siwakGift = formData.get('properties[_optiz_gift_variant]');
+    const siwakOffer = this.closest('.shopify-section')?.querySelector('siwak-product-offers');
+    const giftAllowed = siwakOffer && Array.from(siwakOffer.querySelectorAll('.siwak-product-offers__gift input'))
+      .some((input) => !input.disabled && input.value === siwakGift);
+    let existingSiwakGift = false;
+    if (giftAllowed && itemCount === 4) {
+      try {
+        const response = await fetch(`${window.Shopify?.routes?.root || '/'}cart.js`);
+        if (!response.ok) throw new Error('Cart unavailable');
+        const cart = await response.json();
+        existingSiwakGift = cart.items.some((item) => item.properties?._optiz_siwak_gift === 'true');
+      } catch {
+        for (const container of allAddToCartContainers) container.enable();
+        this.#setLiveRegionText('Impossible de vérifier le cadeau. Réessaie dans un instant.');
+        return;
+      }
+    }
+    if (giftAllowed && itemCount === 4 && !existingSiwakGift) {
+      const lineFields = Array.from(formData.entries()).filter(([name]) =>
+        name === 'id' || name === 'quantity' || name === 'selling_plan' || name.startsWith('properties[')
+      );
+      for (const [name, value] of lineFields) {
+        formData.delete(name);
+        formData.append((name.startsWith('properties[') ? `items[0][properties]${name.slice(10)}` : `items[0][${name}]`), value);
+      }
+      formData.append('items[1][id]', siwakGift);
+      formData.append('items[1][quantity]', '1');
+      formData.append('items[1][properties][_optiz_siwak_gift]', 'true');
+      formData.append('items[1][properties][Cadeau offert]', 'Offre 4 boîtes de Siwak');
+    }
 
     const fetchCfg = fetchConfig('javascript', { body: formData });
 

@@ -448,7 +448,14 @@ class SiwakProductOffers extends HTMLElement {
       this.dialog.close();
     }, options);
     this.form = this.closest('.shopify-section')?.querySelector('product-form-component form');
-    this.form?.addEventListener('submit',()=>this.syncForm(),{...options,capture:true});
+    this.form?.addEventListener('submit', (event) => {
+      this.syncForm();
+      if (this.querySelector('input[name^="siwak-quantity"]:checked')?.value === '4' && !this.gift) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        this.dialog.showModal();
+      }
+    }, {...options,capture:true});
     this.observer = new MutationObserver(()=>this.syncForm());
     if (this.form) this.observer.observe(this.form,{childList:true,subtree:true});
     this.syncForm();
@@ -468,8 +475,7 @@ class SiwakProductOffers extends HTMLElement {
       field.value=value;
     };
     setHidden('selling_plan',subscription ? this.dataset.plan : '');
-    // Prototype: record the choice without adding a paid gift line. Free gift fulfillment
-    // must be connected to a server-validated promotion before automatic cart insertion.
+    // The form adds the chosen gift without a selling plan; eligibility is enforced by Shopify.
     setHidden('properties[Cadeau choisi]',quantity==='4' ? this.gift?.title : '');
     setHidden('properties[_optiz_gift_variant]',quantity==='4' ? this.gift?.value : '');
     this.querySelectorAll('[data-price]').forEach(el=>el.textContent=`${Number(el.dataset.price)*(subscription?10:12)} €`);
@@ -514,7 +520,7 @@ if (!customElements.get('siwak-product-offers')) customElements.define('siwak-pr
     },
     {
       "type": "paragraph",
-      "content": "Les prix affichés ne changent pas les tarifs Shopify. Configurer le cadeau gratuit et la livraison à moitié prix avant activation commerciale. Le cadeau choisi est enregistré sur la ligne Siwak, sans ajout de produit payant."
+      "content": "Les prix affichés ne changent pas les tarifs Shopify. Configurer le cadeau gratuit et la livraison à moitié prix avant activation commerciale. Le cadeau choisi est ajouté au panier en achat ponctuel. Shopify vérifie le seuil de 4 boîtes et applique la remise automatique."
     },
     {
       "type": "product",
