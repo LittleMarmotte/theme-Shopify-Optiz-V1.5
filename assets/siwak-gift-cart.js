@@ -8,7 +8,7 @@
     busy = true;
     try {
       const root = window.Shopify?.routes?.root || '/';
-      const response = await fetch(`${root}cart.js`, { headers: { Accept: 'application/json' } });
+      const response = await fetch(`${root}cart.js`, { cache: 'no-store', headers: { Accept: 'application/json' } });
       if (!response.ok) return;
       const cart = await response.json();
       const quantity = cart.items.filter(item => item.variant_id === siwakId).reduce((total,item)=>total+item.quantity,0);
@@ -37,5 +37,13 @@
   document.addEventListener('change',event => {
     if (event.target.matches('input[name="updates[]"],input[name^="updates["],input[name="quantity"]')) schedule();
   });
+  const observer = new MutationObserver(records => {
+    if (records.some(record => {
+      const node = record.target.nodeType === Node.ELEMENT_NODE ? record.target : record.target.parentElement;
+      const cartUI = node?.closest('[role="dialog"],cart-items-component,cart-drawer-component');
+      return cartUI && /panier|cart/i.test(`${cartUI.getAttribute('aria-label') || ''} ${cartUI.textContent}`);
+    })) schedule();
+  });
+  observer.observe(document.body,{subtree:true,childList:true,characterData:true});
   schedule();
 })();
