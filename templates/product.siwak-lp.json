@@ -140,7 +140,8 @@
               "type": "siwak-product-offers",
               "settings": {
                 "kicker": "L’offre",
-                "heading": "Choisis ton rythme"
+                "heading": "Choisis ton rythme",
+                "selling_plan_id": "711747076478"
               },
               "blocks": {}
             },

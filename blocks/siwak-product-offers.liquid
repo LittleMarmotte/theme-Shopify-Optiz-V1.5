@@ -1,5 +1,5 @@
 {% liquid
-  assign product_resource = closest.product
+  assign product_resource = closest.product | default: product
   assign subscription_plan = product_resource.selling_plan_groups.first.selling_plans.first
   assign selected_plan_id = block.settings.selling_plan_id | default: subscription_plan.id
 %}
@@ -411,6 +411,10 @@
 {% javascript %}
 class SiwakProductOffers extends HTMLElement {
   connectedCallback() {
+    this.initFrame = requestAnimationFrame(() => this.initialize());
+  }
+  initialize() {
+    if (!this.isConnected) return;
     this.controller = new AbortController();
     const options = {signal:this.controller.signal};
     this.dialog = this.querySelector('dialog');
@@ -438,7 +442,7 @@ class SiwakProductOffers extends HTMLElement {
     if (this.form) this.observer.observe(this.form,{childList:true,subtree:true});
     this.syncForm();
   }
-  disconnectedCallback() {this.controller?.abort();this.observer?.disconnect();}
+  disconnectedCallback() {cancelAnimationFrame(this.initFrame);this.controller?.abort();this.observer?.disconnect();}
   syncForm() {
     if (!this.form) return;
     const quantity = this.querySelector('input[name^="siwak-quantity"]:checked')?.value || '1';
