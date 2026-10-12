@@ -269,6 +269,7 @@
         "video-1": {
           "type": "testimonial",
           "settings": {
+            "video": "shopify://files/videos/optiz_temoignage_fiche_produit_v2.mp4",
             "external_video_url": "",
             "title": "Témoignage client",
             "context": "Utilisateur du Siwak Optiz"
@@ -277,6 +278,7 @@
         "video-2": {
           "type": "testimonial",
           "settings": {
+            "video": "shopify://files/videos/ads 2 - monte.mp4",
             "external_video_url": "",
             "title": "Témoignage client",
             "context": "Utilisateur du Siwak Optiz"
@@ -285,22 +287,7 @@
         "video-3": {
           "type": "testimonial",
           "settings": {
-            "external_video_url": "",
-            "title": "Témoignage client",
-            "context": "Utilisateur du Siwak Optiz"
-          }
-        },
-        "video-4": {
-          "type": "testimonial",
-          "settings": {
-            "external_video_url": "",
-            "title": "Témoignage client",
-            "context": "Utilisateur du Siwak Optiz"
-          }
-        },
-        "video-5": {
-          "type": "testimonial",
-          "settings": {
+            "video": "shopify://files/videos/ads 3 - monte.mp4",
             "external_video_url": "",
             "title": "Témoignage client",
             "context": "Utilisateur du Siwak Optiz"
@@ -341,8 +328,6 @@
         "video-1",
         "video-2",
         "video-3",
-        "video-4",
-        "video-5",
         "review-1",
         "review-2",
         "review-3"
