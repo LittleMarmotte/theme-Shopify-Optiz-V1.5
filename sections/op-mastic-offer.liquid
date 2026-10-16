@@ -9,7 +9,7 @@
 {%- if section.settings.gift1_image != blank -%}
   {%- assign gift1_url = section.settings.gift1_image | image_url: width: 200 -%}
 {%- else -%}
-  {%- assign gift1_url = 'https://cdn.shopify.com/s/files/1/0961/2355/2126/files/ChatGPTImage28janv.2026_17_51_44.png?v=1769619124' -%}
+  {%- assign gift1_url = 'Brosse_dent_poils_de_cheval.png' | file_url -%}
 {%- endif -%}
 
 {%- if section.settings.gift2_image != blank -%}
@@ -534,16 +534,16 @@
 
             <!-- Cadeau 1 — débloqué dès le palier 1 -->
             <div class="op-gift" data-min-tier="1">
-              <span class="op-gift__sticker">Offert · 13€</span>
+              <span class="op-gift__sticker">Offert · 8€</span>
               <div class="op-gift__media">
-                <img src="{{ gift1_url }}" alt="Poudre dentaire au charbon" loading="lazy" width="72" height="72">
+                <img src="{{ gift1_url }}" alt="Brosse à dents en crin de cheval" loading="lazy" width="72" height="72">
               </div>
-              <div class="op-gift__name">Poudre dentaire</div>
+              <div class="op-gift__name">Brosse à dents en crin de cheval</div>
               <div class="op-gift__unlock-hint">Dès 1 sachet</div>
             </div>
 
             <!-- Cadeau 2 — débloqué dès le palier 2 -->
-            <div class="op-gift is-locked" data-min-tier="2">
+            <div class="op-gift" data-min-tier="2">
               <span class="op-gift__sticker">Offert · 11€</span>
               <div class="op-gift__media">
                 <img src="{{ gift2_url }}" alt="Bâton de siwak" loading="lazy" width="72" height="72">
@@ -694,8 +694,10 @@
 
     /* Lien achat unique : affiche le prix unitaire du palier 1 */
     var singleBtn = document.getElementById('op-singlebuy-' + sid);
-    if (singleBtn) singleBtn.textContent = 'Achat unique — 22,50€';
+    if (singleBtn) singleBtn.textContent = 'Achat unique — ' + fmt(tiers[0].dataset.price);
   }
+
+  selectTier(offer.querySelector('.op-tier.is-active') || tiers[1]);
 
   /* Bind clics sur les paliers */
   tiers.forEach(function (t) {
@@ -797,7 +799,7 @@
     {
       "type": "image_picker",
       "id": "gift1_image",
-      "label": "Cadeau 1 — Poudre dentaire"
+      "label": "Cadeau 1 — Brosse à dents en crin de cheval"
     },
     {
       "type": "image_picker",
