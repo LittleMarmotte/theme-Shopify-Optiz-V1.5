@@ -268,6 +268,15 @@
     "testimonial": {
       "type": "siwak-testimonial",
       "blocks": {
+        "testimonial_qdPf6x": {
+          "type": "testimonial",
+          "settings": {
+            "video": "shopify://files/videos/Temoignage Gabriel - sous-titres 9x16.mp4",
+            "external_video_url": "",
+            "title": "Témoignage client",
+            "context": "Utilisateur du Siwak Optiz"
+          }
+        },
         "video-1": {
           "type": "testimonial",
           "settings": {
@@ -290,6 +299,15 @@
           "type": "testimonial",
           "settings": {
             "video": "shopify://files/videos/Optiz_FGC_accueil_V2_fluide.mp4",
+            "external_video_url": "",
+            "title": "Témoignage client",
+            "context": "Utilisateur du Siwak Optiz"
+          }
+        },
+        "testimonial_c8HdN9": {
+          "type": "testimonial",
+          "settings": {
+            "video": "shopify://files/videos/Temoignage Melvin - Siwak 9x16.mp4",
             "external_video_url": "",
             "title": "Témoignage client",
             "context": "Utilisateur du Siwak Optiz"
@@ -327,9 +345,11 @@
         }
       },
       "block_order": [
+        "testimonial_qdPf6x",
         "video-1",
         "video-2",
         "video-3",
+        "testimonial_c8HdN9",
         "review-1",
         "review-2",
         "review-3"
