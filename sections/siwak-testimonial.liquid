@@ -61,7 +61,11 @@
               endif
 
               assign video_title = block.settings.title | default: 'Témoignage client'
-              assign poster_url = block.settings.poster | image_url: width: 900
+              assign poster_image = block.settings.poster | default: block.settings.video.preview_image
+              assign poster_url = ''
+              if poster_image != blank
+                assign poster_url = poster_image | image_url: width: 900
+              endif
             %}
 
             <article class="siwak-testimonials__video-card{% if block.settings.video != blank %} has-native-video{% endif %}" {{ block.shopify_attributes }}>
