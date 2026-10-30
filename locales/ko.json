@@ -352,5 +352,11 @@
       "success_moderated": "댓글이 게시되었습니다. 조정 대기 중입니다",
       "success": "댓글 게시됨"
     }
+  },
+  "optiz": {
+    "shipping": {
+      "summary": "France, Belgium and Luxembourg: €4 shipping, free on orders of €40 or more. Other destinations: rates at checkout.",
+      "benefit": "Free shipping from €40 (France, Belgium, Luxembourg)"
+    }
   }
 }

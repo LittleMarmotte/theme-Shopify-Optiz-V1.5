@@ -359,5 +359,11 @@
       "success_moderated": "Comentario publicado y a la espera de moderación",
       "success": "Comentario publicado"
     }
+  },
+  "optiz": {
+    "shipping": {
+      "summary": "France, Belgium and Luxembourg: €4 shipping, free on orders of €40 or more. Other destinations: rates at checkout.",
+      "benefit": "Free shipping from €40 (France, Belgium, Luxembourg)"
+    }
   }
 }

@@ -101,7 +101,9 @@
 {
   "prixUnite250": {{ prix_unite | json }},
   "devise": {{ config.devise | default: 'EUR' | json }},
-  "fraisPortCentimes": {{ section.settings.frais_port_centimes | default: 420 | json }},
+  "fraisPortCentimes": 400,
+  "shippingCountryEligible": {% if localization.country.iso_code == 'FR' or localization.country.iso_code == 'BE' or localization.country.iso_code == 'LU' %}true{% else %}false{% endif %},
+  "shippingBenefit": {{ 'optiz.shipping.benefit' | t | json }},
   "palierInitial": {{ section.settings.palier_initial | default: 2 | json }},
   "paliers": [
     {%- for p in paliers -%}
@@ -449,7 +451,7 @@
       const p = this.palier(i);
       const prec = i > 1 ? this.palier(i - 1) : { remise_centimes: 0, cadeaux: 0, port_offert: false };
       if (p.cadeaux > prec.cadeaux) return { type: 'cadeau', rang: p.cadeaux - 1 };
-      if (p.port_offert && !prec.port_offert) return { type: 'port' };
+      if (this.portOffert(i) && (i === 1 || !this.portOffert(i - 1))) return { type: 'port' };
       if (p.remise_centimes > prec.remise_centimes) return { type: 'remise' };
       return null;
     }
@@ -467,10 +469,14 @@
       return this.prixBarreCentimes(i) - this.palier(i).remise_centimes;
     }
 
+    portOffert(i) {
+      return this.cfg.shippingCountryEligible && this.prixCentimes(i) >= 4000;
+    }
+
     economieCentimes(i) {
       let e = this.palier(i).remise_centimes;
       for (const c of this.cadeauxDe(i)) e += c.prixCentimes || 0;
-      if (this.palier(i).port_offert) e += this.cfg.fraisPortCentimes || 0;
+      if (this.portOffert(i)) e += this.cfg.fraisPortCentimes || 0;
       return e;
     }
 
@@ -591,7 +597,7 @@
           slot.appendChild(img);
         }
       } else if (d.type === 'port') {
-        titre = 'Livraison offerte';
+        titre = this.cfg.shippingBenefit;
         desc = 'Offerte · valeur ' + this.eur(this.cfg.fraisPortCentimes || 0);
       } else {
         const r = this.rangRemise(i);
@@ -761,7 +767,7 @@
         const c = (this.cfg.cadeaux || [])[d.rang];
         quoi = c ? c.titre + ' offert' : 'un cadeau offert';
       } else if (d.type === 'port') {
-        quoi = 'la livraison offerte';
+        quoi = this.cfg.shippingBenefit;
       } else {
         quoi = 'la remise supérieure';
       }
@@ -924,9 +930,9 @@
     {
       "type": "number",
       "id": "frais_port_centimes",
-      "label": "Frais de port offerts (centimes)",
-      "info": "Sert au calcul de l'économie affichée quand le palier offre le port. Doit refléter le tarif réellement offert. 750 = 7,50 € (domicile / Colissimo).",
-      "default": 750
+      "label": "Ancien repère de frais de port",
+      "info": "Sert au calcul de l'économie affichée quand le palier offre le port. Doit refléter le tarif réellement offert. 400 = 4 € (France, Belgique, Luxembourg, sous 40 €).",
+      "default": 400
     },
     {
       "type": "range",
@@ -970,3 +976,4 @@
   ]
 }
 {% endschema %}
+

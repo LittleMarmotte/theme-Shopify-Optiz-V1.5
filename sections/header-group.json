@@ -17,8 +17,8 @@
         "announcement_jJEFE3": {
           "type": "_announcement",
           "settings": {
-            "text": "Livraison gratuite à partir de 80<strong>€ </strong>d'achat !",
-            "link": "",
+            "text": "Livraison 4 € · offerte dès 40 € — France, Belgique, Luxembourg",
+            "link": "/policies/shipping-policy",
             "font": "var(--font-body--family)",
             "font_size": "0.875rem",
             "weight": "",
@@ -111,3 +111,4 @@
     "header_section"
   ]
 }
+

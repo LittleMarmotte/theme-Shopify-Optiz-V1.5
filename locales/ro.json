@@ -359,5 +359,11 @@
       "default_title": "Titlu implicit",
       "sticky_add_to_cart": "Bara de adăugare rapidă în coș"
     }
+  },
+  "optiz": {
+    "shipping": {
+      "summary": "France, Belgium and Luxembourg: €4 shipping, free on orders of €40 or more. Other destinations: rates at checkout.",
+      "benefit": "Free shipping from €40 (France, Belgium, Luxembourg)"
+    }
   }
 }

@@ -363,7 +363,7 @@
       },
       "gift_included": "Free {{ product }}",
       "ebook_included": "Free e-book",
-      "free_shipping": "Free shipping",
+      "free_shipping": "Free shipping from €40 (France, Belgium, Luxembourg)",
       "best_offer": "Best offer",
       "offer_total": "Total",
       "select_pack_sizes": "Choose the size of each pack",
@@ -379,6 +379,12 @@
   "customer_accounts": {
     "order_details": {
       "taxes_included": "Taxes included"
+    }
+  },
+  "optiz": {
+    "shipping": {
+      "summary": "France, Belgium and Luxembourg: €4 shipping, free on orders of €40 or more. Other destinations: rates at checkout.",
+      "benefit": "Free shipping from €40 (France, Belgium, Luxembourg)"
     }
   }
 }

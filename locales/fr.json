@@ -346,7 +346,7 @@
       },
       "gift_included": "{{ product }} offert",
       "ebook_included": "E-book offert",
-      "free_shipping": "Livraison offerte",
+      "free_shipping": "Livraison offerte dès 40 € (France, Belgique, Luxembourg)",
       "best_offer": "Meilleure offre",
       "offer_total": "Total",
       "select_pack_sizes": "Choisis la taille de chaque pack",
@@ -385,5 +385,11 @@
   },
   "customer_accounts": {
     "order_details": {}
+  },
+  "optiz": {
+    "shipping": {
+      "summary": "France, Belgique et Luxembourg : livraison à 4 €, offerte dès 40 € d’achat. Autres destinations : frais au paiement.",
+      "benefit": "Livraison offerte dès 40 € (France, Belgique, Luxembourg)"
+    }
   }
 }

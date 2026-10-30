@@ -31,13 +31,14 @@
             <span class="siwak-product-offers__price"><strong data-price="{{ quantity }}">{% if quantity == 4 %}48{% else %}12{% endif %} €</strong><small data-unit>12 € / boîte</small></span>
           </label>
           {% if quantity == 4 %}
-            <div class="siwak-product-offers__benefits">✓ Livraison à moitié prix<br>✓ 1 produit Optiz offert au premier envoi</div>
+            <div class="siwak-product-offers__benefits">✓ {{ 'optiz.shipping.benefit' | t }}<br>✓ 1 produit Optiz offert au premier envoi</div>
             <button type="button" class="siwak-product-offers__gift-open">+ Choisir mon cadeau → <span data-gift-summary></span></button>
           {% endif %}
         </article>
       {% endfor %}
     </div>
   </fieldset>
+  <p class="siwak-product-offers__setup-note">{{ 'optiz.shipping.summary' | t }}</p>
   <p data-renewal hidden>Renouvellement à 10 € par boîte. {{ subscription_plan.name | escape }}. Les conditions s’affichent au paiement.</p>
   {% if selected_plan_id == blank %}<p class="siwak-product-offers__setup-note">Abonnement bientôt disponible.</p>{% endif %}
   <dialog class="siwak-product-offers__dialog" aria-labelledby="gift-title-{{ block.id }}">
@@ -522,7 +523,7 @@ if (!customElements.get('siwak-product-offers')) customElements.define('siwak-pr
     },
     {
       "type": "paragraph",
-      "content": "Les prix affichés ne changent pas les tarifs Shopify. Configurer le cadeau gratuit et la livraison à moitié prix avant activation commerciale. Le cadeau choisi est ajouté au panier en achat ponctuel. Shopify vérifie le seuil de 4 boîtes et applique la remise automatique."
+      "content": "Les prix affichés ne changent pas les tarifs Shopify. Configurer le cadeau gratuit et la livraison à 4 €, offerte dès 40 € pour la France, la Belgique et le Luxembourg. Le cadeau choisi est ajouté au panier en achat ponctuel. Shopify vérifie le seuil de 4 boîtes et applique la remise automatique."
     },
     {
       "type": "product",
@@ -635,3 +636,4 @@ if (!customElements.get('siwak-product-offers')) customElements.define('siwak-pr
   ]
 }
 {% endschema %}
+
