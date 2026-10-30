@@ -38,7 +38,6 @@
       {% endfor %}
     </div>
   </fieldset>
-  <p class="siwak-product-offers__setup-note">{{ 'optiz.shipping.summary' | t }}</p>
   <p data-renewal hidden>Renouvellement à 10 € par boîte. {{ subscription_plan.name | escape }}. Les conditions s’affichent au paiement.</p>
   {% if selected_plan_id == blank %}<p class="siwak-product-offers__setup-note">Abonnement bientôt disponible.</p>{% endif %}
   <dialog class="siwak-product-offers__dialog" aria-labelledby="gift-title-{{ block.id }}">
