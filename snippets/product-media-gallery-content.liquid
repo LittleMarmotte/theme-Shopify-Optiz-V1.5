@@ -384,6 +384,12 @@
     {% if siwak_gallery %}
       <siwak-gallery-scroll hidden aria-hidden="true"></siwak-gallery-scroll>
     {% endif %}
+    {% liquid
+      assign gallery_slide_count = sorted_media.size
+      if siwak_gallery
+        assign gallery_slide_count = gallery_slide_count | plus: 1
+      endif
+    %}
     {% capture slides %}
       {% for media in sorted_media %}
         {% capture children %}
@@ -426,15 +432,24 @@
           media_fit: block_settings.media_fit,
         %}
       {% endfor %}
+      {% if siwak_gallery %}
+        {% capture case_slide %}
+          <div class="siwak-case-gallery">
+            <img src="{{ 'siwak-case.jpeg' | asset_url }}" alt="{{ 'siwak_offer.case_photo_alt' | t }}" width="720" height="1280" loading="lazy">
+            <p>{{ 'siwak_offer.case_included' | t }}</p>
+          </div>
+        {% endcapture %}
+        {% render 'slideshow-slide', index: sorted_media.size, children: case_slide, class: 'product-media-container product-media-container--image', media_fit: 'contain' %}
+      {% endif %}
     {% endcapture %}
 
-    {% if sorted_media.size > 1 %}
+    {% if gallery_slide_count > 1 %}
       {% capture controls %}
         {% if render_slideshow_controls %}
           {%- render 'slideshow-controls',
             class: slideshow_controls_class,
             style: slideshow_controls_style,
-            item_count: sorted_media.size,
+            item_count: gallery_slide_count,
             thumbnails: sorted_media,
             controls_on_media: controls_on_media,
             pagination_position: pagination_position,
@@ -444,7 +459,8 @@
             arrows_on_media: false,
             icon_style: siwak_controls_icon_style,
             shape: 'none',
-            siwak_gallery: siwak_gallery
+            siwak_gallery: siwak_gallery,
+            siwak_case_slide: siwak_gallery
           -%}
         {% endif %}
 
@@ -452,7 +468,7 @@
           {%- render 'slideshow-controls',
             class: 'desktop:hidden media-gallery__mobile-controls',
             style: block_settings.slideshow_mobile_controls_style,
-            item_count: sorted_media.size,
+            item_count: gallery_slide_count,
             thumbnails: sorted_media,
             controls_on_media: mobile_controls_on_media,
             pagination_position: 'center',
@@ -462,7 +478,8 @@
             arrows_on_media: false,
             icon_style: siwak_controls_icon_style,
             shape: 'none',
-            siwak_gallery: siwak_gallery
+            siwak_gallery: siwak_gallery,
+            siwak_case_slide: siwak_gallery
           -%}
         {% endif %}
       {% endcapture %}
@@ -478,7 +495,7 @@
       ref: 'slideshow',
       class: slideshow_class,
       slides: slides,
-      slide_count: sorted_media.size,
+      slide_count: gallery_slide_count,
       slideshow_arrows: slideshow_arrows,
       arrows_position: icons_position,
       animate_arrows: animate_arrows,

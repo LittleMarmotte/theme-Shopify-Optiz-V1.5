@@ -15,6 +15,7 @@
   @param {number} [thumbnail_radius] - The border radius for thumbnails in pixels
   @param {string} [class] - Additional classes to apply to the controls
   @param {boolean} [secondary] - Whether the controls are secondary
+  @param {boolean} [siwak_case_slide] - Include the Siwak case photo thumbnail
   @param {boolean} [siwak_gallery] - Render large image thumbnails for the Siwak gallery
 
   @example
@@ -159,6 +160,11 @@
                 {% endif %}
               </button>
             {% endfor %}
+            {% if siwak_case_slide %}
+              <button type="button" class="slideshow-control button button-unstyled slideshow-controls__thumbnail" aria-label="{{ 'siwak_offer.case_photo_alt' | t }}" on:click="/select/{{ thumbnails.size }}" style="--aspect-ratio: 1;" ref="thumbnails[]">
+                <img src="{{ 'siwak-case.jpeg' | asset_url }}" width="144" height="144" loading="lazy" alt="{{ 'siwak_offer.case_title' | t }}" style="object-fit:cover;object-position:50% 35%;">
+              </button>
+            {% endif %}
           </div>
         </scroll-hint>
       {% when 'counter' %}

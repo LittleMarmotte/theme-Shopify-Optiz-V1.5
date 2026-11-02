@@ -391,5 +391,22 @@
       "summary": "France, Belgique et Luxembourg : livraison à 4 €, offerte dès 40 € d’achat. Autres destinations : frais au paiement.",
       "benefit": "Livraison offerte dès 40 € (France, Belgique, Luxembourg)"
     }
+  },
+  "siwak_offer": {
+    "boxes": {
+      "one": "{{ count }} boîte",
+      "other": "{{ count }} boîtes"
+    },
+    "sticks": "{{ count }} siwaks",
+    "no_gift": "Sans cadeau",
+    "case_included": "Étui offert dès 2 boîtes",
+    "all_gifts": "Étui + cadeau au choix + livraison offerte",
+    "free": "OFFERT",
+    "case_title": "Ton étui à Siwak",
+    "first_order": "Avec le premier envoi",
+    "choice_title": "1 cadeau Optiz au choix",
+    "shipping_title": "Livraison offerte",
+    "choose_gift": "Choisir mon cadeau",
+    "case_photo_alt": "Étui à Siwak Optiz en bois, tenu dans une main"
   }
 }
