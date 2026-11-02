@@ -1,0 +1,65 @@
+{% doc %}
+  Shows included and locked rewards for a Siwak offer.
+  @param {number} quantity - Number of Siwak boxes in this offer
+  @param {block} block - Offer block containing gift and image settings
+{% enddoc %}
+
+<div class="siwak-product-offers__rewards">
+  <figure class="siwak-product-offers__reward{% if quantity < 2 %} siwak-product-offers__reward--locked{% endif %}" data-reward="case" data-unlocked="{% if quantity >= 2 %}true{% else %}false{% endif %}">
+    <span class="siwak-product-offers__stamp">{% if quantity >= 2 %}{{ 'siwak_offer.free' | t }}{% else %}{{ 'siwak_offer.not_included' | t }}{% endif %}</span>
+    <div class="siwak-product-offers__reward-media">
+      {% if block.settings.case_image != blank %}
+        {{ block.settings.case_image | image_url: width: 480 | image_tag: widths: '120, 240, 480', sizes: '(max-width: 749px) 28vw, 180px', loading: 'lazy', alt: 'Étui à Siwak Optiz en bois' }}
+      {% else %}
+        <img src="{{ 'siwak-case.jpeg' | asset_url }}" width="720" height="1280" loading="lazy" alt="{{ 'siwak_offer.case_photo_alt' | t }}">
+      {% endif %}
+    </div>
+    <figcaption>{{ 'siwak_offer.case_title' | t }}<small{% if quantity < 2 %} class="siwak-product-offers__unlock"{% endif %}>{% if quantity >= 2 %}{{ 'siwak_offer.first_order' | t }}{% else %}{{ 'siwak_offer.unlock_two' | t }}{% endif %}</small></figcaption>
+  </figure>
+
+  <figure class="siwak-product-offers__reward{% if quantity < 4 %} siwak-product-offers__reward--locked{% endif %}" data-reward="choice" data-unlocked="{% if quantity >= 4 %}true{% else %}false{% endif %}">
+    <span class="siwak-product-offers__stamp">{% if quantity >= 4 %}{{ 'siwak_offer.free' | t }}{% else %}{{ 'siwak_offer.not_included' | t }}{% endif %}</span>
+    <div class="siwak-product-offers__reward-media">
+      {% capture gift_images %}
+        {% assign preview_count = 0 %}
+        {% for i in (1..6) %}
+          {% liquid
+            assign gift_key = 'gift_' | append: i
+            assign gift = block.settings[gift_key]
+            assign image_key = gift_key | append: '_image'
+            assign gift_image = block.settings[image_key] | default: gift.featured_image
+            assign sku_key = gift_key | append: '_sku'
+            assign gift_variant = gift.selected_or_first_available_variant
+            if block.settings[sku_key] != blank
+              assign gift_variant = gift.variants | where: 'sku', block.settings[sku_key] | first
+            endif
+            assign gift_available = gift_variant.available
+            if gift_variant == blank
+              assign gift_available = false
+            elsif gift_variant.inventory_management != blank and gift_variant.inventory_quantity <= 0
+              assign gift_available = false
+            endif
+          %}
+          {% if gift != blank and gift_image != blank and gift_available and preview_count < 4 %}
+            {{ gift_image | image_url: width: 200 | image_tag: loading: 'lazy', alt: gift.title }}
+            {% assign preview_count = preview_count | plus: 1 %}
+          {% endif %}
+        {% endfor %}
+      {% endcapture %}
+      {% if preview_count > 0 %}
+        <div class="siwak-product-offers__gift-preview">{{ gift_images }}</div>
+      {% else %}
+        <svg class="siwak-product-offers__shipping-art" viewBox="0 0 160 140" fill="none" stroke="currentColor" stroke-width="4" aria-hidden="true"><path d="M25 55H135V125H25Z M18 35H142V55H18Z M80 35V125"/><path d="M80 35C35 35 35 0 57 10 69 15 80 35 80 35ZM80 35C125 35 125 0 103 10 91 15 80 35 80 35Z"/></svg>
+      {% endif %}
+    </div>
+    <figcaption>{{ 'siwak_offer.choice_title' | t }}<small{% if quantity < 4 %} class="siwak-product-offers__unlock"{% endif %}>{% if quantity >= 4 %}{{ 'siwak_offer.first_order' | t }}{% else %}{{ 'siwak_offer.unlock_four' | t }}{% endif %}</small></figcaption>
+  </figure>
+
+  <figure class="siwak-product-offers__reward{% if quantity < 4 %} siwak-product-offers__reward--locked{% endif %}" data-reward="shipping" data-unlocked="{% if quantity >= 4 %}true{% else %}false{% endif %}">
+    <span class="siwak-product-offers__stamp">{% if quantity >= 4 %}{{ 'siwak_offer.free' | t }}{% else %}{{ 'siwak_offer.not_included' | t }}{% endif %}</span>
+    <div class="siwak-product-offers__reward-media">
+      <svg class="siwak-product-offers__shipping-art" viewBox="0 0 160 140" fill="none" stroke="currentColor" stroke-width="4" aria-hidden="true"><path d="M25 40 80 15 135 40 135 105 80 130 25 105Z M25 40 80 65 135 40 M80 65V130 M52 28 108 53V80"/><path d="m48 88 13 6"/></svg>
+    </div>
+    <figcaption>{{ 'siwak_offer.shipping_title' | t }}{% if quantity < 4 %}<small class="siwak-product-offers__unlock">{{ 'siwak_offer.unlock_four' | t }}</small>{% endif %}</figcaption>
+  </figure>
+</div>
