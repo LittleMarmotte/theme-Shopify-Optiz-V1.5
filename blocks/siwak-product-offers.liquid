@@ -41,13 +41,18 @@
               {% if quantity == 1 %}
                 <span class="siwak-product-offers__teaser-note">{{ 'siwak_offer.no_gift' | t }}</span>
               {% else %}
-                <span><img src="{{ 'siwak-case.jpeg' | asset_url }}" alt="" width="32" height="32" loading="lazy">{{ 'siwak_offer.case_teaser' | t }}</span>
-                {% if quantity == 4 %}<span>+ {{ 'siwak_offer.choice_teaser' | t }}</span><span>+ {{ 'siwak_offer.shipping_title' | t }}</span>{% endif %}
+                <span>✓ {{ 'siwak_offer.case_teaser' | t }}</span>
+                {% if quantity == 4 %}<span>✓ {{ 'siwak_offer.choice_teaser' | t }}</span><span>✓ {{ 'siwak_offer.shipping_title' | t }}</span>{% endif %}
               {% endif %}
             </span>
             <span class="siwak-product-offers__expand" aria-hidden="true">⌄</span>
           </label>
           <div class="siwak-product-offers__panel" id="siwak-panel-{{ block.id }}-{{ quantity }}" data-panel {% unless quantity == 2 %}hidden{% endunless %}>
+            <ul class="siwak-product-offers__reassurance">
+              {% if quantity == 4 %}<li>{{ 'siwak_offer.shipping_and_gifts' | t }}</li>{% endif %}
+              <li>{{ 'siwak_offer.guarantee' | t }}</li>
+              <li data-subscription-only {% if selected_plan_id == blank %}hidden{% endif %}>{{ 'siwak_offer.subscription_flexibility' | t }}</li>
+            </ul>
             <h3 class="siwak-product-offers__panel-title">{{ 'siwak_offer.your_benefits' | t }}</h3>
             {% render 'siwak-offer-rewards', quantity: quantity, block: block %}
             {% if quantity == 4 %}
@@ -456,14 +461,16 @@
 .siwak-product-offers__box-image--duo img {width:55%;margin-inline:-3px}
 .siwak-product-offers__ticket .siwak-product-offers__copy>strong {font-size:1.55rem}
 .siwak-product-offers__ticket .siwak-product-offers__price strong {font-size:2rem}
-.siwak-product-offers__teaser {grid-column:2/-1;display:flex;flex-wrap:wrap;align-items:center;gap:5px 10px;padding-right:18px;font-size:.73rem;line-height:1.35;font-weight:700}
+.siwak-product-offers__teaser {grid-column:2/-1;display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding-right:18px;font-size:.73rem;line-height:1.35;font-weight:700}
 .siwak-product-offers__teaser>span {display:inline-flex;align-items:center;gap:6px}
-.siwak-product-offers__teaser img {width:28px;height:28px;object-fit:cover;object-position:50% 35%;border:1px solid var(--offer-ink)}
 .siwak-product-offers__teaser-note {color:#65615a;font-weight:400}
 .siwak-product-offers__expand {position:absolute;right:14px;bottom:12px;font-size:1.15rem;line-height:1;transition:rotate 150ms ease}
 .siwak-product-offers__ticket:has(.siwak-product-offers__card input:checked) .siwak-product-offers__expand {rotate:180deg}
 .siwak-product-offers__panel {border-top:1px solid #d0cbc2}
-.siwak-product-offers__panel-title {margin:0;padding:16px 16px 0;font-family:var(--font-heading--family);font-size:1.15rem;text-transform:uppercase}
+.siwak-product-offers__reassurance {list-style:none;margin:0;padding:16px 16px 0;display:grid;gap:10px;font-size:.85rem;line-height:1.4}
+.siwak-product-offers__reassurance li {display:flex;align-items:baseline;gap:9px}
+.siwak-product-offers__reassurance li::before {content:'✓';color:var(--offer-red);font-weight:900}
+.siwak-product-offers__panel-title {margin:0;padding:20px 16px 0;font-family:var(--font-heading--family);font-size:1.15rem;text-transform:uppercase}
 .siwak-product-offers__rewards {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:24px 16px 18px}
 .siwak-product-offers__reward {position:relative;min-width:0;margin:0;display:flex;flex-direction:column}
 .siwak-product-offers__reward-media {width:100%;aspect-ratio:1;border:2px solid var(--offer-ink);background:#fff;display:grid;place-items:center;overflow:hidden}
@@ -559,6 +566,7 @@ class SiwakProductOffers extends HTMLElement {
     this.querySelectorAll('[data-price]').forEach(el=>el.textContent=`${Number(el.dataset.price)*(subscription?10:12)} €`);
     this.querySelectorAll('[data-unit]').forEach(el=>el.textContent=`${subscription?10:12} € / boîte`);
     this.querySelector('[data-renewal]').hidden=!subscription;
+    this.querySelectorAll('[data-subscription-only]').forEach(element => element.hidden = !subscription);
     this.querySelectorAll('[data-ticket]').forEach(ticket => {
       ticket.querySelector('[data-panel]').hidden = ticket.dataset.ticket !== quantity;
     });

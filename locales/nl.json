@@ -375,11 +375,14 @@
     "shipping_title": "Free delivery",
     "choose_gift": "Choose my gift",
     "case_photo_alt": "Wooden Optiz Siwak case held in a hand",
-    "your_benefits": "Your offer benefits",
+    "your_benefits": "Exclusive gifts included:",
     "case_teaser": "Free case",
     "choice_teaser": "1 Optiz gift of your choice",
     "not_included": "NOT INCLUDED",
     "unlock_two": "With 2 or more boxes",
-    "unlock_four": "With 4 boxes"
+    "unlock_four": "With 4 boxes",
+    "shipping_and_gifts": "Free delivery + free gifts",
+    "guarantee": "30-day money-back guarantee",
+    "subscription_flexibility": "Modify or cancel at any time"
   }
 }

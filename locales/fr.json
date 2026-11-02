@@ -408,11 +408,14 @@
     "shipping_title": "Livraison offerte",
     "choose_gift": "Choisir mon cadeau",
     "case_photo_alt": "Étui à Siwak Optiz en bois, tenu dans une main",
-    "your_benefits": "Les avantages de ton offre",
+    "your_benefits": "Cadeaux exclusifs offerts :",
     "case_teaser": "Étui offert",
     "choice_teaser": "1 cadeau Optiz au choix",
     "not_included": "NON INCLUS",
     "unlock_two": "Dès 2 boîtes",
-    "unlock_four": "Dès 4 boîtes"
+    "unlock_four": "Dès 4 boîtes",
+    "shipping_and_gifts": "Livraison offerte + cadeaux offerts",
+    "guarantee": "30 jours satisfait ou remboursé",
+    "subscription_flexibility": "Modifiez ou annulez à tout moment"
   }
 }
