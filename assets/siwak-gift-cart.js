@@ -19,21 +19,25 @@ import { planSiwakGiftUpdates } from './siwak-offer-cart.js';
     } catch { /* Shopify still enforces the promotion if a network check fails. */ }
     finally {busy = false;}
   }
-  function schedule() {clearTimeout(timer);timer=setTimeout(reconcile,1200);}
+  function schedule() {
+    if (timer) return;
+    timer = setTimeout(() => { timer = undefined; reconcile(); }, 1200);
+  }
   document.addEventListener('shopify:cart:lines-update',schedule);
   document.addEventListener('cart:updated',schedule);
   document.addEventListener('click',event => {
     const button = event.target.closest('button,a');
     const label = `${button?.getAttribute('aria-label') || ''} ${button?.textContent || ''}`;
-    if (/quantity|quantité|Remove item|supprimer/i.test(label)) schedule();
+    if (button?.closest('#opus-drawer-id .cd-product-list') || /quantity|quantité|Remove item|supprimer/i.test(label)) schedule();
   },true);
   document.addEventListener('change',event => {
-    if (event.target.matches('input[name="updates[]"],input[name^="updates["],input[name="quantity"]')) schedule();
+    if (event.target.matches('input[name="updates[]"],input[name^="updates["],input[name="quantity"],input.cd-number-input-field')) schedule();
   });
   const observer = new MutationObserver(records => {
     if (records.some(record => {
       const node = record.target.nodeType === Node.ELEMENT_NODE ? record.target : record.target.parentElement;
-      const cartUI = node?.closest('[role="dialog"],cart-items-component,cart-drawer-component');
+      if (node?.closest('#opus-drawer-id .cd-product-list')) return true;
+      const cartUI = node?.closest('cart-items-component,cart-drawer-component');
       return cartUI && /panier|cart/i.test(`${cartUI.getAttribute('aria-label') || ''} ${cartUI.textContent}`);
     })) schedule();
   });
