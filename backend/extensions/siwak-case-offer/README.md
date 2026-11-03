@@ -23,3 +23,5 @@ Review exact targets before mutations. Restore the prior cart assets and deactiv
 ## eBook and selection fix — released
 
 Variant 56449444544894 (OPT-EBOOK) is available, untracked, inventoryPolicy CONTINUE. The released function and frontend whitelist include it. Matthieu explicitly authorized the Functions skill deployment exception for this update on 2026-11-03. Five tests execute the real offer element logic for add-before-choice, choice-before-add, cancellation, invalid selection, and lower tiers. Product submission now gates at the document-delegated handler before any cart request; confirming a pending gift choice resumes exactly one submission.
+
+Browser verification after release: in the unpublished theme editor, add-before-choice then confirming the eBook produced 4 subscription Siwak boxes at 40 EUR, one eBook at 0 EUR (37 EUR reference), and one case at 0 EUR (8 EUR reference). Gift modules use the versioned @theme/siwak-offer-cart import-map entry so cached unversioned imports cannot retain the previous whitelist.
