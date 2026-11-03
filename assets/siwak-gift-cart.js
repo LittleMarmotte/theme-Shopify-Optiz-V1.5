@@ -2,7 +2,20 @@ import { planSiwakGiftUpdates } from './siwak-offer-cart.js';
 // Keep the one-time Siwak gift eligible when shoppers edit quantities in any cart UI.
 (() => {
   let timer, busy = false;
+  const observedRoots = new WeakSet();
+  const observerOptions = { subtree: true, childList: true, characterData: true };
+  function observeOpus() {
+    const root = document.getElementById('opus-shadow-container')?.shadowRoot;
+    if (!root || observedRoots.has(root)) return;
+    observedRoots.add(root);
+    observer.observe(root, observerOptions);
+    root.addEventListener('change', onQuantityChange);
+  }
+  function onQuantityChange(event) {
+    if (event.target instanceof Element && event.target.matches('input[name="updates[]"],input[name^="updates["],input[name="quantity"],input.cd-number-input-field')) schedule();
+  }
   async function reconcile() {
+    observeOpus();
     if (busy) return;
     busy = true;
     try {
@@ -26,14 +39,14 @@ import { planSiwakGiftUpdates } from './siwak-offer-cart.js';
   document.addEventListener('shopify:cart:lines-update',schedule);
   document.addEventListener('cart:updated',schedule);
   document.addEventListener('click',event => {
-    const button = event.target.closest('button,a');
+    const target = event.composedPath().find(node => node instanceof Element);
+    const button = target?.closest('button,a');
     const label = `${button?.getAttribute('aria-label') || ''} ${button?.textContent || ''}`;
     if (button?.closest('#opus-drawer-id .cd-product-list') || /quantity|quantité|Remove item|supprimer/i.test(label)) schedule();
   },true);
-  document.addEventListener('change',event => {
-    if (event.target.matches('input[name="updates[]"],input[name^="updates["],input[name="quantity"],input.cd-number-input-field')) schedule();
-  });
+  document.addEventListener('change', onQuantityChange);
   const observer = new MutationObserver(records => {
+    observeOpus();
     if (records.some(record => {
       const node = record.target.nodeType === Node.ELEMENT_NODE ? record.target : record.target.parentElement;
       if (node?.closest('#opus-drawer-id .cd-product-list')) return true;
@@ -41,6 +54,7 @@ import { planSiwakGiftUpdates } from './siwak-offer-cart.js';
       return cartUI && /panier|cart/i.test(`${cartUI.getAttribute('aria-label') || ''} ${cartUI.textContent}`);
     })) schedule();
   });
-  observer.observe(document.body,{subtree:true,childList:true,characterData:true});
+  observer.observe(document.body, observerOptions);
+  observeOpus();
   schedule();
 })();
