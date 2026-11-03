@@ -9,7 +9,7 @@
     assign unit_price = 10
   endif
 %}
-<siwak-product-offers class="siwak-product-offers" data-plan="{{ selected_plan_id }}" data-variant-id="{{ product_resource.selected_or_first_available_variant.id }}" data-case-available="{{ case_variant.available | default: false }}" {{ block.shopify_attributes }}>
+<siwak-product-offers class="siwak-product-offers" data-plan="{{ selected_plan_id }}" data-case-available="{{ case_variant.available | default: false }}" {{ block.shopify_attributes }}>
   <fieldset class="siwak-product-offers__fieldset">
     <legend class="siwak-product-offers__legend"><span>{{ block.settings.kicker | escape }}</span><strong>{{ block.settings.heading | escape }}</strong></legend>
     <div class="siwak-product-offers__modes">

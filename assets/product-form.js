@@ -1,4 +1,4 @@
-import { planSiwakAdditions } from './siwak-offer-cart.js';
+import { planSiwakAdditions, SIWAK_VARIANT_ID } from './siwak-offer-cart.js';
 import { Component } from '@theme/component';
 import { fetchConfig, preloadImage, onAnimationEnd, yieldToMainThread, parseIntOrDefault } from '@theme/utilities';
 import { cartPerformance } from '@theme/performance';
@@ -459,7 +459,7 @@ class ProductFormComponent extends Component {
     const giftAllowed = siwakOffer && Array.from(siwakOffer.querySelectorAll('.siwak-product-offers__gift input'))
       .some(input => !input.disabled && input.value === siwakGift);
     let siwakAdditions = [];
-    if (siwakOffer && String(formData.get('id')) === siwakOffer.dataset.variantId) {
+    if (siwakOffer && String(formData.get('id')) === SIWAK_VARIANT_ID) {
       try {
         const response = await fetch(`${window.Shopify?.routes?.root || '/'}cart.js`, { cache: 'no-store' });
         if (!response.ok) throw new Error('Cart unavailable');
