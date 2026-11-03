@@ -4,12 +4,13 @@ use shopify_function::Result;
 
 const SIWAK_ID: &str = "gid://shopify/ProductVariant/56366142259582";
 const CASE_ID: &str = "gid://shopify/ProductVariant/58340156768638";
-const GIFT_IDS: [&str; 5] = [
+const GIFT_IDS: [&str; 6] = [
     "gid://shopify/ProductVariant/56866953396606",
     "gid://shopify/ProductVariant/56366150680958",
     "gid://shopify/ProductVariant/56366116241790",
     "gid://shopify/ProductVariant/57856612565374",
     "gid://shopify/ProductVariant/56421695390078",
+    "gid://shopify/ProductVariant/56449444544894",
 ];
 
 #[shopify_function]

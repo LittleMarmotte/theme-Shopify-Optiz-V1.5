@@ -99,8 +99,6 @@
           assign gift_available = gift_variant.available
           if gift_variant == blank
             assign gift_available = false
-          elsif gift_variant.inventory_management != blank and gift_variant.inventory_quantity <= 0
-            assign gift_available = false
           endif
         %}
         {% if gift != blank %}
@@ -539,35 +537,51 @@ class SiwakProductOffers extends HTMLElement {
     const options = {signal:this.controller.signal};
     this.dialog = this.querySelector('dialog');
     this.gift = null;
+    this.cancelPendingSubmission();
     this.addEventListener('change', () => {
       this.syncForm();
       this.querySelector('[data-gift-count]').textContent = `${this.querySelector('.siwak-product-offers__gift input:checked') ? 1 : 0} / 1 cadeau sélectionné`;
     }, options);
     this.querySelector('.siwak-product-offers__gift-open').addEventListener('click', () => {
+      this.cancelPendingSubmission();
       this.querySelectorAll('.siwak-product-offers__gift input').forEach(input => input.checked = input.value === this.gift?.value);
       this.querySelector('[data-gift-count]').textContent = `${this.gift ? 1 : 0} / 1 cadeau sélectionné`;
       this.dialog.showModal();
     }, options);
-    this.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click',()=>this.dialog.close(),options));
+    this.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click',()=>{this.cancelPendingSubmission();this.dialog.close();},options));
+    this.dialog.addEventListener('cancel',()=>this.cancelPendingSubmission(),options);
     this.querySelector('[data-confirm]').addEventListener('click', () => {
       const input = this.querySelector('.siwak-product-offers__gift input:checked');
-      this.gift = input ? {value:input.value,title:input.dataset.title} : null;
+      if (!input || input.disabled) return;
+      this.gift = {value:input.value,title:input.dataset.title};
       this.querySelector('[data-gift-summary]').textContent = this.gift?.title || '';
       this.syncForm();
+      const pending = this.pendingSubmission;
+      const submitter = this.pendingSubmitter;
+      this.cancelPendingSubmission();
       this.dialog.close();
+      if (pending) this.form?.requestSubmit(submitter?.form === this.form && !submitter.disabled ? submitter : undefined);
     }, options);
     this.form = this.closest('.shopify-section')?.querySelector('product-form-component form');
-    this.form?.addEventListener('submit', (event) => {
-      this.syncForm();
-      if (this.querySelector('input[name^="siwak-quantity"]:checked')?.value === '4' && !this.gift) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        this.dialog.showModal();
-      }
-    }, {...options,capture:true});
     this.observer = new MutationObserver(()=>this.syncForm());
     if (this.form) this.observer.observe(this.form,{childList:true,subtree:true});
     this.syncForm();
+  }
+  cancelPendingSubmission() {
+    this.pendingSubmission = false;
+    this.pendingSubmitter = undefined;
+  }
+  needsGiftSelection() {
+    if (this.querySelector('input[name^="siwak-quantity"]:checked')?.value !== '4') return false;
+    return !this.gift || !Array.from(this.querySelectorAll('.siwak-product-offers__gift input')).some(input => !input.disabled && input.value === this.gift.value);
+  }
+  prepareSubmission(submitter) {
+    this.syncForm();
+    if (!this.needsGiftSelection()) return true;
+    this.pendingSubmission = true;
+    this.pendingSubmitter = submitter;
+    if (!this.dialog.open) this.dialog.showModal();
+    return false;
   }
   disconnectedCallback() {cancelAnimationFrame(this.initFrame);this.controller?.abort();this.observer?.disconnect();}
   syncForm() {

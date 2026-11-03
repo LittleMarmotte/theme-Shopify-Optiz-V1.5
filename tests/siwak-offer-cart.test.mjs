@@ -31,3 +31,9 @@ test('duplicate and inflated rewards are clamped without touching retail lines',
  assert.deepEqual(planSiwakGiftUpdates(cart),{case1:1,case2:0,gift1:1});
 });
 test('other products never trigger Siwak rewards',()=>assert.deepEqual(planSiwakAdditions({items:[]},'other',4,gift),[]));
+test('eBook is an approved one-time gift and is removed below four boxes',()=>{
+ const ebook='56449444544894';
+ const additions=planSiwakAdditions({items:[]},paid,4,ebook);
+ assert.equal(additions[1].id,ebook);assert.equal(additions[1].selling_plan,undefined);
+ assert.deepEqual(planSiwakGiftUpdates({items:[line(paid,2),line(ebook,1,{_optiz_siwak_gift:'true'})]}),{[ebook]:0});
+});

@@ -1,4 +1,4 @@
-import { planSiwakAdditions, SIWAK_VARIANT_ID } from './siwak-offer-cart.js';
+import { planSiwakAdditions, SIWAK_VARIANT_ID, SIWAK_GIFT_VARIANTS } from './siwak-offer-cart.js';
 import { Component } from '@theme/component';
 import { fetchConfig, preloadImage, onAnimationEnd, yieldToMainThread, parseIntOrDefault } from '@theme/utilities';
 import { cartPerformance } from '@theme/performance';
@@ -72,6 +72,8 @@ export class AddToCartComponent extends Component {
   handleClick(event) {
     const form = this.closest('form');
     if (!form?.checkValidity()) return;
+    const siwakOffer = this.closest('.shopify-section')?.querySelector('siwak-product-offers');
+    if (form.querySelector('input[name="id"]')?.value === SIWAK_VARIANT_ID && siwakOffer?.needsGiftSelection()) return;
 
     // Check if adding would exceed max before animating
     const productForm = /** @type {ProductFormComponent | null} */ (this.closest('product-form-component'));
@@ -324,6 +326,8 @@ class ProductFormComponent extends Component {
   /** @param {Event} event */
   handleSubmit(event) {
     event.preventDefault();
+    const siwakOffer = this.closest('.shopify-section')?.querySelector('siwak-product-offers');
+    if (this.refs.variantId?.value === SIWAK_VARIANT_ID && siwakOffer && !siwakOffer.prepareSubmission(event.submitter)) return;
 
     if (this.#variantChangeInProgress) {
       this.#addToCartQueue.push(this.#createQueuedAddToCartItem());
@@ -463,6 +467,9 @@ class ProductFormComponent extends Component {
       try {
         const response = await fetch(`${window.Shopify?.routes?.root || '/'}cart.js`, { cache: 'no-store' });
         if (!response.ok) throw new Error('Cart unavailable');
+        if (itemCount >= 4 && (!giftAllowed || !SIWAK_GIFT_VARIANTS.has(String(siwakGift)))) {
+          throw new Error('Siwak gift unavailable');
+        }
         siwakAdditions = planSiwakAdditions(await response.json(), formData.get('id'), itemCount, giftAllowed ? siwakGift : null);
         if (siwakAdditions.some(item => item.properties._optiz_siwak_case === 'true') && siwakOffer.dataset.caseAvailable !== 'true') {
           throw new Error('Siwak case unavailable');

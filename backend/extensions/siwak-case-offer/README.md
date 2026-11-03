@@ -10,7 +10,7 @@ Old native BXGY gid://shopify/DiscountAutomaticNode/2437444141438 was deactivate
 
 ## Source and validation
 
-App root: backend/, extension: backend/extensions/siwak-case-offer/. Build using Shopify CLI, then run node tests/run.mjs from the extension folder. Eleven fixtures run the compiled WASM for thresholds, subscriptions, renewals, duplicates, quantity caps, split paid lines and invalid variants. Cart helper tests: node --test tests/siwak-offer-cart.test.mjs from theme root (7 tests).
+App root: backend/, extension: backend/extensions/siwak-case-offer/. Build using Shopify CLI, then run node tests/run.mjs from the extension folder. Thirteen fixtures run the compiled WASM for thresholds, subscriptions, renewals, duplicates, quantity caps, split paid lines and invalid variants. Cart helper tests: node --test tests/siwak-offer-cart.test.mjs from theme root (8 tests).
 
 Theme cart integration uses exact Siwak variant 56366142259582; avoid closest.product.selected_or_first_available_variant as an identity guard, because the render context can resolve a gift variant. Case variant is 58340156768638. Reward lines are added atomically with the paid line. Reconciliation observes the Opus shadow root in #opus-shadow-container and removes/clamps marked gifts below their thresholds. Increasing cart quantity never silently chooses an Optiz gift; gift choice stays on the product offer.
 
@@ -19,3 +19,7 @@ Function and cart tests pass. Theme Check has existing violations, with no new o
 ## Rollback
 
 Review exact targets before mutations. Restore the prior cart assets and deactivate the new automatic discount before reactivating the old BXGY. Do not deploy the stale local calecon application: it omits deployed Siwak shipping modules. Theme target remains unpublished 197781324158 on codex/optiz-dev-sync.
+
+## Prepared eBook and selection fix
+
+Variant 56449444544894 (OPT-EBOOK) is available, untracked, inventoryPolicy CONTINUE. The source whitelist now includes it; deploying the updated function is required before syncing its frontend whitelist. The current released version does not yet authorize the eBook. Five tests execute the real offer element logic for add-before-choice, choice-before-add, cancellation, invalid selection, and lower tiers. Product submission now gates at the document-delegated handler before any cart request; confirming a pending gift choice resumes exactly one submission.

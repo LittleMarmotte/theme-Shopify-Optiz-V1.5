@@ -40,8 +40,6 @@
               assign gift_available = gift_variant.available
               if gift_variant == blank
                 assign gift_available = false
-              elsif gift_variant.inventory_management != blank and gift_variant.inventory_quantity <= 0
-                assign gift_available = false
               endif
             %}
             {% if gift != blank and gift_image != blank and gift_available and preview_count < 4 %}
