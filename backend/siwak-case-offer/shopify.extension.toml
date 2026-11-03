@@ -1,0 +1,18 @@
+api_version = "2026-07"
+
+[[extensions]]
+name = "Offres Siwak — étui et cadeau"
+handle = "siwak-case-offer"
+type = "function"
+uid = "4f4aa723-ce48-8a38-43e5-749179e75270aa65ad2d"
+description = "Un étui dès 2 boîtes et un cadeau Optiz dès 4 boîtes, hors renouvellements."
+
+  [[extensions.targeting]]
+  target = "cart.lines.discounts.generate.run"
+  input_query = "src/cart_lines_discounts_generate_run.graphql"
+  export = "cart_lines_discounts_generate_run"
+
+  [extensions.build]
+  command = "cargo build --target=wasm32-unknown-unknown --release"
+  path = "target/wasm32-unknown-unknown/release/siwak-case-offer.wasm"
+  watch = [ "src/**/*.rs" ]

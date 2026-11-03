@@ -1,0 +1,78 @@
+{
+  "target": "cart.lines.discounts.generate.run",
+  "input": {
+    "cart": {
+      "lines": [
+        {
+          "id": "gid://shopify/CartLine/0",
+          "quantity": 2,
+          "caseMarker": null,
+          "giftMarker": null,
+          "sellingPlanAllocation": null,
+          "merchandise": {
+            "__typename": "ProductVariant",
+            "id": "gid://shopify/ProductVariant/56366142259582"
+          }
+        },
+        {
+          "id": "gid://shopify/CartLine/1",
+          "quantity": 1,
+          "caseMarker": {
+            "value": "true"
+          },
+          "giftMarker": null,
+          "sellingPlanAllocation": null,
+          "merchandise": {
+            "__typename": "ProductVariant",
+            "id": "gid://shopify/ProductVariant/58340156768638"
+          }
+        },
+        {
+          "id": "gid://shopify/CartLine/4",
+          "quantity": 1,
+          "caseMarker": {
+            "value": "true"
+          },
+          "giftMarker": null,
+          "sellingPlanAllocation": null,
+          "merchandise": {
+            "__typename": "ProductVariant",
+            "id": "gid://shopify/ProductVariant/58340156768638"
+          }
+        }
+      ]
+    },
+    "discount": {
+      "discountClasses": [
+        "PRODUCT"
+      ]
+    }
+  },
+  "expectedOutput": {
+    "operations": [
+      {
+        "productDiscountsAdd": {
+          "selectionStrategy": "ALL",
+          "candidates": [
+            {
+              "targets": [
+                {
+                  "cartLine": {
+                    "id": "gid://shopify/CartLine/1",
+                    "quantity": 1
+                  }
+                }
+              ],
+              "message": "\u00c9tui Siwak offert",
+              "value": {
+                "percentage": {
+                  "value": "100.0"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

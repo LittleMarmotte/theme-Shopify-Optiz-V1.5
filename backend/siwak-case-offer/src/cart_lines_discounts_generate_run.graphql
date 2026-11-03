@@ -1,0 +1,16 @@
+query Input {
+  cart {
+    lines {
+      id
+      quantity
+      caseMarker: attribute(key: "_optiz_siwak_case") { value }
+      giftMarker: attribute(key: "_optiz_siwak_gift") { value }
+      sellingPlanAllocation { sellingPlan { id } }
+      merchandise {
+        __typename
+        ... on ProductVariant { id }
+      }
+    }
+  }
+  discount { discountClasses }
+}

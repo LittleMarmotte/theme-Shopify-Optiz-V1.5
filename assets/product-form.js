@@ -1,3 +1,4 @@
+import { planSiwakAdditions } from './siwak-offer-cart.js';
 import { Component } from '@theme/component';
 import { fetchConfig, preloadImage, onAnimationEnd, yieldToMainThread, parseIntOrDefault } from '@theme/utilities';
 import { cartPerformance } from '@theme/performance';
@@ -453,38 +454,40 @@ class ProductFormComponent extends Component {
       })
     );
 
-    // Add the selected Siwak gift in the same request, always as a one-time item.
-    // Shopify's automatic BXGY rule verifies eligibility and applies the free price.
     const siwakGift = formData.get('properties[_optiz_gift_variant]');
     const siwakOffer = this.closest('.shopify-section')?.querySelector('siwak-product-offers');
     const giftAllowed = siwakOffer && Array.from(siwakOffer.querySelectorAll('.siwak-product-offers__gift input'))
-      .some((input) => !input.disabled && input.value === siwakGift);
-    let existingSiwakGift = false;
-    if (giftAllowed && itemCount === 4) {
+      .some(input => !input.disabled && input.value === siwakGift);
+    let siwakAdditions = [];
+    if (siwakOffer && String(formData.get('id')) === siwakOffer.dataset.variantId) {
       try {
-        const response = await fetch(`${window.Shopify?.routes?.root || '/'}cart.js`);
+        const response = await fetch(`${window.Shopify?.routes?.root || '/'}cart.js`, { cache: 'no-store' });
         if (!response.ok) throw new Error('Cart unavailable');
-        const cart = await response.json();
-        existingSiwakGift = cart.items.some((item) => item.properties?._optiz_siwak_gift === 'true');
+        siwakAdditions = planSiwakAdditions(await response.json(), formData.get('id'), itemCount, giftAllowed ? siwakGift : null);
+        if (siwakAdditions.some(item => item.properties._optiz_siwak_case === 'true') && siwakOffer.dataset.caseAvailable !== 'true') {
+          throw new Error('Siwak case unavailable');
+        }
       } catch {
         for (const container of allAddToCartContainers) container.enable();
-        deferredEventPromise.reject(new Error('Gift cart verification failed'));
-        this.#setLiveRegionText('Impossible de vérifier le cadeau. Réessaie dans un instant.');
+        deferredEventPromise.reject(new Error('Siwak gift verification failed'));
+        this.#setLiveRegionText('Impossible d’ajouter les cadeaux de cette offre. Vérifie la disponibilité ou réessaie dans un instant.');
         return;
       }
     }
-    if (giftAllowed && itemCount === 4 && !existingSiwakGift) {
+    if (siwakAdditions.length) {
       const lineFields = Array.from(formData.entries()).filter(([name]) =>
         name === 'id' || name === 'quantity' || name === 'selling_plan' || name.startsWith('properties[')
       );
       for (const [name, value] of lineFields) {
         formData.delete(name);
-        formData.append((name.startsWith('properties[') ? `items[0][properties]${name.slice(10)}` : `items[0][${name}]`), value);
+        formData.append(name.startsWith('properties[') ? `items[0][properties]${name.slice(10)}` : `items[0][${name}]`, value);
       }
-      formData.append('items[1][id]', siwakGift);
-      formData.append('items[1][quantity]', '1');
-      formData.append('items[1][properties][_optiz_siwak_gift]', 'true');
-      formData.append('items[1][properties][Cadeau offert]', 'Offre 4 boîtes de Siwak');
+      siwakAdditions.forEach((item, index) => {
+        const line = index + 1;
+        formData.append(`items[${line}][id]`, item.id);
+        formData.append(`items[${line}][quantity]`, '1');
+        for (const [key, value] of Object.entries(item.properties)) formData.append(`items[${line}][properties][${key}]`, value);
+      });
     }
 
     const fetchCfg = fetchConfig('javascript', { body: formData });

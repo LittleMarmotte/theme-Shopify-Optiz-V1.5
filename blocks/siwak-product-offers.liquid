@@ -2,12 +2,14 @@
   assign product_resource = closest.product | default: product
   assign subscription_plan = product_resource.selling_plan_groups.first.selling_plans.first
   assign selected_plan_id = block.settings.selling_plan_id | default: subscription_plan.id
+  assign case_product = all_products['etui-a-siwak']
+  assign case_variant = case_product.variants | where: 'sku', 'OPT-SIW-HLD' | first
   assign unit_price = 12
   if selected_plan_id != blank
     assign unit_price = 10
   endif
 %}
-<siwak-product-offers class="siwak-product-offers" data-plan="{{ selected_plan_id }}" {{ block.shopify_attributes }}>
+<siwak-product-offers class="siwak-product-offers" data-plan="{{ selected_plan_id }}" data-variant-id="{{ product_resource.selected_or_first_available_variant.id }}" data-case-available="{{ case_variant.available | default: false }}" {{ block.shopify_attributes }}>
   <fieldset class="siwak-product-offers__fieldset">
     <legend class="siwak-product-offers__legend"><span>{{ block.settings.kicker | escape }}</span><strong>{{ block.settings.heading | escape }}</strong></legend>
     <div class="siwak-product-offers__modes">

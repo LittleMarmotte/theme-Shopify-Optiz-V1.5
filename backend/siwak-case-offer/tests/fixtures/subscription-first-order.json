@@ -1,0 +1,98 @@
+{
+  "target": "cart.lines.discounts.generate.run",
+  "input": {
+    "cart": {
+      "lines": [
+        {
+          "id": "gid://shopify/CartLine/0",
+          "quantity": 4,
+          "caseMarker": null,
+          "giftMarker": null,
+          "sellingPlanAllocation": {
+            "sellingPlan": {
+              "id": "gid://shopify/SellingPlan/711747076478"
+            }
+          },
+          "merchandise": {
+            "__typename": "ProductVariant",
+            "id": "gid://shopify/ProductVariant/56366142259582"
+          }
+        },
+        {
+          "id": "gid://shopify/CartLine/1",
+          "quantity": 1,
+          "caseMarker": {
+            "value": "true"
+          },
+          "giftMarker": null,
+          "sellingPlanAllocation": null,
+          "merchandise": {
+            "__typename": "ProductVariant",
+            "id": "gid://shopify/ProductVariant/58340156768638"
+          }
+        },
+        {
+          "id": "gid://shopify/CartLine/2",
+          "quantity": 1,
+          "caseMarker": null,
+          "giftMarker": {
+            "value": "true"
+          },
+          "sellingPlanAllocation": null,
+          "merchandise": {
+            "__typename": "ProductVariant",
+            "id": "gid://shopify/ProductVariant/56866953396606"
+          }
+        }
+      ]
+    },
+    "discount": {
+      "discountClasses": [
+        "PRODUCT"
+      ]
+    }
+  },
+  "expectedOutput": {
+    "operations": [
+      {
+        "productDiscountsAdd": {
+          "selectionStrategy": "ALL",
+          "candidates": [
+            {
+              "targets": [
+                {
+                  "cartLine": {
+                    "id": "gid://shopify/CartLine/1",
+                    "quantity": 1
+                  }
+                }
+              ],
+              "message": "\u00c9tui Siwak offert",
+              "value": {
+                "percentage": {
+                  "value": "100.0"
+                }
+              }
+            },
+            {
+              "targets": [
+                {
+                  "cartLine": {
+                    "id": "gid://shopify/CartLine/2",
+                    "quantity": 1
+                  }
+                }
+              ],
+              "message": "Cadeau Optiz offert",
+              "value": {
+                "percentage": {
+                  "value": "100.0"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
