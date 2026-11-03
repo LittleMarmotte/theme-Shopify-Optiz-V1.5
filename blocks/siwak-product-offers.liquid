@@ -30,7 +30,9 @@
             assign bonus_value = bonus_value | plus: 4
           endif
           assign offer_image = block.settings.trial_image | default: product_resource.featured_image
-          if quantity == 4
+          if quantity == 2
+            assign offer_image = block.settings.duo_image | default: offer_image
+          elsif quantity == 4
             assign offer_image = block.settings.pack_image | default: offer_image
           endif
         %}
@@ -39,9 +41,9 @@
             <input type="radio" name="siwak-quantity-{{ block.id }}" value="{{ quantity }}" aria-labelledby="siwak-title-{{ block.id }}-{{ quantity }} siwak-price-{{ block.id }}-{{ quantity }}" aria-describedby="siwak-teaser-{{ block.id }}-{{ quantity }}" aria-controls="siwak-panel-{{ block.id }}-{{ quantity }}" {% if quantity == 2 %}checked{% endif %}>
             <span class="siwak-product-offers__check" aria-hidden="true"></span>
             {% if offer_image != blank %}
-              <span class="siwak-product-offers__box-image{% if quantity == 2 %} siwak-product-offers__box-image--duo{% endif %}" aria-hidden="true">
+              <span class="siwak-product-offers__box-image{% if quantity == 2 and block.settings.duo_image == blank %} siwak-product-offers__box-image--duo{% endif %}" aria-hidden="true">
                 {{ offer_image | image_url: width: 180 | image_tag: loading: 'lazy', alt: '' }}
-                {% if quantity == 2 %}{{ offer_image | image_url: width: 180 | image_tag: loading: 'lazy', alt: '' }}{% endif %}
+                {% if quantity == 2 and block.settings.duo_image == blank %}{{ offer_image | image_url: width: 180 | image_tag: loading: 'lazy', alt: '' }}{% endif %}
               </span>
             {% endif %}
             <span class="siwak-product-offers__copy"><strong id="siwak-title-{{ block.id }}-{{ quantity }}">{{ 'siwak_offer.boxes' | t: count: quantity }}</strong><span>{{ 'siwak_offer.sticks' | t: count: sticks }}</span></span>
@@ -624,14 +626,32 @@ if (!customElements.get('siwak-product-offers')) customElements.define('siwak-pr
     },
     {
       "type": "image_picker",
+      "id": "duo_image",
+      "label": "Miniature de l’offre 2 boîtes",
+      "info": "Vide : affiche deux fois la miniature de l’offre 1 boîte."
+    },
+    {
+      "type": "image_picker",
       "id": "pack_image",
       "label": "Image 4 boîtes"
     },
     {
       "type": "image_picker",
       "id": "case_image",
-      "label": "Photo de l’étui Siwak",
-      "info": "Vide : utilise la photo réelle fournie avec le thème."
+      "label": "Image de l’étui offert",
+      "info": "Image de la vignette cadeau dans les offres. Vide : photo de l’étui fournie avec le thème."
+    },
+    {
+      "type": "image_picker",
+      "id": "choice_image",
+      "label": "Image du cadeau Optiz offert",
+      "info": "Image de la vignette cadeau dans les offres. Vide : mosaïque des cadeaux disponibles."
+    },
+    {
+      "type": "image_picker",
+      "id": "shipping_image",
+      "label": "Image de la livraison offerte",
+      "info": "Vide : illustration du colis fournie avec le thème."
     },
     {
       "type": "text",
