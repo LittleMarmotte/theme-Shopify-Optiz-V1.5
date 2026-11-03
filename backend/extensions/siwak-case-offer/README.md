@@ -2,7 +2,7 @@
 
 Store: tqka0j-vk.myshopify.com. App: Optiz - Cadeaux Siwak, client ID 96352aa5adbc53f5dee40bb27e0e932e. This standalone application preserves existing shipping and other product applications.
 
-Released version: siwak-rewards-2026-11-03. Function handle: siwak-case-offer; installed ID: 01a1a123-1731-7389-b9c6-8734944a4de2. Automatic discount: gid://shopify/DiscountAutomaticNode/2448394289534, ACTIVE. Scope write_discounts explicitly approved by Matthieu on 2026-11-03. No credentials are stored here.
+Released version: siwak-rewards-ebook-2026-11-03. Function handle: siwak-case-offer; installed ID: 01a1a123-1731-7389-b9c6-8734944a4de2. Automatic discount: gid://shopify/DiscountAutomaticNode/2448394289534, ACTIVE. Scope write_discounts explicitly approved by Matthieu on 2026-11-03. No credentials are stored here.
 
 The server grants 100% off one marked case at 2+ paid Siwak boxes and one marked, whitelisted Optiz gift at 4+ boxes. Both purchase modes qualify. The discount enables one-time and subscription purchases, with recurringCycleLimit 1. The theme adds rewards without a selling plan, and the function rejects any reward line carrying a selling plan. Retail case/gift purchases remain charged. Product and shipping discounts can combine; order discounts cannot.
 
@@ -20,6 +20,6 @@ Function and cart tests pass. Theme Check has existing violations, with no new o
 
 Review exact targets before mutations. Restore the prior cart assets and deactivate the new automatic discount before reactivating the old BXGY. Do not deploy the stale local calecon application: it omits deployed Siwak shipping modules. Theme target remains unpublished 197781324158 on codex/optiz-dev-sync.
 
-## Prepared eBook and selection fix
+## eBook and selection fix — released
 
-Variant 56449444544894 (OPT-EBOOK) is available, untracked, inventoryPolicy CONTINUE. The source whitelist now includes it; deploying the updated function is required before syncing its frontend whitelist. The current released version does not yet authorize the eBook. Five tests execute the real offer element logic for add-before-choice, choice-before-add, cancellation, invalid selection, and lower tiers. Product submission now gates at the document-delegated handler before any cart request; confirming a pending gift choice resumes exactly one submission.
+Variant 56449444544894 (OPT-EBOOK) is available, untracked, inventoryPolicy CONTINUE. The released function and frontend whitelist include it. Matthieu explicitly authorized the Functions skill deployment exception for this update on 2026-11-03. Five tests execute the real offer element logic for add-before-choice, choice-before-add, cancellation, invalid selection, and lower tiers. Product submission now gates at the document-delegated handler before any cart request; confirming a pending gift choice resumes exactly one submission.

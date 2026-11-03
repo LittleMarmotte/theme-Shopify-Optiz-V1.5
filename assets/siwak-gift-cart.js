@@ -1,4 +1,4 @@
-import { planSiwakGiftUpdates } from './siwak-offer-cart.js';
+import { planSiwakGiftUpdates } from '@theme/siwak-offer-cart';
 // Keep the one-time Siwak gift eligible when shoppers edit quantities in any cart UI.
 (() => {
   let timer, busy = false;

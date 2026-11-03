@@ -1,4 +1,4 @@
-import { planSiwakAdditions, SIWAK_VARIANT_ID, SIWAK_GIFT_VARIANTS } from './siwak-offer-cart.js';
+import { planSiwakAdditions, SIWAK_VARIANT_ID, SIWAK_GIFT_VARIANTS } from '@theme/siwak-offer-cart';
 import { Component } from '@theme/component';
 import { fetchConfig, preloadImage, onAnimationEnd, yieldToMainThread, parseIntOrDefault } from '@theme/utilities';
 import { cartPerformance } from '@theme/performance';
