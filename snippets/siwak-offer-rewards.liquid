@@ -14,7 +14,7 @@
         <img src="{{ 'siwak-case.jpeg' | asset_url }}" width="720" height="1280" loading="lazy" alt="{{ 'siwak_offer.case_photo_alt' | t }}">
       {% endif %}
     </div>
-    <figcaption>{{ 'siwak_offer.case_title' | t }}<small{% if quantity < 2 %} class="siwak-product-offers__unlock"{% endif %}>{% if quantity >= 2 %}{{ 'siwak_offer.first_order' | t }}{% else %}{{ 'siwak_offer.unlock_two' | t }}{% endif %}</small></figcaption>
+    <figcaption>{{ 'siwak_offer.case_title' | t }}<small class="siwak-product-offers__reward-value">{{ 'siwak_offer.bonus_value' | t: value: 8 }}</small><small{% if quantity < 2 %} class="siwak-product-offers__unlock"{% endif %}>{% if quantity >= 2 %}{{ 'siwak_offer.first_order' | t }}{% else %}{{ 'siwak_offer.unlock_two' | t }}{% endif %}</small></figcaption>
   </figure>
 
   <figure class="siwak-product-offers__reward{% if quantity < 4 %} siwak-product-offers__reward--locked{% endif %}" data-reward="choice" data-unlocked="{% if quantity >= 4 %}true{% else %}false{% endif %}">
@@ -60,6 +60,6 @@
     <div class="siwak-product-offers__reward-media">
       <svg class="siwak-product-offers__shipping-art" viewBox="0 0 160 140" fill="none" stroke="currentColor" stroke-width="4" aria-hidden="true"><path d="M25 40 80 15 135 40 135 105 80 130 25 105Z M25 40 80 65 135 40 M80 65V130 M52 28 108 53V80"/><path d="m48 88 13 6"/></svg>
     </div>
-    <figcaption>{{ 'siwak_offer.shipping_title' | t }}{% if quantity < 4 %}<small class="siwak-product-offers__unlock">{{ 'siwak_offer.unlock_four' | t }}</small>{% endif %}</figcaption>
+    <figcaption>{{ 'siwak_offer.shipping_title' | t }}<small class="siwak-product-offers__reward-value">{{ 'siwak_offer.bonus_value' | t: value: 4 }}</small>{% if quantity < 4 %}<small class="siwak-product-offers__unlock">{{ 'siwak_offer.unlock_four' | t }}</small>{% endif %}</figcaption>
   </figure>
 </div>

@@ -20,6 +20,13 @@
         {% liquid
           assign quantity = count | plus: 0
           assign sticks = quantity | times: 5
+          assign bonus_value = 0
+          if quantity >= 2
+            assign bonus_value = 8
+          endif
+          if quantity == 4
+            assign bonus_value = bonus_value | plus: 4
+          endif
           assign offer_image = block.settings.trial_image | default: product_resource.featured_image
           if quantity == 4
             assign offer_image = block.settings.pack_image | default: offer_image
@@ -36,7 +43,13 @@
               </span>
             {% endif %}
             <span class="siwak-product-offers__copy"><strong id="siwak-title-{{ block.id }}-{{ quantity }}">{{ 'siwak_offer.boxes' | t: count: quantity }}</strong><span>{{ 'siwak_offer.sticks' | t: count: sticks }}</span></span>
-            <span class="siwak-product-offers__price"><strong id="siwak-price-{{ block.id }}-{{ quantity }}" data-price="{{ quantity }}">{{ quantity | times: unit_price }} €</strong><small data-unit>{{ unit_price }} € / boîte</small></span>
+            <span class="siwak-product-offers__price">
+              {% if bonus_value > 0 %}
+                <span class="siwak-product-offers__value-line" title="{{ 'siwak_offer.first_delivery_value' | t | escape }}"><span>{{ 'siwak_offer.total_value' | t }}</span><s data-value-quantity="{{ quantity }}" data-bonus-value="{{ bonus_value }}">{{ quantity | times: unit_price | plus: bonus_value }} €</s></span>
+              {% endif %}
+              <span class="siwak-product-offers__price-line"><strong id="siwak-price-{{ block.id }}-{{ quantity }}" data-price="{{ quantity }}">{{ quantity | times: unit_price }} €</strong>{% if quantity == 4 %}<span class="siwak-product-offers__extra-gift">{{ 'siwak_offer.extra_gift' | t }}</span>{% endif %}</span>
+              <small data-unit>{{ unit_price }} € / boîte</small>
+            </span>
             <span class="siwak-product-offers__teaser" id="siwak-teaser-{{ block.id }}-{{ quantity }}">
               {% if quantity == 1 %}
                 <span class="siwak-product-offers__teaser-note">{{ 'siwak_offer.no_gift' | t }}</span>
@@ -461,6 +474,11 @@
 .siwak-product-offers__box-image--duo img {width:55%;margin-inline:-3px}
 .siwak-product-offers__ticket .siwak-product-offers__copy>strong {font-size:1.55rem}
 .siwak-product-offers__ticket .siwak-product-offers__price strong {font-size:2rem}
+.siwak-product-offers__ticket .siwak-product-offers__price {max-width:135px;gap:5px}
+.siwak-product-offers__value-line {display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:baseline;gap:3px 5px;color:#65615a;font-size:.65rem;line-height:1.2}
+.siwak-product-offers__value-line s {font-size:.95rem;font-weight:700;white-space:nowrap}
+.siwak-product-offers__price-line {display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:baseline;gap:5px}
+.siwak-product-offers__extra-gift {font-size:.72rem;font-weight:800;white-space:nowrap;color:var(--offer-red)}
 .siwak-product-offers__teaser {grid-column:2/-1;display:flex;flex-direction:column;align-items:flex-start;gap:5px;padding-right:18px;font-size:.73rem;line-height:1.35;font-weight:700}
 .siwak-product-offers__teaser>span {display:inline-flex;align-items:center;gap:6px}
 .siwak-product-offers__teaser-note {color:#65615a;font-weight:400}
@@ -494,6 +512,8 @@
   .siwak-product-offers__box-image {width:42px;height:56px}
   .siwak-product-offers__ticket .siwak-product-offers__copy>strong {font-size:1.3rem}
   .siwak-product-offers__ticket .siwak-product-offers__price strong {font-size:1.8rem}
+  .siwak-product-offers__ticket .siwak-product-offers__price {max-width:105px}
+  .siwak-product-offers__extra-gift {font-size:.65rem}
   .siwak-product-offers__price small {max-width:none;font-size:.6rem}
   .siwak-product-offers__teaser {font-size:.67rem;gap:5px 8px}
   .siwak-product-offers__rewards {padding:24px 10px 16px;gap:7px}
@@ -564,6 +584,10 @@ class SiwakProductOffers extends HTMLElement {
     setHidden('properties[Cadeau choisi]',quantity==='4' ? this.gift?.title : '');
     setHidden('properties[_optiz_gift_variant]',quantity==='4' ? this.gift?.value : '');
     this.querySelectorAll('[data-price]').forEach(el=>el.textContent=`${Number(el.dataset.price)*(subscription?10:12)} €`);
+    this.querySelectorAll('[data-value-quantity]').forEach(element => {
+      const value = Number(element.dataset.valueQuantity) * (subscription ? 10 : 12) + Number(element.dataset.bonusValue);
+      element.textContent = `${value} €`;
+    });
     this.querySelectorAll('[data-unit]').forEach(el=>el.textContent=`${subscription?10:12} € / boîte`);
     this.querySelector('[data-renewal]').hidden=!subscription;
     this.querySelectorAll('[data-subscription-only]').forEach(element => element.hidden = !subscription);

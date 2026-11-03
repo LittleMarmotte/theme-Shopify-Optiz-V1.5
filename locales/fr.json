@@ -416,6 +416,10 @@
     "unlock_four": "Dès 4 boîtes",
     "shipping_and_gifts": "Livraison offerte + cadeaux offerts",
     "guarantee": "30 jours satisfait ou remboursé",
-    "subscription_flexibility": "Modifiez ou annulez à tout moment"
+    "subscription_flexibility": "Modifiez ou annulez à tout moment",
+    "total_value": "Valeur totale",
+    "extra_gift": "+ 1 cadeau",
+    "first_delivery_value": "Valeur du premier envoi, bonus inclus",
+    "bonus_value": "Valeur : {{ value }} €"
   }
 }

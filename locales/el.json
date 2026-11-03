@@ -383,6 +383,10 @@
     "unlock_four": "With 4 boxes",
     "shipping_and_gifts": "Free delivery + free gifts",
     "guarantee": "30-day money-back guarantee",
-    "subscription_flexibility": "Modify or cancel at any time"
+    "subscription_flexibility": "Modify or cancel at any time",
+    "total_value": "Total value",
+    "extra_gift": "+ 1 gift",
+    "first_delivery_value": "First delivery value, including bonuses",
+    "bonus_value": "Value: €{{ value }}"
   }
 }
