@@ -85,3 +85,11 @@ Sur la cohorte des sessions arrivant sur `/products/siwak`, calculer :
 Distinguer Meta payant, TikTok payant, autres sources payantes, organique, direct et email ; conserver `source / medium / campaign` UTM et ventiler mobile/desktop, nouveaux/anciens visiteurs, pays et jours complets. Afficher effectifs et revenus bruts avec les taux. Conserver le même modèle d'attribution et la même définition de revenu avant/après ; ne pas additionner les conversions revendiquées par les plateformes.
 
 Le taux panier est un indicateur intermédiaire : juger aussi le taux d'achat et le revenu par session. Avec peu de commandes, rendre les résultats descriptifs et éviter de déclarer un gagnant. Un avant/après reste exposé aux variations de trafic, de créatifs et de saisonnalité ; il ne suffit pas seul à démontrer une causalité.
+
+## Publication autorisée par Matthieu
+
+2026-11-05T14:42:21+01:00 : duplication du thème de test `197781324158`, puis publication de la copie **Optiz - Siwak achat unique 2 boites - 05-11-2026**, ID `199032209790`, à la demande explicite de Matthieu dans la conversation. Le thème de dev reste non publié. L’ancien thème actif `198911066494` est conservé non publié et permet le retour arrière par republication.
+
+Vérification après publication : Shopify confirme le rôle live de `199032209790` ; la réponse publique de `/products/siwak` sans cookie de prévisualisation identifie ce même thème et contient le mode achat unique avec la quantité 2 cochée. Les fichiers de logique de prix et cadeaux de la copie ont été comparés à ceux validés sur le dev. Shopify a seulement supprimé du JSON le réglage obsolète `selling_plan_id`, dont le schéma a été retiré.
+
+La valeur par défaut de 2 boîtes remplace le défaut de 1 boîte décrit dans le protocole initial (commit `a904261`). La journée de publication doit être exclue du comparatif avant/après. Les limites de validation Meta/TikTok et appareil physique mentionnées plus haut restent applicables.
