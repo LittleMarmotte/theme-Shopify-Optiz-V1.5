@@ -1,4 +1,4 @@
-import { planSiwakGiftUpdates } from '@theme/siwak-offer-cart';
+import { planSiwakGiftUpdates, planSiwakAdditions, siwakQuantity, SIWAK_VARIANT_ID } from '@theme/siwak-offer-cart';
 // Keep the one-time Siwak gift eligible when shoppers edit quantities in any cart UI.
 (() => {
   let timer, busy = false, latestCart;
@@ -51,7 +51,17 @@ import { planSiwakGiftUpdates } from '@theme/siwak-offer-cart';
       latestCart = cart;
       renderShipping();
       const updates = planSiwakGiftUpdates(cart);
-      if (!Object.keys(updates).length) return;
+      if (!Object.keys(updates).length) {
+        // Quantity increases in the drawer can unlock the case, too.
+        const additions = siwakQuantity(cart) >= 2 ? planSiwakAdditions(cart, SIWAK_VARIANT_ID, 1, null) : [];
+        if (additions.length) {
+          const added = await fetch(`${root}cart/add.js`, {
+            method: 'POST', headers: {'Content-Type':'application/json', Accept:'application/json'}, body:JSON.stringify({items:additions})
+          });
+          if (added.ok) window.location.reload();
+        }
+        return;
+      }
       const changed = await fetch(`${root}cart/update.js`, {
         method: 'POST', headers: {'Content-Type':'application/json', Accept:'application/json'}, body:JSON.stringify({updates})
       });
