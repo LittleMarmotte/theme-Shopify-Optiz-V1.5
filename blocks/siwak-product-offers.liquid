@@ -1,10 +1,11 @@
 {% liquid
-  assign product_resource = closest.product | default: product
+  assign product_resource = all_products['siwak']
+  assign unit_cents = product_resource.price
+  assign unit_price = unit_cents | divided_by: 100.0
   assign case_product = all_products['etui-a-siwak']
   assign case_variant = case_product.variants | where: 'sku', 'OPT-SIW-HLD' | first
-  assign unit_price = product_resource.selected_or_first_available_variant.price | divided_by: 100.0
 %}
-<siwak-product-offers class="siwak-product-offers" data-purchase-mode="once" data-unit-cents="{{ product_resource.selected_or_first_available_variant.price }}" data-currency="{{ cart.currency.iso_code }}" data-cta="{{ 'actions.add_to_cart' | t | escape }}" data-case-available="{{ case_variant.available | default: false }}" {{ block.shopify_attributes }}>
+<siwak-product-offers class="siwak-product-offers" data-purchase-mode="once" data-unit-cents="{{ unit_cents }}" data-currency="{{ cart.currency.iso_code }}" data-cta="{{ 'actions.add_to_cart' | t | escape }}" data-case-available="{{ case_variant.available | default: false }}" {{ block.shopify_attributes }}>
   <fieldset class="siwak-product-offers__fieldset">
     <legend class="siwak-product-offers__legend"><span>{{ block.settings.kicker | escape }}</span><strong>{{ block.settings.heading | escape }}</strong></legend>
     <div class="siwak-product-offers__list">
