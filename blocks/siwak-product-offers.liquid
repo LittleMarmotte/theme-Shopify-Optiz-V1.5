@@ -100,6 +100,22 @@
   </dialog>
 </siwak-product-offers>
 {% stylesheet %}
+  @media screen and (max-width: 749px) {
+    .shopify-section:has(siwak-product-offers[data-purchase-mode="once"]) .sticky-add-to-cart__bar {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 8px;
+    }
+    .shopify-section:has(siwak-product-offers[data-purchase-mode="once"]) .sticky-add-to-cart__button {
+      grid-column: 1 / -1;
+      width: 100%;
+      padding: 12px;
+    }
+    .shopify-section:has(siwak-product-offers[data-purchase-mode="once"]) .sticky-add-to-cart__bar .add-to-cart-text__content {
+      display: inline;
+    }
+  }
+
   .siwak-product-offers {
     --offer-red: #e52219;
     --offer-ink: #171717;
