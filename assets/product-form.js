@@ -460,6 +460,7 @@ class ProductFormComponent extends Component {
 
     const siwakGift = formData.get('properties[_optiz_gift_variant]');
     const siwakOffer = this.closest('.shopify-section')?.querySelector('siwak-product-offers');
+    if (siwakOffer?.dataset.purchaseMode === 'once' && String(formData.get('id')) === SIWAK_VARIANT_ID) formData.delete('selling_plan');
     const giftAllowed = siwakOffer && Array.from(siwakOffer.querySelectorAll('.siwak-product-offers__gift input'))
       .some(input => !input.disabled && input.value === siwakGift);
     let siwakAdditions = [];
