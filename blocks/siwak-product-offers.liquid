@@ -1,21 +1,12 @@
 {% liquid
   assign product_resource = closest.product | default: product
-  assign subscription_plan = product_resource.selling_plan_groups.first.selling_plans.first
-  assign selected_plan_id = block.settings.selling_plan_id | default: subscription_plan.id
   assign case_product = all_products['etui-a-siwak']
   assign case_variant = case_product.variants | where: 'sku', 'OPT-SIW-HLD' | first
-  assign unit_price = 12
-  if selected_plan_id != blank
-    assign unit_price = 10
-  endif
+  assign unit_price = product_resource.selected_or_first_available_variant.price | divided_by: 100.0
 %}
-<siwak-product-offers class="siwak-product-offers" data-plan="{{ selected_plan_id }}" data-case-available="{{ case_variant.available | default: false }}" {{ block.shopify_attributes }}>
+<siwak-product-offers class="siwak-product-offers" data-purchase-mode="once" data-unit-cents="{{ product_resource.selected_or_first_available_variant.price }}" data-currency="{{ cart.currency.iso_code }}" data-cta="{{ 'actions.add_to_cart' | t | escape }}" data-case-available="{{ case_variant.available | default: false }}" {{ block.shopify_attributes }}>
   <fieldset class="siwak-product-offers__fieldset">
     <legend class="siwak-product-offers__legend"><span>{{ block.settings.kicker | escape }}</span><strong>{{ block.settings.heading | escape }}</strong></legend>
-    <div class="siwak-product-offers__modes">
-      <label><input type="radio" name="siwak-mode-{{ block.id }}" value="subscription" {% if selected_plan_id == blank %}disabled{% else %}checked{% endif %}><strong>Abonnement</strong><span>10 € / boîte à chaque envoi</span></label>
-      <label><input type="radio" name="siwak-mode-{{ block.id }}" value="once" {% if selected_plan_id == blank %}checked{% endif %}><strong>Achat unique</strong><span>12 € / boîte</span></label>
-    </div>
     <div class="siwak-product-offers__list">
       {% assign quantities = '1,2,4' | split: ',' %}
       {% for count in quantities %}
@@ -38,7 +29,7 @@
         %}
         <article class="siwak-product-offers__ticket" data-ticket="{{ quantity }}">
           <label class="siwak-product-offers__card">
-            <input type="radio" name="siwak-quantity-{{ block.id }}" value="{{ quantity }}" aria-labelledby="siwak-title-{{ block.id }}-{{ quantity }} siwak-price-{{ block.id }}-{{ quantity }}" aria-describedby="siwak-teaser-{{ block.id }}-{{ quantity }}" aria-controls="siwak-panel-{{ block.id }}-{{ quantity }}" {% if quantity == 2 %}checked{% endif %}>
+            <input type="radio" name="siwak-quantity-{{ block.id }}" value="{{ quantity }}" aria-labelledby="siwak-title-{{ block.id }}-{{ quantity }} siwak-price-{{ block.id }}-{{ quantity }}" aria-describedby="siwak-teaser-{{ block.id }}-{{ quantity }}" aria-controls="siwak-panel-{{ block.id }}-{{ quantity }}" {% if quantity == 1 %}checked{% endif %}>
             <span class="siwak-product-offers__check" aria-hidden="true"></span>
             {% if offer_image != blank %}
               <span class="siwak-product-offers__box-image{% if quantity == 2 and block.settings.duo_image == blank %} siwak-product-offers__box-image--duo{% endif %}" aria-hidden="true">
@@ -64,11 +55,10 @@
             </span>
             <span class="siwak-product-offers__expand" aria-hidden="true">⌄</span>
           </label>
-          <div class="siwak-product-offers__panel" id="siwak-panel-{{ block.id }}-{{ quantity }}" data-panel {% unless quantity == 2 %}hidden{% endunless %}>
+          <div class="siwak-product-offers__panel" id="siwak-panel-{{ block.id }}-{{ quantity }}" data-panel {% unless quantity == 1 %}hidden{% endunless %}>
             <ul class="siwak-product-offers__reassurance">
               {% if quantity == 4 %}<li>{{ 'siwak_offer.shipping_and_gifts' | t }}</li>{% endif %}
               <li>{{ 'siwak_offer.guarantee' | t }}</li>
-              <li data-subscription-only {% if selected_plan_id == blank %}hidden{% endif %}>{{ 'siwak_offer.subscription_flexibility' | t }}</li>
             </ul>
             <h3 class="siwak-product-offers__panel-title">{{ 'siwak_offer.your_benefits' | t }}</h3>
             {% render 'siwak-offer-rewards', quantity: quantity, block: block %}
@@ -80,8 +70,6 @@
       {% endfor %}
     </div>
   </fieldset>
-  <p data-renewal hidden>Renouvellement à 10 € par boîte. {{ subscription_plan.name | escape }}. Les conditions s’affichent au paiement.</p>
-  {% if selected_plan_id == blank %}<p class="siwak-product-offers__setup-note">Abonnement bientôt disponible.</p>{% endif %}
   <dialog class="siwak-product-offers__dialog" aria-labelledby="gift-title-{{ block.id }}">
     <header><h2 id="gift-title-{{ block.id }}">Choisis ton cadeau Optiz</h2><button type="button" data-close aria-label="Fermer">×</button></header>
     <div class="siwak-product-offers__gifts">
@@ -564,7 +552,7 @@ class SiwakProductOffers extends HTMLElement {
     }, options);
     this.form = this.closest('.shopify-section')?.querySelector('product-form-component form');
     this.observer = new MutationObserver(()=>this.syncForm());
-    if (this.form) this.observer.observe(this.form,{childList:true,subtree:true});
+    if (this.form) this.observer.observe(this.closest('.shopify-section'),{childList:true,subtree:true});
     this.syncForm();
   }
   cancelPendingSubmission() {
@@ -586,8 +574,8 @@ class SiwakProductOffers extends HTMLElement {
   disconnectedCallback() {cancelAnimationFrame(this.initFrame);this.controller?.abort();this.observer?.disconnect();}
   syncForm() {
     if (!this.form) return;
-    const quantity = this.querySelector('input[name^="siwak-quantity"]:checked')?.value || '2';
-    const subscription = this.querySelector('input[name^="siwak-mode"]:checked')?.value === 'subscription';
+    const quantity = this.querySelector('input[name^="siwak-quantity"]:checked')?.value || '1';
+
     let input = this.form.querySelector('[name="quantity"]');
     if (!input) {input=document.createElement('input');input.type='hidden';input.name='quantity';this.form.append(input);}
     input.value=quantity;
@@ -597,18 +585,23 @@ class SiwakProductOffers extends HTMLElement {
       if (!field) {field=document.createElement('input');field.type='hidden';field.name=name;this.form.append(field);}
       field.value=value;
     };
-    setHidden('selling_plan',subscription ? this.dataset.plan : '');
+    this.form.querySelectorAll('[name="selling_plan"]').forEach(field => field.remove());
     // The form adds the chosen gift without a selling plan; eligibility is enforced by Shopify.
     setHidden('properties[Cadeau choisi]',quantity==='4' ? this.gift?.title : '');
     setHidden('properties[_optiz_gift_variant]',quantity==='4' ? this.gift?.value : '');
-    this.querySelectorAll('[data-price]').forEach(el=>el.textContent=`${Number(el.dataset.price)*(subscription?10:12)} €`);
-    this.querySelectorAll('[data-value-quantity]').forEach(element => {
-      const value = Number(element.dataset.valueQuantity) * (subscription ? 10 : 12) + Number(element.dataset.bonusValue);
-      element.textContent = `${value} €`;
+    const unit = Number(this.dataset.unitCents) / 100;
+    const money = value => new Intl.NumberFormat(document.documentElement.lang || 'fr', {style:'currency',currency:this.dataset.currency || 'EUR',maximumFractionDigits:2}).format(value);
+    this.querySelectorAll('[data-price]').forEach(el => { const value = money(Number(el.dataset.price) * unit); if (el.textContent !== value) el.textContent = value; });
+    this.querySelectorAll('[data-value-quantity]').forEach(el => { const value = money(Number(el.dataset.valueQuantity) * unit + Number(el.dataset.bonusValue)); if (el.textContent !== value) el.textContent = value; });
+    this.querySelectorAll('[data-unit]').forEach(el => { const value = `${money(unit)} / boîte`; if (el.textContent !== value) el.textContent = value; });
+    const section = this.closest('.shopify-section');
+    const total = money(Number(quantity) * unit);
+    section.querySelectorAll('product-price .price bdi, sticky-add-to-cart .price bdi').forEach(el => { if (el.textContent !== total) el.textContent = total; });
+    section.querySelectorAll('product-price .compare-at-price, sticky-add-to-cart .compare-at-price').forEach(el => el.hidden = true);
+    section.querySelectorAll('product-form-component button[type="submit"] [data-siwak-add-label], sticky-add-to-cart .add-to-cart-text__content > span:first-child').forEach(el => {
+      const label = `${this.dataset.cta} — ${total}`;
+      if (el.textContent !== label) el.textContent = label;
     });
-    this.querySelectorAll('[data-unit]').forEach(el=>el.textContent=`${subscription?10:12} € / boîte`);
-    this.querySelector('[data-renewal]').hidden=!subscription;
-    this.querySelectorAll('[data-subscription-only]').forEach(element => element.hidden = !subscription);
     this.querySelectorAll('[data-ticket]').forEach(ticket => {
       ticket.querySelector('[data-panel]').hidden = ticket.dataset.ticket !== quantity;
     });
@@ -631,7 +624,7 @@ if (!customElements.get('siwak-product-offers')) customElements.define('siwak-pr
       "type": "text",
       "id": "heading",
       "label": "Titre",
-      "default": "Choisis ton rythme"
+      "default": "Choisis ton lot"
     },
     {
       "type": "image_picker",
@@ -666,12 +659,6 @@ if (!customElements.get('siwak-product-offers')) customElements.define('siwak-pr
       "id": "shipping_image",
       "label": "Image de la livraison offerte",
       "info": "Vide : illustration du colis fournie avec le thème."
-    },
-    {
-      "type": "text",
-      "id": "selling_plan_id",
-      "label": "ID du forfait Siwak",
-      "info": "Vide : utilise le premier forfait du produit. Vérifier le prix de 10 € par boîte et la fréquence dans Shopify Subscriptions."
     },
     {
       "type": "paragraph",
