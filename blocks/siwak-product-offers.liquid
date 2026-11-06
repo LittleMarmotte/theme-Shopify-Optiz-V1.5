@@ -14,7 +14,7 @@
   assign case_product = all_products['etui-a-siwak']
   assign case_variant = case_product.variants | where: 'sku', 'OPT-SIW-HLD' | first
 %}
-<siwak-product-offers class="siwak-product-offers" data-purchase-mode="once" data-unit-cents="{{ base_unit_cents }}" data-promo-start="{{ promo_start }}" data-promo-end="{{ promo_end }}" data-currency="{{ cart.currency.iso_code }}" data-cta="{{ 'actions.add_to_cart' | t | escape }}" data-case-available="{{ case_variant.available | default: false }}" {{ block.shopify_attributes }}>
+<siwak-product-offers class="siwak-product-offers" data-purchase-mode="once" data-promo-active="{{ promo_active }}" data-unit-cents="{{ base_unit_cents }}" data-promo-start="{{ promo_start }}" data-promo-end="{{ promo_end }}" data-currency="{{ cart.currency.iso_code }}" data-cta="{{ 'actions.add_to_cart' | t | escape }}" data-case-available="{{ case_variant.available | default: false }}" {{ block.shopify_attributes }}>
   <fieldset class="siwak-product-offers__fieldset">
     <legend class="siwak-product-offers__legend"><span>{{ block.settings.kicker | escape }}</span><strong>{{ block.settings.heading | escape }}</strong></legend>
     <p class="siwak-product-offers__promotion" data-promo-message {% unless promo_active %}hidden{% endunless %}>{{ 'siwak_offer.promo_1111' | t }}</p>
@@ -53,7 +53,7 @@
               {% if bonus_value > 0 %}
                 <span class="siwak-product-offers__value-line" data-regular-value {% if promo_active %}hidden{% endif %} title="{{ 'siwak_offer.first_delivery_value' | t | escape }}"><span>{{ 'siwak_offer.total_value' | t }}</span><s data-value-quantity="{{ quantity }}" data-bonus-value="{{ bonus_value }}">{{ quantity | times: unit_price | plus: bonus_value }} €</s></span>
               {% endif %}
-              <span class="siwak-product-offers__price-line"><strong id="siwak-price-{{ block.id }}-{{ quantity }}" data-price="{{ quantity }}">{{ quantity | times: unit_price }} €</strong>{% if quantity == 4 %}<span class="siwak-product-offers__extra-gift">{{ 'siwak_offer.extra_gift' | t }}</span>{% endif %}</span>
+              <span class="siwak-product-offers__price-line"><s class="siwak-product-offers__previous-price" data-promo-reference aria-hidden="true" {% unless promo_active %}hidden{% endunless %}>{{ quantity | times: base_unit_cents | money_without_trailing_zeros }}</s><strong id="siwak-price-{{ block.id }}-{{ quantity }}" data-price="{{ quantity }}">{{ quantity | times: unit_price }} €</strong>{% if quantity == 4 %}<span class="siwak-product-offers__extra-gift">{{ 'siwak_offer.extra_gift' | t }}</span>{% endif %}</span>
               <small data-unit>{{ unit_price }} € / boîte</small>
             </span>
             <span class="siwak-product-offers__teaser" id="siwak-teaser-{{ block.id }}-{{ quantity }}">
@@ -122,6 +122,23 @@
     line-height: 1.5;
   }
   .siwak-product-offers [hidden] { display: none !important; }
+  .siwak-product-offers__previous-price {
+    color: #68635d;
+    font-size: .95rem;
+    font-weight: 500;
+    text-decoration-thickness: 1.5px;
+    text-decoration-color: #68635d;
+  }
+  .siwak-product-offers[data-promo-active="true"] [data-price] {
+    color: var(--offer-red);
+    font-size: clamp(1.65rem, 5.5vw, 2rem);
+    font-weight: 850;
+    line-height: 1;
+    letter-spacing: -.035em;
+  }
+  .siwak-product-offers[data-promo-active="true"] .siwak-product-offers__price-line {
+    column-gap: 8px;
+  }
 
   @media screen and (max-width: 749px) {
     .shopify-section:has(siwak-product-offers[data-purchase-mode="once"]) .sticky-add-to-cart__bar {
@@ -635,7 +652,9 @@ class SiwakProductOffers extends HTMLElement {
     const promo = now >= Number(this.dataset.promoStart) && now < Number(this.dataset.promoEnd)
       && Number(this.dataset.unitCents) === 1200 && this.dataset.currency === 'EUR';
     const unit = promo ? 10 : Number(this.dataset.unitCents) / 100;
+    this.dataset.promoActive = String(promo);
     this.querySelector('[data-promo-message]').hidden = !promo;
+    this.querySelectorAll('[data-promo-reference]').forEach(el => el.hidden = !promo);
     this.querySelectorAll('[data-regular-value]').forEach(el => el.hidden = promo);
     const money = value => new Intl.NumberFormat(document.documentElement.lang || 'fr', {style:'currency',currency:this.dataset.currency || 'EUR',maximumFractionDigits:2}).format(value);
     this.querySelectorAll('[data-price]').forEach(el => { const value = money(Number(el.dataset.price) * unit); if (el.textContent !== value) el.textContent = value; });
