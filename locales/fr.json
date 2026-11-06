@@ -393,6 +393,7 @@
     }
   },
   "siwak_offer": {
+    "promo_1111": "Offre du 11.11 — 10 € la boîte jusqu’au 11 novembre inclus. Achat unique, sans abonnement.",
     "boxes": {
       "one": "{{ count }} boîte",
       "other": "{{ count }} boîtes"

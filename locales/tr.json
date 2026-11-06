@@ -360,6 +360,7 @@
     }
   },
   "siwak_offer": {
+    "promo_1111": "11.11 offer — €10 per box until 11 November inclusive. One-time purchase, no subscription.",
     "boxes": {
       "one": "{{ count }} box",
       "other": "{{ count }} boxes"
