@@ -402,6 +402,14 @@
     "total_value": "Total value",
     "extra_gift": "+ 1 gift",
     "first_delivery_value": "First delivery value, including bonuses",
-    "bonus_value": "Value: €{{ value }}"
+    "bonus_value": "Value: €{{ value }}",
+    "mode_label": "Purchase type",
+    "mode_once": "One-time purchase",
+    "mode_once_detail": "No commitment, no renewal",
+    "mode_subscription": "Subscription",
+    "per_box": "{{ price }} / box",
+    "subscription_saving": "−{{ amount }} / box",
+    "renewal_note": "Subscription: {{ plan }}. Renews at {{ price }} per box; change or cancel anytime. Terms are shown at checkout.",
+    "headline_once": "one-time purchase"
   }
 }

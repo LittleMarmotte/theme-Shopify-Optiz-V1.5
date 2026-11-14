@@ -276,3 +276,38 @@
 .siwak-purchase-panel .product-form-buttons add-to-cart-component .add-to-cart-button:not(:disabled):active {
   translate: 2px 2px;
 }
+
+/* Mobile first screen (Meta Ads traffic, 390×700 in-app browsers): a compact gallery keeps
+   the title, reviews, price, offer hook and the start of the offer block above the fold. */
+@media (max-width: 749px) {
+  .product-information:has(.siwak-purchase-panel) .product-information__grid {
+    row-gap: 6px;
+  }
+
+  .product-information:has(.siwak-purchase-panel) media-gallery slideshow-slide.product-media-container {
+    aspect-ratio: auto;
+    height: clamp(190px, 30svh, 250px);
+  }
+
+  .product-information:has(.siwak-purchase-panel) media-gallery slideshow-slide .product-media-constraint-wrapper,
+  .product-information:has(.siwak-purchase-panel) media-gallery slideshow-slide .product-media,
+  .product-information:has(.siwak-purchase-panel) media-gallery slideshow-slide .siwak-case-gallery {
+    height: 100%;
+    aspect-ratio: auto;
+  }
+
+  .product-information:has(.siwak-purchase-panel) media-gallery slideshow-slide img {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    object-fit: contain;
+  }
+
+  .product-information .siwak-purchase-panel > .group-block {
+    padding-block-start: 12px;
+  }
+
+  .siwak-purchase-panel .siwak-offer-headline__price strong {
+    font-size: 2rem;
+  }
+}

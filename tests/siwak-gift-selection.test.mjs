@@ -10,7 +10,7 @@ function setup() {
  const gift={value:'56449444544894',dataset:{title:'eBook'},disabled:false,checked:false};
  const quantity={value:'4'};
  const registry=new Map();
- const context=vm.createContext({HTMLElement:class {addEventListener(){}},AbortController,MutationObserver:class {observe(){} disconnect(){}},customElements:{get:n=>registry.get(n),define:(n,c)=>registry.set(n,c)}});
+ const context=vm.createContext({HTMLElement:class {addEventListener(){}},AbortController,setInterval:()=>0,clearInterval:()=>{},requestAnimationFrame:()=>0,cancelAnimationFrame:()=>{},document:{addEventListener(){}},MutationObserver:class {observe(){} disconnect(){}},customElements:{get:n=>registry.get(n),define:(n,c)=>registry.set(n,c)}});
  vm.runInContext(code,context);
  const offer=new (registry.get('siwak-product-offers'))();
  const submissions=[];

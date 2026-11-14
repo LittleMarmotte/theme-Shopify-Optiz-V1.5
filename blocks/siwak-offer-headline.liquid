@@ -1,0 +1,118 @@
+{% doc %}
+  Siwak price headline for the product page. Shows the price of the preselected
+  lot (2 boxes, one-time purchase), the struck total value and the ad hook.
+  The `siwak-product-offers` block keeps it in sync with the selected lot and mode.
+{% enddoc %}
+{% liquid
+  assign product_resource = all_products['siwak']
+  assign unit_cents = product_resource.price
+  assign default_quantity = 2
+  assign case_value_cents = 800
+  assign total_cents = unit_cents | times: default_quantity
+  assign value_cents = total_cents | plus: case_value_cents
+  assign boxes_label = 'siwak_offer.boxes' | t: count: default_quantity
+  assign once_label = 'siwak_offer.headline_once' | t
+%}
+<div
+  class="siwak-offer-headline"
+  data-siwak-headline
+  data-purchase-mode="once"
+  data-once-label="{{ once_label | escape }}"
+  {{ block.shopify_attributes }}
+>
+  <p class="siwak-offer-headline__price">
+    <strong data-headline-total>{{ total_cents | money }}</strong>
+    {% if block.settings.show_value %}
+      <s data-headline-value>{{ value_cents | money }}</s>
+    {% endif %}
+    <span class="siwak-offer-headline__meta" data-headline-meta>{{ boxes_label }} · {{ once_label }}</span>
+  </p>
+  {% if block.settings.hook != blank %}
+    <p class="siwak-offer-headline__hook">{{ block.settings.hook | escape }}</p>
+  {% endif %}
+</div>
+
+{% stylesheet %}
+  .siwak-offer-headline {
+    display: grid;
+    gap: 8px;
+    width: 100%;
+    color: #171717;
+  }
+
+  .siwak-offer-headline [hidden] {
+    display: none !important;
+  }
+
+  .siwak-offer-headline__price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+    margin: 0;
+  }
+
+  .siwak-offer-headline__price strong {
+    font-family: var(--font-heading--family);
+    font-size: clamp(1.9rem, 8vw, 2.4rem);
+    line-height: 1;
+  }
+
+  .siwak-offer-headline__price s {
+    color: #65615a;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  .siwak-offer-headline__meta {
+    font-size: 0.8rem;
+    font-weight: 600;
+    opacity: 0.75;
+  }
+
+  .siwak-offer-headline__hook {
+    justify-self: start;
+    margin: 0;
+    padding: 7px 12px;
+    background: #e52219;
+    color: #fff;
+    font-family: var(--font-heading--family);
+    font-size: clamp(1.05rem, 4.6vw, 1.3rem);
+    letter-spacing: 0.01em;
+    line-height: 1.1;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0 #171717;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Prix et accroche Siwak",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "hook",
+      "label": "Accroche de l’offre",
+      "default": "2 boîtes achetées = l’étui offert"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_value",
+      "label": "Afficher la valeur totale barrée",
+      "info": "Prix des boîtes au tarif normal + valeur des cadeaux inclus. Masquée pour 1 boîte.",
+      "default": true
+    },
+    {
+      "type": "paragraph",
+      "content": "Le prix suit le lot et le mode d’achat choisis dans le bloc « Offres produit Siwak »."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Prix et accroche Siwak",
+      "category": "Produit"
+    }
+  ]
+}
+{% endschema %}

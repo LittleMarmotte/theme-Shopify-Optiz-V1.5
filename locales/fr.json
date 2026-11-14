@@ -421,6 +421,14 @@
     "total_value": "Valeur totale",
     "extra_gift": "+ 1 cadeau",
     "first_delivery_value": "Valeur du lot, bonus inclus",
-    "bonus_value": "Valeur : {{ value }} €"
+    "bonus_value": "Valeur : {{ value }} €",
+    "mode_label": "Mode d’achat",
+    "mode_once": "Achat unique",
+    "mode_once_detail": "Sans engagement, sans renouvellement",
+    "mode_subscription": "Abonnement",
+    "per_box": "{{ price }} / boîte",
+    "subscription_saving": "−{{ amount }} / boîte",
+    "renewal_note": "Abonnement : {{ plan }}. Renouvellement à {{ price }} par boîte, modifiable ou annulable à tout moment. Les conditions s’affichent au paiement.",
+    "headline_once": "achat unique"
   }
 }
