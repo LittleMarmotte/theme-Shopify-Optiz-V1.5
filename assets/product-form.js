@@ -422,6 +422,10 @@ class ProductFormComponent extends Component {
       }
     }
 
+    // Preserve experiment attribution before adding items / advancing to checkout.
+    // The optional hook has a one-second deadline and never blocks a purchase on failure.
+    try { await window.optizPopupExperiment?.ready?.(); }
+    catch (error) { console.warn('[Optiz experiment] Attribution unavailable; continuing purchase.', error); }
     const formData = new FormData(form);
 
     if (overrideVariantId) {

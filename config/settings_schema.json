@@ -2116,5 +2116,46 @@
         "default": "equal-width-buttons"
       }
     ]
+  },
+  {
+    "name": "Test pop-up Siwak",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Test 50/50 sur la fiche Siwak. Activer uniquement après validation du pixel et de la règle Klaviyo. Aucun gagnant automatique."
+      },
+      {
+        "type": "select",
+        "id": "optiz_popup_mode",
+        "label": "Mode du test",
+        "options": [
+          {
+            "value": "off",
+            "label": "Désactivé"
+          },
+          {
+            "value": "qa",
+            "label": "Recette sur thème non publié"
+          },
+          {
+            "value": "live",
+            "label": "Production après validation"
+          }
+        ],
+        "default": "off"
+      },
+      {
+        "type": "checkbox",
+        "id": "optiz_popup_tracking_verified",
+        "label": "Pixel et collecte des achats vérifiés",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "optiz_popup_targeting_verified",
+        "label": "Exclusion Klaviyo du formulaire original vérifiée",
+        "default": false
+      }
+    ]
   }
 ]

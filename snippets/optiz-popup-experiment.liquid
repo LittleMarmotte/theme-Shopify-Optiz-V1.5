@@ -1,0 +1,29 @@
+{% comment %}Run before content_for_header so Klaviyo sees the URL exclusion before loading.{% endcomment %}
+{% if settings.optiz_popup_mode != 'off' and settings.optiz_popup_mode != blank %}
+  <script>
+    window.optizPopupExperimentConfig = {
+      mode: {{ settings.optiz_popup_mode | json }},
+      trackingVerified: {{ settings.optiz_popup_tracking_verified | json }},
+      targetingVerified: {{ settings.optiz_popup_targeting_verified | json }},
+      experimentId: 'siwak_popup_v1',
+      formId: 'VKsPes',
+      originalFormId: 'VVGheZ',
+      themeRole: {{ theme.role | json }},
+      designMode: {{ request.design_mode | json }},
+      eligiblePage: {% if request.page_type == 'product' and product.handle == 'siwak' %}true{% else %}false{% endif %}
+    };
+    (function () {
+      var config = window.optizPopupExperimentConfig;
+      var url = new URL(location.href);
+      var qa = config.mode === 'qa' && ['unpublished', 'development'].includes(config.themeRole)
+        && config.targetingVerified && ['popup', 'holdout'].includes(url.searchParams.get('optiz_ab'));
+      var live = config.mode === 'live' && config.themeRole === 'main' && config.trackingVerified && config.targetingVerified;
+      config.running = !config.designMode && (qa || live);
+      if (config.running && config.eligiblePage) {
+        url.searchParams.set('optiz_popup_test', 'managed');
+        history.replaceState(history.state, '', url.href);
+      }
+    })();
+  </script>
+  <script src="{{ 'optiz-popup-experiment.js' | asset_url }}" defer></script>
+{% endif %}

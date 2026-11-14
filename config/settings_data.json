@@ -108,7 +108,10 @@
       "color8": "#ff0000",
       "color10": "#e4e4e4"
     },
-    "auto_open_cart_drawer": false
+    "auto_open_cart_drawer": false,
+    "optiz_popup_mode": "qa",
+    "optiz_popup_tracking_verified": false,
+    "optiz_popup_targeting_verified": false
   },
   "presets": {
     "Savor": {
