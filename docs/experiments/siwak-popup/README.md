@@ -2,6 +2,14 @@
 
 État : préparation/recette, pas de collecte de production ni de publication du thème.
 
+### État de configuration au 14 novembre 2026
+
+- Code livré au thème de recette par le commit `8f9d0c3` ; synchronisation vérifiée, aperçu ouvert dans Opera.
+- GA4 : dimensions événement créées et relues dans l'administration : **Optiz Experience** (`experiment_id`), **Optiz Groupe** (`variant_id`), **Optiz Environnement** (`environment`). Métrique **Optiz Valeur commande experience** (`order_value`), unité Devise, catégorie revenus, créée et vérifiée.
+- Pixel Shopify **Optiz Siwak popup experience**, ID `343277950` : code enregistré, analyse requise, marketing/préférences non requis, données non considérées comme vente. **Déconnecté**, dialogue de connexion ouvert ; confirmation de Matthieu demandée avant l'accès aux événements de boutique/paiement.
+- Klaviyo : clone `VKsPes` et exclusion du marqueur sur `VVGheZ` toujours en brouillon ; publications soumises à la confirmation explicite exigée par l'outil.
+- Validation réelle des événements GA4, des deux groupes et de l'achat encore à effectuer. Les deux cases de validation du thème restent décochées et aucune activation de production n'a été faite.
+
 ## Cibles et principe
 
 - Expérience : `siwak_popup_v1` ; unité = navigateur consentant, pas personne tous appareils confondus.
