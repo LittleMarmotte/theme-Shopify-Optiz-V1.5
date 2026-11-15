@@ -111,7 +111,7 @@
     "auto_open_cart_drawer": false,
     "optiz_popup_mode": "qa",
     "optiz_popup_tracking_verified": false,
-    "optiz_popup_targeting_verified": false
+    "optiz_popup_targeting_verified": true
   },
   "presets": {
     "Savor": {
