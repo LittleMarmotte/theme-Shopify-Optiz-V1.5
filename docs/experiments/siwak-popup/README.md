@@ -2,13 +2,14 @@
 
 État : préparation/recette, pas de collecte de production ni de publication du thème.
 
-### État de configuration au 14 novembre 2026
+### État de configuration au 15 novembre 2026
 
-- Code livré au thème de recette par le commit `8f9d0c3` ; synchronisation vérifiée, aperçu ouvert dans Opera.
+- Code initial `8f9d0c3`, recette autorisée par `b83efe7` ; synchronisation du thème vérifiée, aperçu ouvert dans Opera.
 - GA4 : dimensions événement créées et relues dans l'administration : **Optiz Experience** (`experiment_id`), **Optiz Groupe** (`variant_id`), **Optiz Environnement** (`environment`). Métrique **Optiz Valeur commande experience** (`order_value`), unité Devise, catégorie revenus, créée et vérifiée.
-- Pixel Shopify **Optiz Siwak popup experience**, ID `343277950` : code enregistré, analyse requise, marketing/préférences non requis, données non considérées comme vente. **Déconnecté**, dialogue de connexion ouvert ; confirmation de Matthieu demandée avant l'accès aux événements de boutique/paiement.
-- Klaviyo : clone `VKsPes` et exclusion du marqueur sur `VVGheZ` toujours en brouillon ; publications soumises à la confirmation explicite exigée par l'outil.
-- Validation réelle des événements GA4, des deux groupes et de l'achat encore à effectuer. Les deux cases de validation du thème restent décochées et aucune activation de production n'a été faite.
+- Pixel Shopify **Optiz Siwak popup experience**, ID `343277950` : **connecté**, état vérifié dans l'administration après accord explicite de Matthieu. Analyse requise, marketing/préférences non requis, données non considérées comme vente.
+- Klaviyo : clone `VKsPes` et exclusion du marqueur sur `VVGheZ` **publiés après accord explicite**, règles live relues par API. Clone live `29718756`, original live `29718723`. Les cinq sélecteurs CSS du clone qui mentionnaient encore l'ID original ont été adaptés à `VKsPes` pour conserver le rendu mobile.
+- Recette réelle : aucun formulaire dans le groupe `holdout`, clone uniquement dans `popup`. Affectation, ouverture, fermeture, ajout au panier et début du paiement acceptés par GA4 ; événements et paramètres du paiement relus dans **DebugView**. Retrait du consentement : affectation et stockage du contrôleur supprimés. Voir [RECETTE-2026-11-15.md](RECETTE-2026-11-15.md).
+- Mode `qa`, ciblage vérifié **vrai**, collecte des achats vérifiée **faux**. Aucune activation de production ni publication du thème. Achat réel et inscription e-mail non effectués ; commande de test demandée à Matthieu pour le rapprochement final.
 
 ## Cibles et principe
 
@@ -25,7 +26,7 @@
 
 - Thème de recette unique : `197781324158` (non publié), branche connectée `codex/optiz-dev-sync`.
 - Branche d'implémentation : `codex/siwak-popup-experiment`, dans un espace Orca dédié.
-- Formulaire original : `VVGheZ`, **OPTIZ | Bienvenue -10 %**. Seul son brouillon reçoit l'exclusion du marqueur ; version en ligne conservée tant que la publication Klaviyo n'est pas approuvée.
+- Formulaire original : `VVGheZ`, **OPTIZ | Bienvenue -10 %**. L'exclusion du marqueur est publiée ; les autres règles et le contenu sont conservés.
 - Clone : `VKsPes`, **OPTIZ | Test Siwak popup v1 | Traitement**, déclenchement JavaScript uniquement ; même liste `VCwZhh`, donc même flux de bienvenue `WveiNa`.
 - Sauvegarde du formulaire original avant modification : `sauvegardes/klaviyo-popup-VVGheZ-avant-experiment.json` dans le dossier principal du projet.
 - Propriété GA4 : `518462075` ; flux Web Optiz `13245067098`, `https://optiz.store`, mesure **G-V6ZGZG90XP**, vérifiés dans Google Analytics.
@@ -65,7 +66,9 @@ Une annotation privée `__optiz_experiment` contient le groupe, l'identifiant al
 
 ## Rapport de décision
 
-Dans une exploration GA4 :
+Exploration enregistrée : [Optiz — Siwak pop-up A/B — suivi](https://analytics.google.com/analytics/web/#/analysis/a379365749p518462075/edit/ZGONAhihTnu3D9aXvbz7OQ), onglet **Production — groupes et parcours**. Lignes groupe et événement ; colonnes appareil ; valeurs utilisateurs, événements et valeur commande ; 50 lignes. Les filtres d'expérience et de production sont déjà appliqués. La vue est vide tant que le test public n'est pas activé. Les 28 derniers jours sont la plage initiale : régler les dates sur toute la période du test lors de l'analyse finale.
+
+Lire les lignes de cette exploration ainsi :
 
 - Filtres `experiment_id = siwak_popup_v1`, `environment = production` ; dates de l'expérience seulement.
 - Lignes : `variant_id` ; ventilation séparée par catégorie d'appareil.
@@ -74,6 +77,8 @@ Dans une exploration GA4 :
 - Taux d'achat = acheteurs affectés / visiteurs affectés. Revenu brut par visiteur = somme `order_value` des commandes retenues / visiteurs affectés. Taux d'inscription = `optiz_exp_popup_submit` / visiteurs affectés ; indicateur secondaire.
 - Afficher aussi contaminations et erreurs de suivi par groupe. Si des vues du formulaire original apparaissent dans le test, ne pas conclure tant que le ciblage n'est pas corrigé.
 - Ne pas additionner les revenus attribués au formulaire et au flux e-mail ; ils se recoupent.
+
+Le tableau ne calcule pas automatiquement le taux d'achat ni le revenu par visiteur : utiliser les **utilisateurs de la ligne `experiment_impression`** comme dénominateur et ceux de `optiz_exp_purchase` comme acheteurs ; diviser la valeur de la ligne achat par ce dénominateur. Ne pas utiliser le total de tous les événements. Le rapprochement Shopify reste nécessaire avant une décision.
 
 Faire au moins deux semaines complètes de collecte et laisser maturer la fenêtre de suivi de 30 jours des derniers entrants avant la décision finale. Deux semaines ne garantissent pas assez de volume. Définir le seuil d'effet utile et la taille d'échantillon après lecture du taux d'achat de référence ; ne pas arrêter sur une fluctuation quotidienne. Sans données suffisantes, conclure « non concluant », jamais « égalité ».
 
@@ -85,8 +90,8 @@ Faire au moins deux semaines complètes de collecte et laisser maturer la fenêt
   - https://tqka0j-vk.myshopify.com/products/siwak?preview_theme_id=197781324158&optiz_ab=holdout
 - Diagnostic local : `window.optizPopupExperiment.inspect()`. Il contient l'affectation et les erreurs, aucune donnée du formulaire.
 - Après publication approuvée du clone et de l'exclusion Klaviyo, vérifier que le contrôle ne voit aucun formulaire et que le traitement voit uniquement `VKsPes`.
-- Le mode `live` ne s'exécute que sur le rôle Liquid `main`, avec les deux cases de validation cochées. Tous les réglages de validation restent faux pour l'instant.
-- Ne pas publier le thème de test sans validation explicite. Le thème réellement publié au début de cette intervention est `198911066494`, différent du thème connecté de recette : comparer les versions avant de proposer une publication, afin de préserver les autres changements en production.
+- Le mode `live` ne s'exécute que sur le rôle Liquid `main`, avec les deux cases de validation cochées. Le ciblage est vérifié ; les achats restent à vérifier.
+- Ne pas publier le thème de test sans validation explicite. Le thème publié relevé le 15 novembre est **Offre mobil**, `199525990782`, différent du thème connecté de recette : comparer les versions avant de proposer une publication, afin de préserver les autres changements en production.
 
 ## Arrêt / retour arrière
 
@@ -98,6 +103,6 @@ Un nouveau test doit recevoir un nouvel `experiment_id`, une nouvelle clé de st
 
 `node --test tests/popup-experiment.test.mjs tests/siwak-*.test.mjs` : 33 tests passent, dont 16 pour cette expérience (consentement, révocation pendant identification, écriture panier en cours, deux onglets, stabilité, QA, PII, cadeaux et doublons d'achat).
 
-Shopify Theme Check : 574 problèmes avant/après, aucun ajouté. Les nouvelles vérifications de syntaxe JavaScript passent. Pas d'achat réel effectué, pas de réception GA4 déclarée validée à ce stade.
+Shopify Theme Check : 574 problèmes avant/après le code initial, aucun ajouté. Les nouvelles vérifications de syntaxe JavaScript passent. Recette réelle documentée séparément : réception GA4 vérifiée jusqu'au début du paiement, sans achat réel.
 
 Sources : documentation officielle Shopify Customer Privacy / Web Pixels / Cart API, Klaviyo custom trigger et `klaviyoForms`, Google Analytics intégration d'expériences et dimensions personnalisées. Les limites de consentement, de stockage, de navigateurs, de pixels bloqués et de changement d'appareil empêchent de promettre une mesure de 100 % des visiteurs.
